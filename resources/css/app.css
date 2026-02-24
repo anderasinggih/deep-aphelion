@@ -10,11 +10,11 @@
         --color-primary-content: #ffffff;
 
         /* Base Backgrounds (The deep navy non-glaring dark) */
-        --color-base-100: #121822;
+        --color-base-100: #0e131d;
         /* Main dark background */
-        --color-base-200: #1c2431;
+        --color-base-200: #1c2636;
         /* Cards, Sidebars, Navbar (slightly lighter) */
-        --color-base-300: #262d3a;
+        --color-base-300: #28374d;
         /* Borders and subtle accents */
         --color-base-content: #e2e8f0;
         /* Soft readable white text */

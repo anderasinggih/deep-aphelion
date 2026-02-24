@@ -7,7 +7,7 @@
     </x-header>
 
     <!-- Unified Filter Bar Container -->
-    <div class="p-4 mb-8 border lg:p-6 shadow-sm bg-base-100 rounded-[1.5rem] border-base-200">
+    <div class="p-4 mb-8 border lg:p-6 shadow-sm bg-base-200 rounded-[1.5rem] border-base-300">
         <x-form wire:submit="render">
             <div class="flex flex-col gap-4 md:flex-row md:items-center">
 
@@ -58,7 +58,7 @@
         <div class="space-y-6 lg:col-span-4">
             @forelse($pengaduans as $pengaduan)
             <div
-                class="transition-all duration-300 border shadow-sm bg-base-100 rounded-[1.5rem] border-base-200 hover:shadow-md hover:border-primary/30">
+                class="transition-all duration-300 border shadow-sm bg-base-200 rounded-[1.5rem] border-base-300 hover:shadow-md hover:border-primary/30">
                 <div class="p-5 sm:p-8">
                     <div class="flex flex-col gap-3 mb-4 sm:flex-row sm:items-start sm:justify-between">
                         <div class="flex-1 pr-4">
@@ -73,9 +73,14 @@
                                 </span>
                             </div>
                             <h2
-                                class="text-lg font-bold leading-tight cursor-pointer sm:text-xl text-base-content hover:text-primary transition-colors">
+                                class="text-lg font-bold leading-tight cursor-pointer sm:text-xl text-base-content hover:text-primary transition-colors mb-2">
                                 <a href="#">{{ $pengaduan->judul }}</a>
                             </h2>
+                            <div class="flex items-start gap-1.5 text-xs text-base-content/60">
+                                <x-icon name="o-map-pin" class="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-error/80" />
+                                <span class="line-clamp-2">{{ $pengaduan->lokasi ?? 'Lokasi tidak spesifik (Data
+                                    koordinat terlampir)' }}</span>
+                            </div>
                         </div>
 
                         <div class="flex-shrink-0">
@@ -94,6 +99,14 @@
                     <p class="mb-5 text-sm leading-relaxed sm:text-base text-base-content/80 line-clamp-3">
                         {{ $pengaduan->deskripsi }}
                     </p>
+
+                    @if($pengaduan->path_bukti)
+                    <div class="mb-5 overflow-hidden border shadow-sm rounded-2xl border-base-300">
+                        <img src="{{ Storage::url($pengaduan->path_bukti) }}" alt="Bukti {{ $pengaduan->judul }}"
+                            class="object-cover w-full h-auto max-h-[400px] hover:scale-105 transition-transform duration-500 cursor-zoom-in"
+                            onclick="window.open(this.src, '_blank')" />
+                    </div>
+                    @endif
 
                     <div
                         class="flex flex-col gap-4 pt-4 mt-2 border-t sm:flex-row sm:items-center sm:justify-between border-base-200">
@@ -128,7 +141,7 @@
             </div>
             @empty
             <div
-                class="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed bg-base-100/50 rounded-[1.5rem] border-base-300">
+                class="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed bg-base-200/50 rounded-[1.5rem] border-base-300">
                 <div class="p-4 mb-4 rounded-full bg-base-200">
                     <x-icon name="o-inbox" class="w-10 h-10 text-base-content/40" />
                 </div>
@@ -139,9 +152,3 @@
             @endforelse
 
             <div class="mt-6">
-                {{ $pengaduans->links() }}
-            </div>
-        </div>
-
-    </div>
-</div>
