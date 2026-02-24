@@ -11,45 +11,41 @@
     </div>
 
     <!-- Summary Stats -->
-    <div class="grid grid-cols-2 gap-4 mb-8 sm:grid-cols-3 lg:grid-cols-5">
-        <div class="p-6 border shadow-sm bg-base-100 rounded-2xl border-base-200">
-            <div class="flex items-center gap-3 mb-2">
-                <div class="p-2 rounded-lg bg-base-200 text-base-content/70"><x-icon name="o-document-text"
-                        class="w-5 h-5" /></div>
-                <h3 class="text-sm font-semibold tracking-wide text-base-content/60">Total Laporan</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+
+        <!-- Pendaftar / Users -->
+        <div
+            class="p-8 border bg-base-200 rounded-3xl border-base-300/60 flex flex-col items-center justify-center text-center transition-all hover:border-primary/50">
+            <div class="p-3 mb-4 rounded-full bg-primary/20 text-primary">
+                <x-icon name="o-users" class="w-6 h-6" />
             </div>
-            <p class="text-3xl font-black">{{ $stats['total_laporan'] ?? 0 }}</p>
+            <h2 class="text-4xl font-black text-white mb-2">{{ $stats['total_warga'] ?? 0 }}</h2>
+            <h3 class="text-base font-bold text-white mb-1">Akun Terdaftar</h3>
+            <p class="text-xs text-base-content/50">Jumlah akun warga terdaftar di sistem</p>
         </div>
-        <div class="p-6 border shadow-sm bg-base-100 rounded-2xl border-base-200 border-b-4 border-b-warning/50">
-            <div class="flex items-center gap-3 mb-2">
-                <div class="p-2 rounded-lg bg-warning/20 text-warning"><x-icon name="o-clock" class="w-5 h-5" /></div>
-                <h3 class="text-sm font-semibold tracking-wide text-base-content/60">Menunggu</h3>
+
+        <!-- Total Laporan -->
+        <div
+            class="p-8 border bg-base-200 rounded-3xl border-base-300/60 flex flex-col items-center justify-center text-center transition-all hover:border-success/50">
+            <div class="p-3 mb-4 rounded-full bg-success/20 text-success">
+                <x-icon name="o-document-check" class="w-6 h-6" />
             </div>
-            <p class="text-3xl font-black text-warning">{{ $stats['menunggu'] ?? 0 }}</p>
+            <h2 class="text-4xl font-black text-white mb-2">{{ $stats['total_laporan'] ?? 0 }}</h2>
+            <h3 class="text-base font-bold text-white mb-1">Total Pengaduan</h3>
+            <p class="text-xs text-base-content/50">Seluruh aduan masuk se-Kecamatan</p>
         </div>
-        <div class="p-6 border shadow-sm bg-base-100 rounded-2xl border-base-200 border-b-4 border-b-info/50">
-            <div class="flex items-center gap-3 mb-2">
-                <div class="p-2 rounded-lg bg-info/20 text-info"><x-icon name="o-arrow-path" class="w-5 h-5" /></div>
-                <h3 class="text-sm font-semibold tracking-wide text-base-content/60">Diproses</h3>
+
+        <!-- Laporan Diproses/Berlangsung -->
+        <div
+            class="p-8 border bg-base-200 rounded-3xl border-base-300/60 flex flex-col items-center justify-center text-center transition-all hover:border-warning/50">
+            <div class="p-3 mb-4 rounded-full bg-warning/20 text-warning">
+                <x-icon name="o-bolt" class="w-6 h-6" />
             </div>
-            <p class="text-3xl font-black text-info">{{ $stats['diproses'] ?? 0 }}</p>
+            <h2 class="text-4xl font-black text-white mb-2">{{ $stats['diproses'] ?? 0 }}</h2>
+            <h3 class="text-base font-bold text-white mb-1">Aduan Berlangsung</h3>
+            <p class="text-xs text-base-content/50">Laporan yang sedang ditangani saat ini</p>
         </div>
-        <div class="p-6 border shadow-sm bg-base-100 rounded-2xl border-base-200 border-b-4 border-b-success/50">
-            <div class="flex items-center gap-3 mb-2">
-                <div class="p-2 rounded-lg bg-success/20 text-success"><x-icon name="o-check-circle" class="w-5 h-5" />
-                </div>
-                <h3 class="text-sm font-semibold tracking-wide text-base-content/60">Selesai</h3>
-            </div>
-            <p class="text-3xl font-black text-success">{{ $stats['selesai'] ?? 0 }}</p>
-        </div>
-        <div class="p-6 border shadow-sm bg-base-100 rounded-2xl border-base-200">
-            <div class="flex items-center gap-3 mb-2">
-                <div class="p-2 rounded-lg bg-base-200 text-base-content/70"><x-icon name="o-users" class="w-5 h-5" />
-                </div>
-                <h3 class="text-sm font-semibold tracking-wide text-base-content/60">Total Warga</h3>
-            </div>
-            <p class="text-3xl font-black">{{ $stats['total_warga'] ?? 0 }}</p>
-        </div>
+
     </div>
 
     <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
@@ -150,7 +146,7 @@
                     L.marker([item.latitude, item.longitude])
                         .addTo(map)
                         .bindPopup(`<b>${item.judul}</b><br/>Status: ${item.status.toUpperCase(;
-          }
+                }
             });
         });
     </script>

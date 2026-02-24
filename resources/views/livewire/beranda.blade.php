@@ -6,60 +6,60 @@
         </x-slot:actions>
     </x-header>
 
-    <div class="grid grid-cols-1 gap-8 lg:grid-cols-4">
+    <!-- Unified Filter Bar Container -->
+    <div class="p-4 mb-8 border lg:p-6 shadow-sm bg-base-100 rounded-[1.5rem] border-base-200">
+        <x-form wire:submit="render">
+            <div class="flex flex-col gap-4 md:flex-row md:items-center">
 
-        <!-- Sidebar Filter / Sort -->
-        <div class="hidden space-y-6 lg:block lg:col-span-1">
-            <div class="p-6 border shadow-sm bg-base-100 rounded-2xl border-base-200">
-                <h3 class="mb-4 text-xs font-bold tracking-wider uppercase text-base-content/50">Pencarian & Filter</h3>
-                <x-form wire:submit="render">
-                    <x-input wire:model.live.debounce="search" icon="o-magnifying-glass" placeholder="Cari laporan..."
-                        class="mb-4 input-bordered" />
-
-                    <x-select wire:model.live="kategori_id" :options="$kategoris" option-label="nama" option-value="id"
-                        placeholder="Semua Kategori" class="mb-4 select-bordered" />
-
-                    <x-radio wire:model.live="sort"
-                        :options="[['id' => 'terbaru', 'name' => 'Terbaru'], ['id' => 'terpopuler', 'name' => 'Dukungan Terbanyak']]"
-                        option-value="id" option-label="name" class="gap-2 p-0" />
-                </x-form>
-            </div>
-
-            <div class="p-6 border shadow-sm bg-base-100 rounded-2xl border-base-200">
-                <h3 class="mb-4 text-xs font-bold tracking-wider uppercase text-base-content/50">Legenda Status</h3>
-                <div class="flex flex-col gap-3 text-sm font-medium text-base-content/80">
-                    <div class="flex items-center gap-3"><span class="w-3 h-3 rounded-full bg-warning"></span> Menunggu
-                        Validasi</div>
-                    <div class="flex items-center gap-3"><span class="w-3 h-3 rounded-full bg-info"></span> Sedang
-                        Diproses</div>
-                    <div class="flex items-center gap-3"><span class="w-3 h-3 rounded-full bg-success"></span> Selesai
-                        Ditangani</div>
-                    <div class="flex items-center gap-3"><span class="w-3 h-3 rounded-full bg-error"></span> Laporan
-                        Ditolak</div>
+                <!-- Search Box -->
+                <div class="relative flex-1">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                        <x-icon name="o-magnifying-glass" class="w-5 h-5 opacity-50 text-base-content/50" />
+                    </div>
+                    <input type="text" wire:model.live.debounce="search" placeholder="Cari laporan..."
+                        class="w-full h-12 pl-12 pr-4 text-sm transition-colors border shadow-sm outline-none bg-base-100 border-base-content/20 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary text-base-content" />
                 </div>
-            </div>
-        </div>
 
-        <!-- Main Feed -->
-        <div class="space-y-6 lg:col-span-3">
-            <!-- Mobile Filter Toggle (Visible only on small screens) -->
-            <div class="block lg:hidden">
-                <div class="p-4 border shadow-sm bg-base-100 rounded-2xl border-base-200">
-                    <x-input wire:model.live.debounce="search" icon="o-magnifying-glass" placeholder="Cari laporan..."
-                        class="mb-3 input-bordered" />
-                    <div class="flex gap-2">
-                        <x-select wire:model.live="kategori_id" :options="$kategoris" option-label="nama"
-                            option-value="id" placeholder="Semua Kategori" class="flex-1 select-bordered select-sm" />
-                        <x-select wire:model.live="sort"
-                            :options="[['id' => 'terbaru', 'name' => 'Terbaru'], ['id' => 'terpopuler', 'name' => 'Terapik']]"
-                            option-value="id" option-label="name" class="flex-1 select-bordered select-sm" />
+                <!-- Selects Row -->
+                <div class="flex flex-col gap-4 sm:flex-row md:w-auto">
+                    <!-- Kategori Dropdown -->
+                    <div class="relative w-full sm:w-56 md:w-64">
+                        <select wire:model.live="kategori_id"
+                            class="w-full h-12 px-4 pr-10 text-sm transition-colors border shadow-sm appearance-none outline-none cursor-pointer bg-base-100 border-base-content/20 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary text-base-content">
+                            <option value="">Semua Kategori</option>
+                            @foreach($kategoris as $kat)
+                            <option value="{{ $kat->id }}">{{ $kat->nama }}</option>
+                            @endforeach
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                            <x-icon name="o-chevron-down" class="w-4 h-4 opacity-50 text-base-content/50" />
+                        </div>
+                    </div>
+
+                    <!-- Sort Dropdown -->
+                    <div class="relative w-full sm:w-40 md:w-48">
+                        <select wire:model.live="sort"
+                            class="w-full h-12 px-4 pr-10 text-sm font-medium transition-colors border shadow-sm appearance-none outline-none cursor-pointer bg-base-100 border-base-content/20 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary text-base-content">
+                            <option value="terbaru">Terbaru</option>
+                            <option value="terpopuler">Terpopuler</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                            <x-icon name="o-chevron-down" class="w-4 h-4 opacity-50 text-base-content/50" />
+                        </div>
                     </div>
                 </div>
+
             </div>
+        </x-form>
+    </div>
+
+    <div class="grid grid-cols-1 gap-8 lg:grid-cols-4">
+        <!-- Main Feed -->
+        <div class="space-y-6 lg:col-span-4">
             @forelse($pengaduans as $pengaduan)
             <div
-                class="transition-all duration-300 border shadow-sm bg-base-100 rounded-2xl border-base-200 hover:shadow-md hover:border-primary/30">
-                <div class="p-5 sm:p-6">
+                class="transition-all duration-300 border shadow-sm bg-base-100 rounded-[1.5rem] border-base-200 hover:shadow-md hover:border-primary/30">
+                <div class="p-5 sm:p-8">
                     <div class="flex flex-col gap-3 mb-4 sm:flex-row sm:items-start sm:justify-between">
                         <div class="flex-1 pr-4">
                             <div class="flex items-center gap-2 mb-2 text-xs font-medium text-base-content/60">
@@ -128,7 +128,7 @@
             </div>
             @empty
             <div
-                class="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed bg-base-100/50 rounded-2xl border-base-300">
+                class="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed bg-base-100/50 rounded-[1.5rem] border-base-300">
                 <div class="p-4 mb-4 rounded-full bg-base-200">
                     <x-icon name="o-inbox" class="w-10 h-10 text-base-content/40" />
                 </div>
