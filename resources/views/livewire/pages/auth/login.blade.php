@@ -80,9 +80,13 @@ new #[Layout('layouts.auth')] class extends Component
                     @endif
                 </div>
                 <x-input wire:model="form.password" id="password" placeholder="Masukkan password" type="password"
-                    icon-right="o-eye" required autocomplete="current-password"
+                    required autocomplete="current-password"
                     class="bg-base-200 border-base-300 text-base-content focus:border-primary focus:ring-primary" />
+
+
             </div>
+
+
 
             <!-- Remember Me -->
             <div class="pt-2">
@@ -90,7 +94,7 @@ new #[Layout('layouts.auth')] class extends Component
                     <input wire:model="form.remember" id="remember" type="checkbox"
                         class="checkbox checkbox-sm checkbox-primary rounded bg-base-200 border-base-300"
                         name="remember">
-                    <span class="ml-3 text-sm text-base-content/70">Remember me</span>
+                    <span class="ml-3 text-sm text-base-content/70">Ingat Saya</span>
                 </label>
             </div>
 

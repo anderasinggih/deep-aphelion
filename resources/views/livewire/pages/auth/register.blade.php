@@ -47,7 +47,6 @@ new #[Layout('layouts.auth')] class extends Component
 <div
     class="flex flex-col md:flex-row w-full max-w-5xl mx-4 my-8 bg-base-100 rounded-[2rem] overflow-hidden shadow-xl border border-base-200 max-h-[95vh] md:max-h-[90vh]">
 
-    <!-- Left Side: Image Banner -->
     <div class="hidden md:block md:w-5/12 relative">
         <img src="https://images.unsplash.com/photo-1519501025264-65ba15a82390?q=80&w=1000&auto=format&fit=crop"
             alt="Kabupaten Banyumas" class="absolute inset-0 w-full h-full object-cover" />
@@ -59,11 +58,9 @@ new #[Layout('layouts.auth')] class extends Component
         </div>
     </div>
 
-    <!-- Right Side: Register Form (Scrollable) -->
     <div class="w-full md:w-7/12 p-8 sm:p-10 flex flex-col overflow-y-auto no-scrollbar bg-base-100"
         style="scrollbar-width: none;">
 
-        <!-- Header Logos -->
         <div class="flex items-center justify-center gap-4 mb-6">
             <img src="{{ asset('storage/assets/logobanyumas.png') }}" alt="Logo Banyumas"
                 class="w-10 h-10 object-contain" />
@@ -79,14 +76,12 @@ new #[Layout('layouts.auth')] class extends Component
 
         <form wire:submit="register" class="space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Name -->
                 <div>
                     <x-input wire:model="name" id="name" label="Nama Lengkap (Sesuai KTP)" type="text" required
                         autofocus autocomplete="name"
                         class="bg-base-200 border-base-300 text-base-content focus:border-primary focus:ring-primary" />
                 </div>
 
-                <!-- NIK -->
                 <div>
                     <x-input wire:model="nik" id="nik" label="Nomor Induk Kependudukan (NIK)" type="number" required
                         autocomplete="off"
@@ -95,14 +90,12 @@ new #[Layout('layouts.auth')] class extends Component
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- WhatsApp -->
                 <div>
                     <x-input wire:model="no_wa" id="no_wa" label="Nomor WhatsApp" type="number" placeholder="08xxxxxxxx"
                         required autocomplete="tel"
                         class="bg-base-200 border-base-300 text-base-content focus:border-primary focus:ring-primary" />
                 </div>
 
-                <!-- Email -->
                 <div>
                     <x-input wire:model="email" id="email" label="Email (Opsional)" type="email"
                         placeholder="email@example.com" autocomplete="email"
@@ -111,14 +104,12 @@ new #[Layout('layouts.auth')] class extends Component
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-base-200 pt-3 mt-2">
-                <!-- Password -->
                 <div>
                     <x-input wire:model="password" id="password" label="Password" type="password" icon-right="o-eye"
                         required autocomplete="new-password"
                         class="bg-base-200 border-base-300 text-base-content focus:border-primary focus:ring-primary" />
                 </div>
 
-                <!-- Confirm Password -->
                 <div>
                     <x-input wire:model="password_confirmation" id="password_confirmation" label="Konfirmasi Password"
                         type="password" icon-right="o-eye" required autocomplete="new-password"
@@ -143,10 +134,22 @@ new #[Layout('layouts.auth')] class extends Component
         </p>
     </div>
 
-    <!-- Inline Style for hiding scrollbar -->
     <style>
+        /* Sembunyikan Scrollbar */
         .no-scrollbar::-webkit-scrollbar {
             display: none;
+        }
+
+        /* Sembunyikan panah atas-bawah di input type="number" (Chrome, Safari, Edge, Opera) */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* Sembunyikan panah atas-bawah di input type="number" (Firefox) */
+        input[type=number] {
+            -moz-appearance: textfield;
         }
     </style>
 </div>
