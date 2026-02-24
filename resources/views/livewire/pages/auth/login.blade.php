@@ -64,7 +64,8 @@ new #[Layout('layouts.auth')] class extends Component
             <!-- Email Address -->
             <div>
                 <x-input wire:model="form.email" id="email" label="Alamat email" placeholder="email@example.com"
-                    type="email" required autofocus autocomplete="username" />
+                    type="email" required autofocus autocomplete="username"
+                    class="bg-base-200 border-base-300 text-base-content focus:border-primary focus:ring-primary" />
             </div>
 
             <!-- Password -->
@@ -79,20 +80,23 @@ new #[Layout('layouts.auth')] class extends Component
                     @endif
                 </div>
                 <x-input wire:model="form.password" id="password" placeholder="Masukkan password" type="password"
-                    icon-right="o-eye" required autocomplete="current-password" />
+                    icon-right="o-eye" required autocomplete="current-password"
+                    class="bg-base-200 border-base-300 text-base-content focus:border-primary focus:ring-primary" />
             </div>
 
             <!-- Remember Me -->
             <div class="pt-2">
                 <label for="remember" class="flex items-center cursor-pointer">
                     <input wire:model="form.remember" id="remember" type="checkbox"
-                        class="checkbox checkbox-sm checkbox-primary rounded" name="remember">
+                        class="checkbox checkbox-sm checkbox-primary rounded bg-base-200 border-base-300"
+                        name="remember">
                     <span class="ml-3 text-sm text-base-content/70">Remember me</span>
                 </label>
             </div>
 
             <div class="pt-4">
-                <button type="submit" class="w-full btn btn-primary text-white shadow-sm rounded-xl">
+                <button type="submit"
+                    class="w-full btn btn-primary bg-primary border-none hover:bg-primary/90 text-white shadow-sm rounded-xl">
                     Masuk
                 </button>
             </div>
@@ -104,4 +108,5 @@ new #[Layout('layouts.auth')] class extends Component
         </p>
     </div>
 
+</div>
 </div>

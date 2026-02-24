@@ -82,13 +82,15 @@ new #[Layout('layouts.auth')] class extends Component
                 <!-- Name -->
                 <div>
                     <x-input wire:model="name" id="name" label="Nama Lengkap (Sesuai KTP)" type="text" required
-                        autofocus autocomplete="name" />
+                        autofocus autocomplete="name"
+                        class="bg-base-200 border-base-300 text-base-content focus:border-primary focus:ring-primary" />
                 </div>
 
                 <!-- NIK -->
                 <div>
                     <x-input wire:model="nik" id="nik" label="Nomor Induk Kependudukan (NIK)" type="number" required
-                        autocomplete="off" />
+                        autocomplete="off"
+                        class="bg-base-200 border-base-300 text-base-content focus:border-primary focus:ring-primary" />
                 </div>
             </div>
 
@@ -96,13 +98,15 @@ new #[Layout('layouts.auth')] class extends Component
                 <!-- WhatsApp -->
                 <div>
                     <x-input wire:model="no_wa" id="no_wa" label="Nomor WhatsApp" type="number" placeholder="08xxxxxxxx"
-                        required autocomplete="tel" />
+                        required autocomplete="tel"
+                        class="bg-base-200 border-base-300 text-base-content focus:border-primary focus:ring-primary" />
                 </div>
 
                 <!-- Email -->
                 <div>
                     <x-input wire:model="email" id="email" label="Email (Opsional)" type="email"
-                        placeholder="email@example.com" autocomplete="email" />
+                        placeholder="email@example.com" autocomplete="email"
+                        class="bg-base-200 border-base-300 text-base-content focus:border-primary focus:ring-primary" />
                 </div>
             </div>
 
@@ -110,13 +114,15 @@ new #[Layout('layouts.auth')] class extends Component
                 <!-- Password -->
                 <div>
                     <x-input wire:model="password" id="password" label="Password" type="password" icon-right="o-eye"
-                        required autocomplete="new-password" />
+                        required autocomplete="new-password"
+                        class="bg-base-200 border-base-300 text-base-content focus:border-primary focus:ring-primary" />
                 </div>
 
                 <!-- Confirm Password -->
                 <div>
                     <x-input wire:model="password_confirmation" id="password_confirmation" label="Konfirmasi Password"
-                        type="password" icon-right="o-eye" required autocomplete="new-password" />
+                        type="password" icon-right="o-eye" required autocomplete="new-password"
+                        class="bg-base-200 border-base-300 text-base-content focus:border-primary focus:ring-primary" />
                 </div>
             </div>
 
@@ -124,7 +130,8 @@ new #[Layout('layouts.auth')] class extends Component
                 dan angka.</p>
 
             <div class="pt-2">
-                <button type="submit" class="w-full btn btn-primary text-white shadow-sm rounded-xl">
+                <button type="submit"
+                    class="w-full btn btn-primary bg-primary border-none hover:bg-primary/90 text-white shadow-sm rounded-xl">
                     Daftar Sekarang
                 </button>
             </div>
