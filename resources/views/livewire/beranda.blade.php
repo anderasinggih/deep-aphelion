@@ -2,7 +2,7 @@
     <x-header title="Kembaran Ngadu" subtitle="Layanan Pengaduan Masyarakat Kecamatan Kembaran" size="text-3xl"
         class="mb-5">
         <x-slot:actions>
-            <x-button label="Buat Laporan Baru" icon="o-plus-circle" class="btn-primary" link="/pengaduan/create" />
+            <x-button label="Mulai Ngadu" icon="o-plus-circle" class="btn-primary" link="/pengaduan/create" />
         </x-slot:actions>
     </x-header>
 
@@ -163,4 +163,5 @@
             </div>
             @endforelse
 
+            <div class="mt-6">
             <div class="mt-6">

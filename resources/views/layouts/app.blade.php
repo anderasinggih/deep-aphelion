@@ -45,7 +45,7 @@
                     @endauth
                 </ul>
             </div>
-            <a href="/" class="text-xl font-bold text-primary flex items-center gap-2 lg:ml-0">
+            <a href="/" class="text-xl font-bold text-brand flex items-center gap-2 lg:ml-0">
                 <x-icon name="o-megaphone" class="w-6 h-6" />
                 Kembaran Ngadu
             </a>

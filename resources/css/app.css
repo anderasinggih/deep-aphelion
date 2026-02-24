@@ -5,18 +5,21 @@
 @layer base {
     :root {
         /* Primary Brand Color */
-        --color-primary: #0076a8;
-        /* Adjusted to match the 'Mulai Pengajuan' button blue */
+        --color-primary: #165dfc;
+        /* Text color on top of primary button */
         --color-primary-content: #ffffff;
 
+        /* App Title Brand Color */
+        --color-brand: #74d4ff;
+
         /* Base Backgrounds (The deep navy non-glaring dark) */
-        --color-base-100: #0e131d;
+        --color-base-100: #101828;
         /* Main dark background */
-        --color-base-200: #1c2636;
+        --color-base-200: #1d2939;
         /* Cards, Sidebars, Navbar (slightly lighter) */
-        --color-base-300: #28374d;
+        --color-base-300: #344054;
         /* Borders and subtle accents */
-        --color-base-content: #e2e8f0;
+        --color-base-content: #fcfcfd;
         /* Soft readable white text */
 
         /* Surface/Neutral Colors (similar to the settings dropdown) */
