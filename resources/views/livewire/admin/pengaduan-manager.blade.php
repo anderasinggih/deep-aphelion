@@ -1,4 +1,4 @@
-<div class="max-w-7xl mx-auto py-8 text-black px-4">
+<div class="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8 text-base-content">
     <x-header title="Manajemen Pengaduan" subtitle="Data seluruh laporan warga Kecamatan Kembaran" size="text-2xl"
         class="mb-5">
         <x-slot:actions>
