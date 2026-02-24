@@ -59,70 +59,79 @@
             @forelse($pengaduans as $pengaduan)
             <div
                 class="transition-all duration-300 border shadow-sm bg-base-200 rounded-[1.5rem] border-base-300 hover:shadow-md hover:border-primary/30">
-                <div class="p-5 sm:p-8">
-                    <div class="flex flex-col gap-3 mb-4 sm:flex-row sm:items-start sm:justify-between">
-                        <div class="flex-1 pr-4">
-                            <div class="flex items-center gap-2 mb-2 text-xs font-medium text-base-content/60">
-                                <span class="flex items-center gap-1 px-2 py-1 rounded-md bg-base-200">
-                                    <x-icon name="o-folder" class="w-3.5 h-3.5" /> {{ $pengaduan->kategori->nama }}
-                                </span>
-                                <span>&bull;</span>
-                                <span class="flex items-center gap-1">
-                                    <x-icon name="o-clock" class="w-3.5 h-3.5" /> {{
-                                    $pengaduan->created_at->diffForHumans() }}
-                                </span>
-                            </div>
-                            <h2
-                                class="text-lg font-bold leading-tight cursor-pointer sm:text-xl text-base-content hover:text-primary transition-colors mb-2">
-                                <a href="#">{{ $pengaduan->judul }}</a>
-                            </h2>
-                            <div class="flex items-start gap-1.5 text-xs text-base-content/60">
-                                <x-icon name="o-map-pin" class="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-error/80" />
-                                <span class="line-clamp-2">{{ $pengaduan->lokasi_kejadian ?? 'Lokasi tidak spesifik
-                                    (Data koordinat terlampir)' }}</span>
-                            </div>
-                        </div>
-
-                        <div class="flex-shrink-0 mt-1 sm:mt-0">
-                            @if($pengaduan->status == 'menunggu')
-                            <div class="px-4 py-1.5 text-xs font-bold rounded-full bg-warning/20 text-warning">Menunggu
-                            </div>
-                            @elseif($pengaduan->status == 'diproses')
-                            <div class="px-4 py-1.5 text-xs font-bold rounded-full bg-info/20 text-info">Diproses</div>
-                            @elseif($pengaduan->status == 'selesai')
-                            <div class="px-4 py-1.5 text-xs font-bold rounded-full bg-success/20 text-success">Selesai
-                            </div>
-                            @elseif($pengaduan->status == 'ditolak')
-                            <div class="px-4 py-1.5 text-xs font-bold rounded-full bg-error/20 text-error">Ditolak</div>
-                            @endif
-                        </div>
+                <div class="p-3 sm:p-4">
+                    <!-- Category & Time -->
+                    <div
+                        class="flex flex-wrap items-center gap-1.5 mb-2 text-[11px] sm:text-xs font-medium text-base-content/60">
+                        <span class="flex items-center gap-1">
+                            <x-icon name="o-folder" class="w-3.5 h-3.5" /> {{ $pengaduan->kategori->nama }}
+                        </span>
+                        <span>&bull;</span>
+                        <span class="flex items-center gap-1">
+                            <x-icon name="o-clock" class="w-3.5 h-3.5" /> {{ $pengaduan->created_at->diffForHumans() }}
+                        </span>
                     </div>
 
-                    <p class="mb-5 text-sm leading-relaxed sm:text-base text-base-content/80 line-clamp-3">
-                        {{ $pengaduan->deskripsi }}
-                    </p>
-
+                    <!-- Image Content -->
                     @if($pengaduan->foto_bukti)
                     <div
-                        class="mb-5 overflow-hidden border shadow-sm rounded-2xl border-base-300 aspect-square relative">
+                        class="mb-3 overflow-hidden border shadow-sm rounded-xl sm:rounded-2xl border-base-300 aspect-square relative">
                         <img src="{{ Storage::url($pengaduan->foto_bukti) }}" alt="Bukti {{ $pengaduan->judul }}"
                             class="absolute inset-0 object-cover w-full h-full hover:scale-105 transition-transform duration-500 cursor-zoom-in"
                             onclick="window.open(this.src, '_blank')" />
                     </div>
                     @endif
 
-                    <div
-                        class="flex flex-col gap-4 pt-4 mt-2 border-t sm:flex-row sm:items-center sm:justify-between border-base-200">
-                        <div
-                            class="flex items-center self-start gap-2 px-3 py-1.5 text-sm font-medium rounded-lg text-base-content/70 bg-base-200/60">
-                            <x-icon name="o-user" class="w-4 h-4 text-base-content/50" />
-                            {{ $pengaduan->is_anonymous ? 'Dilaporkan Anonim' : $pengaduan->user->name }}
+                    <!-- Title & Location -->
+                    <h2
+                        class="text-base sm:text-lg font-bold leading-tight cursor-pointer text-base-content hover:text-primary transition-colors mb-0.5">
+                        <a href="#">{{ $pengaduan->judul }}</a>
+                    </h2>
+                    <div class="flex items-start gap-1 text-xs text-base-content/60 mb-2">
+                        <x-icon name="o-map-pin" class="w-3 h-3 mt-0.5 flex-shrink-0 text-error/80" />
+                        <span class="line-clamp-1 sm:line-clamp-2">{{ $pengaduan->lokasi_kejadian ?? 'Lokasi tidak
+                            spesifik (Data koordinat terlampir)' }}</span>
+                    </div>
+
+                    <!-- Description -->
+                    <p class="mb-3 text-sm leading-relaxed text-base-content/80 line-clamp-3">
+                        {{ $pengaduan->deskripsi }}
+                    </p>
+
+                    <!-- Footer Interactions -->
+                    <div class="flex flex-col xl:flex-row gap-2 mt-2 xl:items-center xl:justify-between">
+                        <!-- User & Status (Left Side / Top on mobile) -->
+                        <div class="flex items-center justify-between w-full xl:w-auto xl:justify-start gap-4">
+                            <div class="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-base-content/70">
+                                <x-icon name="o-user" class="w-4 h-4 text-base-content/50" />
+                                {{ $pengaduan->is_anonymous ? 'Anonim' : $pengaduan->user->name }}
+                            </div>
+                            <!-- Status Badge -->
+                            <div class="flex-shrink-0">
+                                @if($pengaduan->status == 'menunggu')
+                                <div
+                                    class="px-4 py-1.5 text-xs sm:text-sm font-bold rounded-full bg-warning/20 text-warning">
+                                    Menunggu</div>
+                                @elseif($pengaduan->status == 'diproses')
+                                <div class="px-4 py-1.5 text-xs sm:text-sm font-bold rounded-full bg-info/20 text-info">
+                                    Diproses</div>
+                                @elseif($pengaduan->status == 'selesai')
+                                <div
+                                    class="px-4 py-1.5 text-xs sm:text-sm font-bold rounded-full bg-success/20 text-success">
+                                    Selesai</div>
+                                @elseif($pengaduan->status == 'ditolak')
+                                <div
+                                    class="px-4 py-1.5 text-xs sm:text-sm font-bold rounded-full bg-error/20 text-error">
+                                    Ditolak</div>
+                                @endif
+                            </div>
                         </div>
 
-                        <div class="flex items-center self-end gap-2 sm:self-auto">
+                        <!-- Actions (Right Side / Bottom on mobile) -->
+                        <div class="flex items-center gap-1 self-end xl:self-auto">
                             @if(session()->has('success') && session('id') == $pengaduan->id)
-                            <span class="mr-2 text-xs font-semibold animate-pulse text-success">{{ session('success')
-                                }}</span>
+                            <span class="mr-2 text-[10px] sm:text-xs font-semibold animate-pulse text-success">{{
+                                session('success') }}</span>
                             @endif
 
                             <x-button label="{{ $pengaduan->dukungans_count }}" icon="o-hand-thumb-up"
