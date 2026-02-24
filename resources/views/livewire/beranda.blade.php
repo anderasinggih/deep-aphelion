@@ -55,7 +55,7 @@
 
     <div class="grid grid-cols-1 gap-8 lg:grid-cols-4">
         <!-- Main Feed -->
-        <div class="space-y-6 lg:col-span-4">
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:col-span-4">
             @forelse($pengaduans as $pengaduan)
             <div
                 class="transition-all duration-300 border shadow-sm bg-base-200 rounded-[1.5rem] border-base-300 hover:shadow-md hover:border-primary/30">
@@ -83,15 +83,17 @@
                             </div>
                         </div>
 
-                        <div class="flex-shrink-0">
+                        <div class="flex-shrink-0 mt-1 sm:mt-0">
                             @if($pengaduan->status == 'menunggu')
-                            <div class="font-bold badge badge-warning badge-outline">Menunggu</div>
+                            <div class="px-4 py-1.5 text-xs font-bold rounded-full bg-warning/20 text-warning">Menunggu
+                            </div>
                             @elseif($pengaduan->status == 'diproses')
-                            <div class="font-bold badge badge-info badge-outline">Diproses</div>
+                            <div class="px-4 py-1.5 text-xs font-bold rounded-full bg-info/20 text-info">Diproses</div>
                             @elseif($pengaduan->status == 'selesai')
-                            <div class="font-bold badge badge-success badge-outline">Selesai</div>
+                            <div class="px-4 py-1.5 text-xs font-bold rounded-full bg-success/20 text-success">Selesai
+                            </div>
                             @elseif($pengaduan->status == 'ditolak')
-                            <div class="font-bold badge badge-error badge-outline">Ditolak</div>
+                            <div class="px-4 py-1.5 text-xs font-bold rounded-full bg-error/20 text-error">Ditolak</div>
                             @endif
                         </div>
                     </div>
@@ -101,9 +103,10 @@
                     </p>
 
                     @if($pengaduan->foto_bukti)
-                    <div class="mb-5 overflow-hidden border shadow-sm rounded-2xl border-base-300">
+                    <div
+                        class="mb-5 overflow-hidden border shadow-sm rounded-2xl border-base-300 aspect-square relative">
                         <img src="{{ Storage::url($pengaduan->foto_bukti) }}" alt="Bukti {{ $pengaduan->judul }}"
-                            class="object-cover w-full h-auto max-h-[400px] hover:scale-105 transition-transform duration-500 cursor-zoom-in"
+                            class="absolute inset-0 object-cover w-full h-full hover:scale-105 transition-transform duration-500 cursor-zoom-in"
                             onclick="window.open(this.src, '_blank')" />
                     </div>
                     @endif
