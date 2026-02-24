@@ -6,42 +6,31 @@
         </x-slot:actions>
     </x-header>
 
-    <div class="p-0.1 mb-8 border shadow-sm lg:p-5 bg-base-100/50 backdrop-blur-sm rounded-2xl border-base-200">
-        <x-form wire:submit="render">
-            <div class="flex flex-col gap-3 md:flex-row md:items-center">
+    @php
+    $sortOptions = [
+    ['id' => 'terbaru', 'nama' => 'Terbaru'],
+    ['id' => 'terpopuler', 'nama' => 'Populer'], // Disingkat sedikit agar aman di layar HP kecil
+    ];
+    @endphp
 
-                <div class="relative flex-1 w-full">
-                    <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-                        <x-icon name="o-magnifying-glass" class="w-5 h-5 opacity-50 text-base-content/50" />
-                    </div>
-                    <input type="text" wire:model.live.debounce="search" placeholder="Cari laporan..."
-                        class="w-full h-12 pl-12 pr-4 text-sm transition-colors border shadow-sm outline-none bg-base-100 border-base-content/20 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary text-base-content" />
+    <div class="p-2 mb-8 border shadow-sm lg:p-4 bg-base-100 rounded-2xl border-base-200">
+        <x-form wire:submit="render">
+
+            <div class="flex flex-row items-center w-full gap-2 lg:gap-4">
+
+                <div class="flex-1">
+                    <x-input placeholder="Cari..." wire:model.live.debounce.500ms="search" icon="o-magnifying-glass"
+                        clearable />
                 </div>
 
-                <div class="flex flex-col w-full gap-3 sm:flex-row md:w-auto">
-                    <div class="relative w-full sm:w-56 md:w-64">
-                        <select wire:model.live="kategori_id"
-                            class="w-full h-12 px-4 pr-10 text-sm transition-colors border shadow-sm appearance-none outline-none cursor-pointer bg-base-100 border-base-content/20 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary text-base-content">
-                            <option value="">Semua Kategori</option>
-                            @foreach($kategoris as $kat)
-                            <option value="{{ $kat->id }}">{{ $kat->nama }}</option>
-                            @endforeach
-                        </select>
-                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                            <x-icon name="o-chevron-down" class="w-4 h-4 opacity-50 text-base-content/50" />
-                        </div>
-                    </div>
+                <div class="w-28 sm:w-40 lg:w-48 shrink-0">
+                    <x-select wire:model.live="kategori_id" :options="$kategoris" option-value="id" option-label="nama"
+                        placeholder="Kategori" icon="o-tag" />
+                </div>
 
-                    <div class="relative w-full sm:w-40 md:w-48">
-                        <select wire:model.live="sort"
-                            class="w-full h-12 px-4 pr-10 text-sm font-medium transition-colors border shadow-sm appearance-none outline-none cursor-pointer bg-base-100 border-base-content/20 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary text-base-content">
-                            <option value="terbaru">Terbaru</option>
-                            <option value="terpopuler">Terpopuler</option>
-                        </select>
-                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                            <x-icon name="o-chevron-down" class="w-4 h-4 opacity-50 text-base-content/50" />
-                        </div>
-                    </div>
+                <div class="w-24 sm:w-36 lg:w-40 shrink-0">
+                    <x-select wire:model.live="sort" :options="$sortOptions" option-value="id" option-label="nama"
+                        icon="o-arrows-up-down" />
                 </div>
 
             </div>
@@ -142,8 +131,7 @@
                 @if($pengaduan->status == 'menunggu')
                 <div
                     class="w-full py-1.5 text-xs text-center font-bold rounded-lg bg-warning/20 text-warning transition-colors cursor-default hover:bg-warning/30">
-                    Menunggu
-                </div>
+                    Menunggu</div>
                 @elseif($pengaduan->status == 'diproses')
                 <div
                     class="w-full py-1.5 text-xs text-center font-bold rounded-lg bg-info/20 text-info transition-colors cursor-default hover:bg-info/30">
@@ -151,8 +139,7 @@
                 @elseif($pengaduan->status == 'selesai')
                 <div
                     class="w-full py-1.5 text-xs text-center font-bold rounded-lg bg-success/20 text-success transition-colors cursor-default hover:bg-success/30">
-                    Selesai
-                </div>
+                    Selesai</div>
                 @elseif($pengaduan->status == 'ditolak')
                 <div
                     class="w-full py-1.5 text-xs text-center font-bold rounded-lg bg-error/20 text-error transition-colors cursor-default hover:bg-error/30">
@@ -164,7 +151,7 @@
         </div>
         @empty
         <div
-            class="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed lg:col-span-3 xl:col-span-4 2xl:col-span-5 bg-base-200/50 rounded-[1.5rem] border-base-300">
+            class="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed lg:col-span-3 xl:col-span-4 2xl:col-span-3 bg-base-200/50 rounded-[1.5rem] border-base-300">
             <div class="p-4 mb-4 rounded-full bg-base-100 shadow-sm">
                 <x-icon name="o-inbox" class="w-10 h-10 text-base-content/40" />
             </div>
