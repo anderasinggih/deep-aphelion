@@ -78,8 +78,8 @@
                             </h2>
                             <div class="flex items-start gap-1.5 text-xs text-base-content/60">
                                 <x-icon name="o-map-pin" class="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-error/80" />
-                                <span class="line-clamp-2">{{ $pengaduan->lokasi ?? 'Lokasi tidak spesifik (Data
-                                    koordinat terlampir)' }}</span>
+                                <span class="line-clamp-2">{{ $pengaduan->lokasi_kejadian ?? 'Lokasi tidak spesifik
+                                    (Data koordinat terlampir)' }}</span>
                             </div>
                         </div>
 
@@ -100,9 +100,9 @@
                         {{ $pengaduan->deskripsi }}
                     </p>
 
-                    @if($pengaduan->path_bukti)
+                    @if($pengaduan->foto_bukti)
                     <div class="mb-5 overflow-hidden border shadow-sm rounded-2xl border-base-300">
-                        <img src="{{ Storage::url($pengaduan->path_bukti) }}" alt="Bukti {{ $pengaduan->judul }}"
+                        <img src="{{ Storage::url($pengaduan->foto_bukti) }}" alt="Bukti {{ $pengaduan->judul }}"
                             class="object-cover w-full h-auto max-h-[400px] hover:scale-105 transition-transform duration-500 cursor-zoom-in"
                             onclick="window.open(this.src, '_blank')" />
                     </div>
