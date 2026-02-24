@@ -12,63 +12,134 @@
 
 <body class="min-h-screen font-sans antialiased bg-base-200/50">
 
-    <x-nav sticky class="lg:hidden bg-base-100 shadow-sm">
-        <x-slot:brand>
-            <div class="ml-5 pt-5">
-                <span class="font-bold text-2xl text-primary">Kembaran Ngadu</span>
-            </div>
-        </x-slot:brand>
-        <x-slot:actions>
-            <label for="main-drawer" class="lg:hidden mr-3">
-                <x-icon name="o-bars-3" class="w-8 h-8 cursor-pointer" />
-            </label>
-        </x-slot:actions>
-    </x-nav>
-
-    <x-main with-nav full-width>
-        <x-slot:sidebar drawer="main-drawer" collapse-text="Tutup">
-            <div class="hidden lg:block pt-5 pb-2 mb-4 px-4 border-b border-base-200 text-center">
-                <div class="text-3xl font-black text-primary flex items-center justify-center gap-2">
-                    <x-icon name="o-megaphone" class="w-8 h-8" />
-                    Kembaran
+    <!-- Top Navbar -->
+    <div class="navbar bg-base-100 shadow-sm border-b border-base-200 sm:px-8">
+        <div class="navbar-start">
+            <div class="dropdown">
+                <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
+                    <x-icon name="o-bars-3" class="w-5 h-5" />
                 </div>
+                <ul tabindex="0"
+                    class="menu menu-sm dropdown-content mt-3 z-[50] p-2 shadow bg-base-100 rounded-box w-52 border border-base-200">
+                    <li><a href="/" class="{{ request()->is('/') ? 'active' : '' }}"><x-icon name="o-home"
+                                class="w-4 h-4" /> Beranda Publik</a></li>
+                    @auth
+                    @if(auth()->user()->role === 'admin')
+                    <li><a href="/admin/dashboard"
+                            class="{{ request()->is('admin/dashboard') ? 'active' : '' }}"><x-icon name="o-chart-bar"
+                                class="w-4 h-4" /> Dashboard Admin</a></li>
+                    <li><a href="/admin/pengaduan"
+                            class="{{ request()->is('admin/pengaduan') ? 'active' : '' }}"><x-icon name="o-inbox-stack"
+                                class="w-4 h-4" /> Kelola Pengaduan</a></li>
+                    @elseif(auth()->user()->role === 'petugas')
+                    <li><a href="/petugas/disposisi"
+                            class="{{ request()->is('petugas/disposisi') ? 'active' : '' }}"><x-icon
+                                name="o-clipboard-document-check" class="w-4 h-4" /> Disposisi</a></li>
+                    @else
+                    <li><a href="/dashboard" class="{{ request()->is('dashboard') ? 'active' : '' }}"><x-icon
+                                name="o-chart-pie" class="w-4 h-4" /> Dashboard Warga</a></li>
+                    @endif
+                    <li><a href="/pengaduan/create"
+                            class="{{ request()->is('pengaduan/create') ? 'active' : '' }}"><x-icon name="o-plus-circle"
+                                class="w-4 h-4" /> Pengaduan Baru</a></li>
+                    @endauth
+                </ul>
             </div>
+            <a href="/" class="text-xl font-bold text-primary flex items-center gap-2 lg:ml-0">
+                <x-icon name="o-megaphone" class="w-6 h-6" />
+                Kembaran Ngadu
+            </a>
+        </div>
 
-            <x-menu activate-by-route>
-                @if($user = auth()->user())
-                <x-menu-separator />
-                <x-list-item :item="$user" value="name" sub-value="role" no-separator no-hover
-                    class="-mx-2 !-my-2 rounded text-base-content relative">
-                    <x-slot:actions>
-                        <x-button icon="o-power" class="btn-circle btn-ghost btn-xs" tooltip-left="Sign Out"
-                            no-wire-navigate link="/logout" />
-                    </x-slot:actions>
-                </x-list-item>
-                <x-menu-separator />
-                @endif
-
-                <x-menu-item title="Beranda Publik" icon="o-home" link="/" />
-
+        <div class="navbar-center hidden lg:flex">
+            <ul class="menu menu-horizontal px-1 gap-1 text-sm font-medium text-base-content/80">
+                <li><a href="/"
+                        class="{{ request()->is('/') ? 'active bg-base-200 text-base-content' : '' }} rounded-lg"><x-icon
+                            name="o-home" class="w-4 h-4" /> Beranda</a></li>
                 @auth
                 @if(auth()->user()->role === 'admin')
-                <x-menu-sub title="Admin Panel" icon="o-cog-6-tooth">
-                    <x-menu-item title="Dashboard Admin" icon="o-chart-bar" link="/admin/dashboard" />
-                    <x-menu-item title="Manajemen Pengaduan" icon="o-inbox-stack" link="/admin/pengaduan" />
-                </x-menu-sub>
+                <li><a href="/admin/dashboard"
+                        class="{{ request()->is('admin/dashboard') ? 'active bg-base-200 text-base-content' : '' }} rounded-lg"><x-icon
+                            name="o-chart-bar" class="w-4 h-4" /> Dashboard</a></li>
+                <li><a href="/admin/pengaduan"
+                        class="{{ request()->is('admin/pengaduan') ? 'active bg-base-200 text-base-content' : '' }} rounded-lg"><x-icon
+                            name="o-inbox-stack" class="w-4 h-4" /> Aduan</a></li>
                 @elseif(auth()->user()->role === 'petugas')
-                <x-menu-item title="Tugas Disposisi" icon="o-clipboard-document-check" link="/petugas/disposisi" />
-                @endif
-                <x-menu-item title="Dashboard Warga" icon="o-user" link="/dashboard" />
-                <x-menu-item title="Buat Pengaduan" icon="o-plus-circle" link="/pengaduan/create" />
+                <li><a href="/petugas/disposisi"
+                        class="{{ request()->is('petugas/disposisi') ? 'active bg-base-200 text-base-content' : '' }} rounded-lg"><x-icon
+                            name="o-clipboard-document-check" class="w-4 h-4" /> Disposisi</a></li>
                 @else
-                <x-menu-item title="Login" icon="o-arrow-right-on-rectangle" link="/login" />
-                <x-menu-item title="Registrasi" icon="o-user-plus" link="/register" />
+                <li><a href="/dashboard"
+                        class="{{ request()->is('dashboard') ? 'active bg-base-200 text-base-content' : '' }} rounded-lg"><x-icon
+                            name="o-chart-pie" class="w-4 h-4" /> Dashboard</a></li>
+                @endif
+                <li><a href="/pengaduan/create"
+                        class="{{ request()->is('pengaduan/create') ? 'active bg-base-200 text-base-content' : '' }} rounded-lg"><x-icon
+                            name="o-plus-circle" class="w-4 h-4" /> Lapor!</a></li>
                 @endauth
-            </x-menu>
-        </x-slot:sidebar>
+            </ul>
+        </div>
 
+        <div class="navbar-end">
+            @auth
+            @php
+            // Build User Initials
+            $nameParts = explode(' ', auth()->user()->name);
+            $initials = collect($nameParts)->map(fn($part) => substr($part, 0, 1))->take(2)->join('');
+            @endphp
+            <div class="dropdown dropdown-end">
+                <div tabindex="0" role="button"
+                    class="btn btn-ghost px-2 flex items-center gap-2 hover:bg-base-200/50 rounded-lg">
+                    <div class="avatar placeholder">
+                        <div class="bg-base-200 text-base-content rounded-md w-8 h-8 flex items-center justify-center">
+                            <span class="text-xs font-bold">{{ strtoupper($initials) }}</span>
+                        </div>
+                    </div>
+                    <x-icon name="o-chevron-down" class="w-3.5 h-3.5 opacity-50 hidden sm:block" />
+                </div>
+                <!-- Profile Menu -->
+                <ul tabindex="0"
+                    class="menu menu-sm dropdown-content mt-3 z-[50] p-2 shadow-lg bg-base-100 rounded-box w-64 border border-base-200">
+                    <li class="px-4 py-3 border-b border-base-200 mb-1 hover:bg-transparent pointer-events-none">
+                        <div class="font-bold text-base-content text-sm">{{ auth()->user()->name }}</div>
+                        <div class="text-xs text-base-content/60 opacity-80 break-all">{{ auth()->user()->email }}</div>
+                    </li>
+                    @if(auth()->user()->role === 'admin')
+                    <li><a href="/admin/dashboard" class="py-2"><x-icon name="o-squares-2x2"
+                                class="w-4 h-4 opacity-70" /> Dashboard</a></li>
+                    @else
+                    <li><a href="/dashboard" class="py-2"><x-icon name="o-squares-2x2" class="w-4 h-4 opacity-70" />
+                            Dashboard</a></li>
+                    @endif
+                    <li><a href="/profile" class="py-2"><x-icon name="o-cog-6-tooth" class="w-4 h-4 opacity-70" />
+                            Settings</a></li>
+                    <div class="divider my-0"></div>
+                    <li><a href="/logout" class="py-2 text-error hover:bg-error/10"><x-icon
+                                name="o-arrow-right-start-on-rectangle" class="w-4 h-4" /> Log Out</a></li>
+                </ul>
+            </div>
+            @else
+            <div class="hidden sm:flex gap-2">
+                <a href="/login" class="btn btn-ghost btn-sm">Login</a>
+                <a href="/register" class="btn btn-primary btn-sm">Register</a>
+            </div>
+            @endauth
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <x-main full-width>
         <x-slot:content>
-            {{ $slot }}
+            @isset($header)
+            <div
+                class="px-4 py-4 mx-auto mb-6 shadow-sm max-w-7xl sm:px-6 lg:px-8 bg-base-100 rounded-2xl border border-base-200">
+                {{ $header }}
+            </div>
+            @endisset
+
+            <div class="mx-auto max-w-7xl">
+                {{ $slot }}
+            </div>
         </x-slot:content>
     </x-main>
 
