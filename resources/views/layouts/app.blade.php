@@ -46,7 +46,8 @@
                 </ul>
             </div>
             <a href="/" class="text-xl font-bold text-brand flex items-center gap-2 lg:ml-0 whitespace-nowrap">
-                <x-icon name="o-megaphone" class="w-6 h-6" />
+                <img src="{{ asset('storage/assets/logobanyumas.png') }}" alt="Logo Banyumas"
+                    class="w-9 h-9 object-contain" />
                 <span class="hidden lg:block">Kembaran Ngadu</span>
             </a>
         </div>
