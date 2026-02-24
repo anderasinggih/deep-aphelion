@@ -2,7 +2,7 @@
     <x-header title="Kembaran Ngadu" subtitle="Layanan Pengaduan Masyarakat Kecamatan Kembaran" size="text-3xl"
         class="mb-6">
         <x-slot:actions>
-            <x-button label="Mulai Ngadu" icon="o-plus-circle" class="btn-primary" link="/pengaduan/create" />
+            <x-button label="Mulai Ngadu" class="btn-primary" link="/pengaduan/create" />
         </x-slot:actions>
     </x-header>
 
@@ -13,29 +13,29 @@
     ];
     @endphp
 
-    <div class="p-2 mb-8 border shadow-sm lg:p-4 bg-base-100 rounded-2xl border-base-200">
-        <x-form wire:submit="render">
 
-            <div class="flex flex-row items-center w-full gap-2 lg:gap-4">
+    <form wire:submit.prevent class="p-0.1 mb-7 lg:p-4 shadow-sm bg-base-100 rounded-2xl">
 
-                <div class="flex-1">
-                    <x-input placeholder="Cari..." wire:model.live.debounce.500ms="search" icon="o-magnifying-glass"
-                        clearable />
-                </div>
+        <div class="flex flex-row items-center w-full gap-2 lg:gap-4">
 
-                <div class="w-28 sm:w-40 lg:w-48 shrink-0">
-                    <x-select wire:model.live="kategori_id" :options="$kategoris" option-value="id" option-label="nama"
-                        placeholder="Kategori" icon="o-tag" />
-                </div>
-
-                <div class="w-24 sm:w-36 lg:w-40 shrink-0">
-                    <x-select wire:model.live="sort" :options="$sortOptions" option-value="id" option-label="nama"
-                        icon="o-arrows-up-down" />
-                </div>
-
+            <div class="flex-1">
+                <x-input placeholder="Cari..." wire:model.live.debounce.500ms="search" icon="o-magnifying-glass"
+                    clearable />
             </div>
-        </x-form>
-    </div>
+
+            <div class="w-28 sm:w-40 lg:w-48 shrink-0">
+                <x-select wire:model.live="kategori_id" :options="$kategoris" option-value="id" option-label="nama"
+                    placeholder="Kategori" icon="o-tag" />
+            </div>
+
+            <div class="w-24 sm:w-36 lg:w-40 shrink-0">
+                <x-select wire:model.live="sort" :options="$sortOptions" option-value="id" option-label="nama"
+                    icon="o-arrows-up-down" />
+            </div>
+
+        </div>
+    </form>
+
 
     <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-3">
         @forelse($pengaduans as $pengaduan)

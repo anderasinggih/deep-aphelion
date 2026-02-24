@@ -38,3 +38,11 @@
         color: var(--color-base-content);
     }
 }
+
+@layer components {
+
+    /* Prevent DaisyUI from adding its own chevron background image so it doesn't overlap with MaryUI's SVG chevron */
+    .select {
+        background-image: none !important;
+    }
+}
