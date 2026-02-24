@@ -22,19 +22,17 @@ new #[Layout('layouts.auth')] class extends Component
      */
     public function register(): void
     {
-        // Menambahkan Custom Messages berbahasa Indonesia
         $validated = $this->validate([
             'name' => ['required', 'string', 'min:5', 'max:255'],
             'nik' => ['required', 'numeric', 'digits:16', 'unique:'.User::class],
-            'no_wa' => ['required', 'numeric', 'min_digits:10', 'max_digits:15'], // Ditambah max_digits agar aman di database
+            'no_wa' => ['required', 'numeric', 'min_digits:10', 'max_digits:15'],
             'email' => ['nullable', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => [
                 'required', 'string', 'min:8', 'confirmed',
-                'regex:/[a-zA-Z]/', // Harus ada huruf
-                'regex:/[0-9]/',    // Harus ada angka
+                'regex:/[a-zA-Z]/', 
+                'regex:/[0-9]/',    
             ],
         ], [
-            // Kustomisasi pesan error agar ramah untuk warga
             'name.required' => 'Nama lengkap wajib diisi.',
             'name.min' => 'Nama minimal 5 karakter.',
             'nik.required' => 'NIK wajib diisi.',
@@ -64,9 +62,9 @@ new #[Layout('layouts.auth')] class extends Component
 <div
     class="flex flex-col md:flex-row w-full max-w-5xl mx-4 my-8 bg-base-100 rounded-[2rem] overflow-hidden shadow-xl border border-base-200 max-h-[95vh] md:max-h-[90vh]">
 
-    <div class="hidden md:block md:w-5/12 relative">
+    <div class="hidden relative md:block md:w-5/12">
         <img src="https://images.unsplash.com/photo-1519501025264-65ba15a82390?q=80&w=1000&auto=format&fit=crop"
-            alt="Kecamatan Kembaran" class="absolute inset-0 w-full h-full object-cover" />
+            alt="Kecamatan Kembaran" class="absolute inset-0 object-cover w-full h-full" />
         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
         <div class="absolute bottom-0 left-0 w-full p-8">
             <h2 class="mb-2 text-3xl font-bold text-white shadow-black drop-shadow-md">Pendaftaran Warga</h2>
@@ -94,42 +92,38 @@ new #[Layout('layouts.auth')] class extends Component
         <form wire:submit="register" class="space-y-4">
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
-                    <x-input wire:model="name" id="name" label="Nama Lengkap (Sesuai KTP)" type="text" required
-                        autofocus autocomplete="name"
-                        class="bg-base-200 border-base-300 text-base-content focus:border-primary focus:ring-primary" />
+                    <x-input wire:model="name" id="name" label="Nama Lengkap (Sesuai KTP)" type="text"
+                        placeholder="Contoh: Budi Santoso" required autofocus autocomplete="name" icon="o-user" />
                 </div>
 
                 <div>
-                    <x-input wire:model="nik" id="nik" label="Nomor Induk Kependudukan (NIK)" type="number" required
-                        autocomplete="off"
-                        class="bg-base-200 border-base-300 text-base-content focus:border-primary focus:ring-primary" />
+                    <x-input wire:model="nik" id="nik" label="Nomor Induk Kependudukan (NIK)" type="number"
+                        placeholder="Masukkan 16 digit NIK" required autocomplete="off" icon="o-identification" />
                 </div>
             </div>
 
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
-                    <x-input wire:model="no_wa" id="no_wa" label="Nomor WhatsApp" type="number" placeholder="08xxxxxxxx"
-                        required autocomplete="tel"
-                        class="bg-base-200 border-base-300 text-base-content focus:border-primary focus:ring-primary" />
+                    <x-input wire:model="no_wa" id="no_wa" label="Nomor WhatsApp" type="number"
+                        placeholder="Contoh: 081234567890" required autocomplete="tel" icon="o-phone" />
                 </div>
 
                 <div>
                     <x-input wire:model="email" id="email" label="Email (Opsional)" type="email"
-                        placeholder="email@example.com" autocomplete="email"
-                        class="bg-base-200 border-base-300 text-base-content focus:border-primary focus:ring-primary" />
+                        placeholder="Contoh: nama@email.com" autocomplete="email" icon="o-envelope" />
                 </div>
             </div>
 
-            <div class="pt-3 mt-2 border-t grid grid-cols-1 md:grid-cols-2 gap-4 border-base-200">
+            <div class="grid grid-cols-1 gap-4 pt-3 mt-2 border-t md:grid-cols-2 border-base-200">
                 <div>
                     <label for="password" class="block mb-1 text-sm font-medium text-base-content/80">Password</label>
                     <div x-data="{ show: false }" class="relative">
-                        <x-input x-bind:type="show ? 'text' : 'password'" wire:model="password" id="password" required
-                            autocomplete="new-password"
-                            class="bg-base-200 border-base-300 text-base-content focus:border-primary focus:ring-primary" />
+                        <x-input x-bind:type="show ? 'text' : 'password'" wire:model="password" id="password"
+                            placeholder="Buat password baru" required autocomplete="new-password"
+                            icon="o-lock-closed" />
 
                         <button type="button" @click="show = !show"
-                            class="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer text-base-content/40 hover:text-primary transition-colors">
+                            class="absolute inset-y-0 right-0 flex items-center pr-3 transition-colors cursor-pointer text-base-content/40 hover:text-primary">
                             <x-icon name="o-eye" x-show="!show" class="w-5 h-5" />
                             <x-icon name="o-eye-slash" x-show="show" class="w-5 h-5" style="display: none;" />
                         </button>
@@ -141,11 +135,11 @@ new #[Layout('layouts.auth')] class extends Component
                         class="block mb-1 text-sm font-medium text-base-content/80">Konfirmasi Password</label>
                     <div x-data="{ show: false }" class="relative">
                         <x-input x-bind:type="show ? 'text' : 'password'" wire:model="password_confirmation"
-                            id="password_confirmation" required autocomplete="new-password"
-                            class="bg-base-200 border-base-300 text-base-content focus:border-primary focus:ring-primary" />
+                            id="password_confirmation" placeholder="Ketik ulang password" required
+                            autocomplete="new-password" icon="o-lock-closed" />
 
                         <button type="button" @click="show = !show"
-                            class="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer text-base-content/40 hover:text-primary transition-colors">
+                            class="absolute inset-y-0 right-0 flex items-center pr-3 transition-colors cursor-pointer text-base-content/40 hover:text-primary">
                             <x-icon name="o-eye" x-show="!show" class="w-5 h-5" />
                             <x-icon name="o-eye-slash" x-show="show" class="w-5 h-5" style="display: none;" />
                         </button>
@@ -176,16 +170,30 @@ new #[Layout('layouts.auth')] class extends Component
             display: none;
         }
 
-        /* Sembunyikan panah atas-bawah di input type="number" (Chrome, Safari, Edge, Opera) */
+        /* Sembunyikan panah atas-bawah di input type="number" */
         input::-webkit-outer-spin-button,
         input::-webkit-inner-spin-button {
             -webkit-appearance: none;
             margin: 0;
         }
 
-        /* Sembunyikan panah atas-bawah di input type="number" (Firefox) */
         input[type=number] {
             -moz-appearance: textfield;
+        }
+
+        /* ---------------------------------------------------
+           Trik CSS Anti-Autofill Putih & Teks Hitam (Versi Kuat)
+           --------------------------------------------------- */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active {
+            /* Tahan background agar tetap ikut tema gelap */
+            transition: background-color 5000s ease-in-out 0s !important;
+
+            /* Paksa warna teks jadi putih keabu-abuan (Hex murni, bukan variabel) */
+            -webkit-text-fill-color: #f3f4f6 !important;
+            font-weight: 500 !important;
         }
     </style>
 </div>
