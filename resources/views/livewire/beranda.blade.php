@@ -14,9 +14,9 @@
     @endphp
 
 
-    <form wire:submit.prevent class="p-0.1 mb-7 lg:p-4 shadow-sm bg-base-100 rounded-2xl">
+    <form wire:submit.prevent class="p-0.1 mb-7 lg:p-4 shadow-sm rounded-2xl">
 
-        <div class="flex flex-row items-center w-full gap-2 lg:gap-4">
+        <div class="flex flex-row items-center w-full gap-1.5 lg:gap-4">
 
             <div class="flex-1">
                 <x-input placeholder="Cari..." wire:model.live.debounce.500ms="search" icon="o-magnifying-glass"

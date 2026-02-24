@@ -12,13 +12,13 @@
         /* App Title Brand Color */
         --color-brand: #74d4ff;
 
-        /* Base Backgrounds (The deep navy non-glaring dark) */
-        --color-base-100: #101828;
+        /* Base Backgrounds */
+        --color-base-100: #172030;
+        /* Inner forms and containers */
+        --color-base-200: #0d1424;
         /* Main dark background */
-        --color-base-200: #1d2939;
-        /* Cards, Sidebars, Navbar (slightly lighter) */
-        --color-base-300: #344054;
-        /* Borders and subtle accents */
+        --color-base-300: #232f45;
+        /* Borders and accents */
         --color-base-content: #fcfcfd;
         /* Soft readable white text */
 

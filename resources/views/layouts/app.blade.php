@@ -10,7 +10,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="min-h-screen font-sans antialiased bg-base-200/50">
+<body class="min-h-screen font-sans antialiased bg-base-200">
 
     <!-- Top Navbar -->
     <div class="navbar bg-base-100 shadow-sm border-b border-base-200 sm:px-8">

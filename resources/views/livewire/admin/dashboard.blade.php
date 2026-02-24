@@ -15,7 +15,7 @@
 
         <!-- Pendaftar / Users -->
         <div
-            class="p-8 border bg-base-200 rounded-3xl border-base-300/60 flex flex-col items-center justify-center text-center transition-all hover:border-primary/50">
+            class="p-8 border bg-base-100 rounded-3xl border-base-300/60 flex flex-col items-center justify-center text-center transition-all hover:border-primary/50">
             <div class="p-3 mb-4 rounded-full bg-primary/20 text-primary">
                 <x-icon name="o-users" class="w-6 h-6" />
             </div>
@@ -26,7 +26,7 @@
 
         <!-- Total Laporan -->
         <div
-            class="p-8 border bg-base-200 rounded-3xl border-base-300/60 flex flex-col items-center justify-center text-center transition-all hover:border-success/50">
+            class="p-8 border bg-base-100 rounded-3xl border-base-300/60 flex flex-col items-center justify-center text-center transition-all hover:border-success/50">
             <div class="p-3 mb-4 rounded-full bg-success/20 text-success">
                 <x-icon name="o-document-check" class="w-6 h-6" />
             </div>
@@ -37,7 +37,7 @@
 
         <!-- Laporan Diproses/Berlangsung -->
         <div
-            class="p-8 border bg-base-200 rounded-3xl border-base-300/60 flex flex-col items-center justify-center text-center transition-all hover:border-warning/50">
+            class="p-8 border bg-base-100 rounded-3xl border-base-300/60 flex flex-col items-center justify-center text-center transition-all hover:border-warning/50">
             <div class="p-3 mb-4 rounded-full bg-warning/20 text-warning">
                 <x-icon name="o-bolt" class="w-6 h-6" />
             </div>
