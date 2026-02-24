@@ -1,4 +1,4 @@
-<div class="w-full px-2 py-6 mx-auto lg:px-4">
+<div class="w-full px-0.1 py-6 mx-auto lg:px-4">
     <x-header title="Kembaran Ngadu" subtitle="Layanan Pengaduan Masyarakat Kecamatan Kembaran" size="text-3xl"
         class="mb-6">
         <x-slot:actions>
@@ -6,7 +6,7 @@
         </x-slot:actions>
     </x-header>
 
-    <div class="p-4 mb-8 border shadow-sm lg:p-5 bg-base-100/50 backdrop-blur-sm rounded-2xl border-base-200">
+    <div class="p-0.1 mb-8 border shadow-sm lg:p-5 bg-base-100/50 backdrop-blur-sm rounded-2xl border-base-200">
         <x-form wire:submit="render">
             <div class="flex flex-col gap-3 md:flex-row md:items-center">
 
@@ -48,7 +48,7 @@
         </x-form>
     </div>
 
-    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-3">
         @forelse($pengaduans as $pengaduan)
         <div
             class="flex flex-col overflow-hidden transition-all duration-300 transform border shadow-sm bg-base-100 rounded-2xl border-base-200 hover:shadow-lg hover:border-primary/50 hover:-translate-y-1 group">
