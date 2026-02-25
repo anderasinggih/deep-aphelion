@@ -26,8 +26,7 @@
                     <div tabindex="0" role="button" class="btn btn-ghost lg:hidden rounded-full ">
                         <x-icon name="o-bars-3" class="w-5 h-5" />
                     </div>
-                    <ul tabindex="0"
-                        class="menu menu-sm dropdown-content mt-5 z-[50] p-2 shadow-lg bg-base-100/90 backdrop-blur-lg rounded-2xl w-52 border border-white/20">
+                    <ul tabindex="0" class="menu menu-sm dropdown-content mt-5 z-[50] p-2 shadow-2xl bg-base-100 rounded-2xl w-64 border border-base-300">
                         <li><a href="/" class="{{ request()->is('/') ? 'active' : '' }}"><x-icon name="o-home" class="w-4 h-4" /> Beranda Publik</a></li>
                         @auth
                         @if(auth()->user()->role === 'admin')
@@ -80,7 +79,7 @@
                         </div>
                         <x-icon name="o-chevron-down" class="w-3.5 h-3.5 opacity-50 hidden sm:block" />
                     </div>
-                    <ul tabindex="0" class="menu menu-sm dropdown-content mt-5 z-[50] p-2 shadow-xl bg-base-100/95 backdrop-blur-lg rounded-2xl w-64 border border-white/20">
+                    <ul tabindex="0" class="menu menu-sm dropdown-content mt-5 z-[50] p-2 shadow-2xl bg-base-100 rounded-2xl w-64 border border-base-300">
                         <li class="px-4 py-3 border-b border-base-200/50 mb-1 hover:bg-transparent pointer-events-none">
                             <div class="font-black text-base-content text-sm">{{ auth()->user()->name }}</div>
                             <div class="text-xs text-base-content/60 opacity-80 break-all font-medium">{{ auth()->user()->email }}</div>

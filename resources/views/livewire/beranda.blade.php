@@ -13,7 +13,7 @@
 
     {{-- Banner Wrapper --}}
     <div
-        class="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden mb-0 -mt-5 md:-mt-5 lg:-mt-5">
+        class="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden mb-0 -mt-8 md:-mt-14 lg:-mt-20">
         <div class="absolute inset-0 z-0">
             <img class="absolute inset-0 opacity-40 w-full h-full object-cover"
                 src="{{ asset('storage/assets/banner.jpg') }}">
@@ -24,7 +24,7 @@
             <img src="{{ asset('storage/assets/logobanyumas.png') }}"
                 class="w-20 md:w-28 lg:w-32 h-auto mb-6 drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]" alt="Logo" />
 
-            <h1 class="text-4xl md:text-6xl lg:text-7xl font-black text-white mb-4 tracking-tight drop-shadow-2xl">
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-semibold text-white mb-4 tracking-tight drop-shadow-2xl">
                 Selamat Datang
             </h1>
 
