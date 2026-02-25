@@ -1,7 +1,7 @@
-<div class="px-0.1 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8 text-base-content">
+<div class="px-0.1 py-4 mx-auto max-w-7xl sm:px-6 lg:px-8 text-base-content">
 
     {{-- Button Kembali --}}
-    <div class="mb-6">
+    <div class="mb-4">
         <a href="{{ route('beranda') }}" wire:navigate class="btn btn-sm btn-ghost hover:bg-base-200 transition-colors">
             <x-icon name="o-arrow-left" class="w-4 h-4 mr-1" /> Kembali ke Beranda
         </a>
