@@ -6,7 +6,7 @@
         </div>
         <div>
             <x-button label="Buat Laporan Baru" icon="o-plus" class="shadow-sm btn-primary rounded-xl"
-                link="/pengaduan/create" />
+                link="{{ route('pengaduan.create') }}" />
         </div>
     </div>
 
@@ -37,7 +37,7 @@
                             M Y') }}</td>
                         <td class="text-sm text-base-content/80">
                             <span class="flex items-center gap-1">
-                                <x-icon name="o-folder" class="w-3.5 h-3.5" />
+
                                 {{ $pengaduan->kategori->nama }}
                             </span>
                         </td>
@@ -67,8 +67,23 @@
 
                         </td>
                         <td class="text-right">
-                            <x-button icon="o-eye" class="rounded-lg btn-sm btn-ghost text-primary hover:bg-primary/10"
-                                tooltip="Lihat Detail Riwayat" />
+                            <div class="flex items-center justify-end gap-2">
+                                <x-button icon="o-eye"
+                                    class="rounded-lg btn-sm btn-ghost text-primary hover:bg-primary/10"
+                                    tooltip="Lihat Detail Riwayat"
+                                    link="{{ route('pengaduan.feed-detail', $pengaduan->id) }}" />
+
+                                @if($pengaduan->status === 'menunggu')
+                                <x-button icon="o-pencil-square"
+                                    class="rounded-lg btn-sm btn-ghost text-warning hover:bg-warning/10"
+                                    tooltip="Edit Laporan" link="{{ route('pengaduan.edit', $pengaduan->id) }}" />
+
+                                <x-button icon="o-trash"
+                                    class="rounded-lg btn-sm btn-ghost text-error hover:bg-error/10"
+                                    tooltip="Hapus Laporan" wire:click="deletePengaduan({{ $pengaduan->id }})"
+                                    wire:confirm="Yakin ingin menghapus laporan ini? Data yang sudah dihapus tidak bisa dikembalikan." />
+                                @endif
+                            </div>
                         </td>
                     </tr>
                     @empty

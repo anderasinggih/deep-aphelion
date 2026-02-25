@@ -14,9 +14,9 @@
         }
     </style>
 
-    <x-header title="Buat Laporan Baru"
-        subtitle="Ceritakan masalah atau aspirasi di sekitar Anda dengan jelas agar mudah ditangani." size="text-3xl"
-        class="mb-8" />@if (session()->has('error')) <x-alert icon="o-exclamation-triangle"
+    <x-header title="{{ $isEdit ? 'Edit Laporan' : 'Buat Laporan Baru' }}"
+        subtitle="{{ $isEdit ? 'Perbarui informasi laporan Anda jika ada kesalahan atau kekurangan data.' : 'Ceritakan masalah atau aspirasi di sekitar Anda dengan jelas agar mudah ditangani.' }}"
+        size="text-3xl" class="mb-8" />@if (session()->has('error')) <x-alert icon="o-exclamation-triangle"
         class="mb-6 shadow-sm alert-error rounded-xl"> {
         {
         session('error')
@@ -33,11 +33,23 @@
                         label="Deskripsi Lengkap" wire:model="deskripsi"
                         placeholder="   Jelaskan kondisi secara detail (kapan, apa yang terjadi, dan dampaknya)..."
                         rows="5" required /><x-file label="Foto Bukti (Maksimal 2MB)" wire:model="foto_bukti"
-                        accept="image/*" hint="Format yang didukung: JPG, PNG, JPEG." />@if ($foto_bukti) <div
-                        class="p-3 mt-2 border shadow-sm rounded-xl bg-base-200/50 border-base-300"><span
-                            class="block mb-2 text-xs font-semibold text-base-content/60">Preview Foto:</span><img
-                            src="{{ $foto_bukti->temporaryUrl() }}"
-                            class="object-cover w-full h-auto rounded-lg shadow-sm aspect-video"></div>@endif </div>
+                        accept="image/*" hint="Format yang didukung: JPG, PNG, JPEG." />
+
+                    @if ($foto_bukti)
+                    <div class="p-3 mt-2 border shadow-sm rounded-xl bg-base-200/50 border-base-300">
+                        <span class="block mb-2 text-xs font-semibold text-base-content/60">Preview Foto Baru:</span>
+                        <img src="{{ $foto_bukti->temporaryUrl() }}"
+                            class="object-cover w-full h-auto rounded-lg shadow-sm aspect-video">
+                    </div>
+                    @elseif ($isEdit && $old_foto_bukti)
+                    <div class="p-3 mt-2 border shadow-sm rounded-xl bg-base-200/50 border-base-300">
+                        <span class="block mb-2 text-xs font-semibold text-base-content/60">Preview Foto Saat
+                            Ini:</span>
+                        <img src="{{ Storage::url($old_foto_bukti) }}"
+                            class="object-cover w-full h-auto rounded-lg shadow-sm aspect-video">
+                    </div>
+                    @endif
+                </div>
                 <div class="space-y-5"><x-input label="Detail Lokasi Kejadian" wire:model="lokasi_kejadian"
                         placeholder="Contoh: Sebelah utara pertigaan pasar, dekat tiang listrik" required
                         icon="o-map-pin" />
@@ -93,9 +105,10 @@
                     </div>
                 </div>
             </div><x-slot:actions>
-                <div class="flex items-center justify-end w-full gap-3"><x-button label="Batal" link="/"
-                        class="rounded-xl btn-ghost hover:bg-base-200" /><x-button label="Kirim Laporan" type="submit"
-                        icon="o-paper-airplane"
+                <div class="flex items-center justify-end w-full gap-3"><x-button label="Batal"
+                        link="{{ route('dashboard') }}" class="rounded-xl btn-ghost hover:bg-base-200" /><x-button
+                        label="{{ $isEdit ? 'Simpan Perubahan' : 'Kirim Laporan' }}" type="submit"
+                        icon="{{ $isEdit ? 'o-check-circle' : 'o-paper-airplane' }}"
                         class="text-white border-none shadow-sm rounded-xl btn-primary bg-primary hover:bg-primary/90 p-4"
                         spinner="save" /></div>
             </x-slot:actions>

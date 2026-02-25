@@ -16,6 +16,7 @@ Route::get('/pengaduan/{id}', PengaduanFeedDetail::class)->name('pengaduan.feed-
 Route::middleware(['auth'])->group(function () {
     // Warga
     Route::get('/pengaduan/create', PengaduanForm::class)->name('pengaduan.create');
+    Route::get('/pengaduan/{id}/edit', PengaduanForm::class)->name('pengaduan.edit');
     Route::get('/dashboard', WargaDashboard::class)->name('dashboard');
 
     // Admin

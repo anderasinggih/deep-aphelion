@@ -110,7 +110,7 @@
                             {{ $pengaduan->kategori->nama }}
                         </span>
                         <span class="flex items-center gap-1">
-                            <x-icon name="o-clock" class="w-3.1 h-3.1" /> {{ $pengaduan->created_at->diffForHumans() }}
+                            <x-icon name="o-clock" class="w-3.5 h-3.5" /> {{ $pengaduan->created_at->diffForHumans() }}
                         </span>
                     </div>
 
