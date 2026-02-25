@@ -11,7 +11,7 @@ use App\Livewire\Petugas\Disposisi;
 use App\Livewire\PengaduanFeedDetail;
 
 Route::get('/', Beranda::class)->name('beranda');
-Route::get('/pengaduan/{id}', PengaduanFeedDetail::class)->name('pengaduan.feed-detail');
+Route::get('/pengaduan/{id}', PengaduanFeedDetail::class)->name('pengaduan.feed-detail')->where('id', '[0-9]+');
 
 Route::middleware(['auth'])->group(function () {
     // Warga
