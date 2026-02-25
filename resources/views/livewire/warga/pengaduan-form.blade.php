@@ -47,17 +47,40 @@
                             (Opsional)
                         </div>
                         <p class="mb-4 text-xs leading-relaxed text-base-content/60">
-                            Jika memungkinkan, cantumkan titik koordinat untuk mempermudah petugas ke lokasi kejadian.
+                            Pilih titik lokasi pada peta untuk mempermudah petugas menemukan lokasi kejadian.
                         </p>
+
+                        <div x-data="leafletMap()" x-init="initMap()" class="w-full relative z-0 mb-4">
+                            <!-- Map Controls -->
+                            <div class="flex flex-col sm:flex-row gap-2 mb-3">
+                                <div class="relative flex-1">
+                                    <x-input x-model="searchQuery" @keydown.enter.prevent="searchLocation"
+                                        placeholder="Cari nama tempat / jalan..." class="w-full bg-base-100 pr-10" />
+                                    <button type="button" @click="searchLocation"
+                                        class="absolute right-2 top-1/2 -translate-y-1/2 btn btn-ghost btn-xs btn-circle text-base-content/50 hover:text-primary">
+                                        <x-icon name="o-magnifying-glass" class="w-4 h-4" />
+                                    </button>
+                                </div>
+                                <x-button type="button" @click="getCurrentLocation" icon="o-map-pin"
+                                    label="Lokasi Saat Ini"
+                                    class="btn-primary btn-outline bg-base-100 sm:w-auto w-full" />
+                            </div>
+
+                            <!-- Map Container -->
+                            <div wire:ignore id="map"
+                                class="w-full h-64 rounded-xl border border-base-300 shadow-inner z-[1]"></div>
+                        </div>
+
                         <div class="grid grid-cols-2 gap-3 mb-3">
-                            <x-input label="Latitude" wire:model="latitude" placeholder="Contoh: -7.425..." />
-                            <x-input label="Longitude" wire:model="longitude" placeholder="Contoh: 109.255..." />
+                            <x-input label="Latitude" wire:model="latitude" placeholder="-7.425..." readonly
+                                class="bg-base-200/50" />
+                            <x-input label="Longitude" wire:model="longitude" placeholder="109.255..." readonly
+                                class="bg-base-200/50" />
                         </div>
 
                         <div class="flex items-start gap-1.5 text-[11px] text-info/80 italic">
                             <x-icon name="o-information-circle" class="w-3.5 h-3.5 shrink-0 mt-0.5" />
-                            <span>Integrasi Peta Interaktif (Leaflet.js) akan dipasang di sini pada tahapan pengembangan
-                                selanjutnya.</span>
+                            <span>Anda dapat mengklik atau menggeser peta untuk menandai lokasi secara presisi.</span>
                         </div>
                     </div>
 
@@ -107,3 +130,106 @@
         </x-form>
     </x-card>
 </div>
+
+@push('styles')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+@endpush
+
+@push('scripts')
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('leafletMap', () => ({
+            map: null,
+            marker: null,
+            searchQuery: '',
+
+            initMap() {
+                // Return if already initialized
+                let mapContainer = document.getElementById('map');
+                if (!mapContainer || mapContainer._leaflet_id) return;
+
+                // Default koordinat Kabupaten Banyumas
+                let defaultLat = -7.4248;
+                let defaultLng = 109.2302;
+
+                this.map = L.map('map').setView([defaultLat, defaultLng], 12);
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '© OpenStreetMap'
+                }).addTo(this.map);
+
+                // Initialize with current location if possible automatically
+                this.getCurrentLocation(false);
+
+                // Map click event handling
+                this.map.on('click', (e) => {
+                    this.placeMarker(e.latlng.lat, e.latlng.lng);
+                });
+
+                // Fix map rendering issues inside hidden tabs or delayed renders
+                setTimeout(() => {
+                    this.map.invalidateSize();
+                }, 500);
+            },
+
+            placeMarker(lat, lng, zoom = null) {
+                if (this.marker) {
+                    this.map.removeLayer(this.marker);
+                }
+                this.marker = L.marker([lat, lng]).addTo(this.map);
+
+                if (zoom) {
+                    this.map.setView([lat, lng], zoom);
+                }
+
+                // Perbarui properti Livewire agar form tahu koordinatnya
+                this.$wire.set('latitude', lat.toFixed(6));
+                this.$wire.set('longitude', lng.toFixed(6));
+            },
+
+            getCurrentLocation(forceZoom = true) {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(position => {
+                        let lat = position.coords.latitude;
+                        let lng = position.coords.longitude;
+                        let zoomTarget = forceZoom ? 16 : 14;
+                        this.map.setView([lat, lng], zoomTarget);
+                        this.placeMarker(lat, lng);
+                    }, (error) => {
+                        // Gagal ambil lokasi diam saja kalau auto, alert kalau force
+                        if (forceZoom) { alert('Tidak dapat mengambil lokasi. Pastikan GPS aktif dan diizinkan.'); }
+                    });
+                } else {
+                    if (forceZoom) { alert('Browser Anda tidak mendukung deteksi lokasi.'); }
+                }
+            },
+
+            async searchLocation() {
+                if (!this.searchQuery.trim()) return;
+
+                let query = encodeURIComponent(this.searchQuery + ' Banyumas'); // Bias to local area
+                try {
+                    // OpenStreetMap Nominatim API for free geocoding
+                    let response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}`);
+                    let data = await response.json();
+
+                    if (data && data.length > 0) {
+                        let lat = parseFloat(data[0].lat);
+                        let lng = parseFloat(data[0].lon);
+                        this.placeMarker(lat, lng, 16);
+                    } else {
+                        alert('Lokasi tidak ditemukan. Coba gunakan nama jalan atau tempat yang lebih spesifik.');
+                    }
+                } catch (e) {
+                    console.error('Pencarian lokasi gagal', e);
+                    alert('Terjadi kesalahan saat mencari lokasi.');
+                }
+            }
+        }))
+    });
+</script>
+@endpush
