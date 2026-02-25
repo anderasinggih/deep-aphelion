@@ -1,4 +1,4 @@
-<div class="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8 text-base-content">
+<div class="px-0.1 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8 text-base-content">
 
     {{-- Header Content --}}
     <div class="flex flex-col gap-4 mb-8 sm:flex-row sm:items-center sm:justify-between">
@@ -8,23 +8,28 @@
                 ID Pengaduan: <span class="font-mono text-base-content/90 font-bold">#{{ $this->pengaduan->id }}</span>
             </p>
         </div>
-        <div class="flex items-center gap-3">
-            @php
-            $statusBadgeClass = match($this->pengaduan->status) {
-            'menunggu' => 'badge-warning',
-            'diproses' => 'badge-info',
-            'selesai' => 'badge-success',
-            'ditolak' => 'badge-error',
-            default => 'badge-ghost',
-            };
-            @endphp
-            <div
-                class="badge {{ $statusBadgeClass }} badge-outline font-bold px-4 py-3 uppercase tracking-wider text-xs">
-                {{ $this->pengaduan->status }}
+
+        {{-- Tambahkan gap dan w-full sm:w-auto agar responsif --}}
+        <div class="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
+            <div class="flex items-center">
+                @if($this->pengaduan->status == 'menunggu')
+                <x-badge value="Menunggu"
+                    class="badge-warning badge-md font-bold px-4 py-3  tracking-wider text-xs shadow-sm" />
+                @elseif($this->pengaduan->status == 'diproses')
+                <x-badge value="Diproses"
+                    class="badge-info badge-md font-bold px-4 py-3  tracking-wider text-xs shadow-sm" />
+                @elseif($this->pengaduan->status == 'selesai')
+                <x-badge value="Selesai"
+                    class="badge-success badge-md font-bold px-4 py-3  tracking-wider text-xs shadow-sm" />
+                @elseif($this->pengaduan->status == 'ditolak')
+                <x-badge value="Ditolak"
+                    class="badge-error badge-md font-bold px-4 py-3  tracking-wider text-xs shadow-sm" />
+                @endif
             </div>
 
+            {{-- Tombol Kembali --}}
             <a href="{{ route('admin.pengaduan') }}" wire:navigate
-                class="btn btn-outline shadow-sm rounded-xl hover:bg-base-200 hover:text-base-content hover:border-base-300 transition-colors">
+                class="btn btn-outline border-base-300 shadow-sm rounded-xl hover:bg-base-200 hover:text-base-content transition-all shrink-0">
                 <x-icon name="o-arrow-left" class="w-4 h-4 mr-1" /> Kembali
             </a>
         </div>
@@ -52,12 +57,12 @@
 
                 <div class="p-6 md:p-8 space-y-6">
                     <div>
-                        <div class="flex items-center gap-2 mb-3">
-                            <span
-                                class="badge badge-primary bg-primary/10 text-primary border-primary/20 font-bold px-3 py-3 rounded-lg flex items-center gap-1.5 text-xs">
-                                <x-icon name="{{ $this->pengaduan->kategori->icon ?? 'o-tag' }}" class="w-3.5 h-3.5" />
-                                {{ $this->pengaduan->kategori->nama }}
-                            </span>
+                        <div
+                            class="flex items-center gap-2 px-2 py-1 bg-base-100 border border-base-300 rounded-xl shadow-sm w-fit mb-2">
+                            <x-icon name="{{ $this->pengaduan->kategori->icon ?? 'o-tag' }}"
+                                class="w-4 h-4 text-primary" />
+                            <span class="text-sm font-bold text-base-content">{{ $this->pengaduan->kategori->nama
+                                }}</span>
                         </div>
                         <h3 class="text-2xl md:text-3xl font-black leading-tight text-base-content mb-4">
                             {{ $this->pengaduan->judul }}
@@ -139,15 +144,16 @@
                         </div>
                     </div>
 
-                    <div class="bg-base-200/50 rounded-xl p-3 border border-base-200 space-y-2">
+                    <div class="bg-base-200/50 rounded-xl p-4 border border-base-200 space-y-3">
                         <div class="flex justify-between items-center text-xs">
-                            <span class="font-medium text-base-content/60">NIK</span>
-                            <span class="font-mono font-bold text-base-content/80">{{ $this->pengaduan->user->nik ?? '-'
-                                }}</span>
+                            <span class="font-bold text-base-content/50 uppercase">NIK Pelapor</span>
+                            <span class="font-mono font-black text-base-content/80 text-sm">{{
+                                $this->pengaduan->user->nik ?? '-' }}</span>
                         </div>
+                        <div class="divider my-0 opacity-10"></div>
                         <div class="flex justify-between items-center text-xs">
-                            <span class="font-medium text-base-content/60">No. WhatsApp</span>
-                            <span class="font-mono font-bold text-base-content/80">{{ $this->pengaduan->user->wa ??
+                            <span class="font-bold text-base-content/50 uppercase">No. WhatsApp</span>
+                            <span class="font-mono font-black text-base-content/80 text-sm">{{
                                 $this->pengaduan->user->no_wa ?? '-' }}</span>
                         </div>
                     </div>
