@@ -1,4 +1,4 @@
-<div class="max-w-5xl px-0.1 py-8 mx-auto sm:px-6 lg:px-8">
+<div class="px-0.1 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
     <style>
         input:-webkit-autofill,
         input:-webkit-autofill:hover,
@@ -14,10 +14,17 @@
         }
     </style>
 
-    <x-header title="{{ $isEdit ? 'Edit Laporan' : 'Buat Laporan Baru' }}"
-        subtitle="{{ $isEdit ? 'Perbarui informasi laporan Anda jika ada kesalahan atau kekurangan data.' : 'Ceritakan masalah atau aspirasi di sekitar Anda dengan jelas agar mudah ditangani.' }}"
-        size="text-3xl" class="mb-8" />@if (session()->has('error')) <x-alert icon="o-exclamation-triangle"
-        class="mb-6 shadow-sm alert-error rounded-xl"> {
+
+    <div class="flex flex-col gap-4 mb-8 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <h1 class="text-3xl font-black tracking-tight text-primary">Buat Laporan Baru</h1>
+            <p class="mt-1 text-sm text-base-content/70">Ceritakan masalah atau aspirasi di sekitar Anda dengan jelas
+                agar mudah ditangani.</p>
+        </div>
+
+    </div>
+    @if (session()->has('error')) <x-alert icon="o-exclamation-triangle" class="mb-6 shadow-sm alert-error rounded-xl">
+        {
         {
         session('error')
         }
