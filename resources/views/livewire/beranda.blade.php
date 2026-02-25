@@ -128,7 +128,8 @@
 
                 <h2
                     class="mb-1 text-base font-bold leading-tight transition-colors sm:text-lg cursor-pointer text-base-content hover:text-primary line-clamp-2">
-                    <a href="#">{{ $pengaduan->judul }}</a>
+                    <a href="{{ route('pengaduan.feed-detail', $pengaduan->id) }}" wire:navigate>{{ $pengaduan->judul
+                        }}</a>
                 </h2>
                 <div class="flex items-start gap-1 mb-3 text-xs text-base-content/50">
                     <x-icon name="o-map-pin" class="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-error/80" />

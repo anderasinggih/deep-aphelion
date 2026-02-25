@@ -8,8 +8,10 @@ use App\Livewire\Admin\Dashboard as AdminDashboard;
 use App\Livewire\Admin\PengaduanManager;
 use App\Livewire\Admin\PengaduanDetail;
 use App\Livewire\Petugas\Disposisi;
+use App\Livewire\PengaduanFeedDetail;
 
 Route::get('/', Beranda::class)->name('beranda');
+Route::get('/pengaduan/{id}', PengaduanFeedDetail::class)->name('pengaduan.feed-detail');
 
 Route::middleware(['auth'])->group(function () {
     // Warga
