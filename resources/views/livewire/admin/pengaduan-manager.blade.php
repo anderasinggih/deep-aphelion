@@ -1,10 +1,16 @@
 <div class="px-0.1 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8 text-base-content">
-    <x-header title="Manajemen Pengaduan" subtitle="Data seluruh laporan warga Kecamatan Kembaran" size="text-2xl"
-        class="mb-5">
-        <x-slot:actions>
-            <x-button label="Export Data" icon="o-document-arrow-down" class="btn-outline" />
-        </x-slot:actions>
-    </x-header>
+
+    <div class="flex flex-col gap-4 mb-8 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <h1 class="text-3xl font-black tracking-tight text-primary">Manajemen Pengaduan</h1>
+            <p class="mt-1 text-sm text-base-content/70">Data seluruh laporan warga Kecamatan Kembaran</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <x-button label="Export Data" icon="o-document-arrow-down"
+                class="shadow-sm btn-outline btn-primary rounded-xl" link="/admin/pengaduan" />
+        </div>
+    </div>
+
 
     @if (session()->has('success'))
     <x-alert icon="o-check-circle" class="alert-success mb-5">
@@ -18,8 +24,7 @@
     </x-alert>
     @endif
 
-    {{-- PERBAIKAN 1: Tambahkan !overflow-visible di x-card --}}
-    <x-card class="shadow-sm !overflow-visible">
+    <x-card class="shadow-sm">
         <div class="flex flex-col md:flex-row gap-4 mb-6">
             <x-input wire:model.live.debounce="search" icon="o-magnifying-glass"
                 placeholder="Cari Judul / Nama Warga..." class="flex-1" />
@@ -33,8 +38,8 @@
             ]" option-value="id" option-label="name" class="w-full md:w-48" />
         </div>
 
-        {{-- PERBAIKAN 2: overflow-x-auto dengan min-h yang cukup --}}
-        <div class="overflow-x-auto min-h-[380px] pb-4">
+        {{-- PERBAIKAN: Cukup pakai overflow-x-auto dengan min-h-[400px] --}}
+        <div class="overflow-x-auto min-h-[400px]">
             <table class="table w-full">
                 <thead>
                     <tr>
@@ -84,23 +89,18 @@
                             @endif
                         </td>
                         <td class="text-right whitespace-nowrap">
-
-                            {{-- PERBAIKAN 3: Deteksi baris agar dropdown bisa naik ke atas jika di bawah --}}
-                            @php
-                            // Jika data lebih dari 2 dan ini adalah 2 baris terakhir, buka menu ke atas!
-                            $openUpwards = ($pengaduans->count() > 2) && ($loop->remaining < 2); @endphp <x-dropdown
-                                class="dropdown-left {{ $openUpwards ? 'dropdown-top' : 'dropdown-end' }}">
+                            {{-- Dropdown Keren yang Kembali --}}
+                            <x-dropdown class="dropdown-left dropdown-end">
                                 <x-slot:trigger>
                                     <x-button icon="o-ellipsis-horizontal"
-                                        class="btn-primary btn-sm rounded-full shadow-md hover:scale-110 transition-all text-white"
+                                        class="btn-primary btn-sm rounded-full shadow-md text-white hover:scale-110 transition-all"
                                         tooltip="Aksi" />
                                 </x-slot:trigger>
 
                                 <x-menu-item title="Detail Lengkap" icon="o-eye"
                                     link="{{ route('admin.pengaduan.detail', $pengaduan->id) }}" wire:navigate />
 
-                                <div class="divider my-1 text-[10px] uppercase font-bold opacity-50">Ubah Status
-                                </div>
+                                <div class="divider my-1 text-[10px] uppercase font-bold opacity-50">Ubah Status</div>
 
                                 @if($pengaduan->status !== 'menunggu')
                                 <x-menu-item title="Set Menunggu" icon="o-clock"
@@ -123,14 +123,14 @@
                                 @endif
 
                                 @if($pengaduan->status !== 'ditolak')
-                                <x-menu-item title="Tolak Laporan" icon="o-no-symbol" class="text-error font-bold"
+                                <x-menu-item title="Tolak Laporan" icon="o-x-circle" class="text-error font-bold"
                                     wire:click="setStatus({{ $pengaduan->id }}, 'ditolak')" />
                                 @endif
 
                                 <div class="divider my-1 text-[10px] uppercase font-bold opacity-50">Tugas</div>
                                 <x-menu-item title="Atur Disposisi" icon="o-user-plus"
                                     wire:click="openDisposisi({{ $pengaduan->id }})" />
-                                </x-dropdown>
+                            </x-dropdown>
                         </td>
                     </tr>
                     @empty

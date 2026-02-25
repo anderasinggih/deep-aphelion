@@ -43,7 +43,7 @@
                                 name="o-clipboard-document-check" class="w-4 h-4" /> Disposisi</a></li>
                     @else
                     <li><a href="/dashboard" class="{{ request()->is('dashboard') ? 'active' : '' }}"><x-icon
-                                name="o-chart-pie" class="w-4 h-4" /> Dashboard Warga</a></li>
+                                name="o-chart-pie" class="w-4 h-4" /> Dashboard</a></li>
                     @endif
                     <li><a href="/pengaduan/create"
                             class="{{ request()->is('pengaduan/create') ? 'active' : '' }}"><x-icon name="o-plus-circle"
