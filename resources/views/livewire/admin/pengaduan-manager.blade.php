@@ -18,7 +18,8 @@
     </x-alert>
     @endif
 
-    <x-card class="shadow-sm">
+    {{-- PERBAIKAN 1: Tambahkan !overflow-visible di x-card --}}
+    <x-card class="shadow-sm !overflow-visible">
         <div class="flex flex-col md:flex-row gap-4 mb-6">
             <x-input wire:model.live.debounce="search" icon="o-magnifying-glass"
                 placeholder="Cari Judul / Nama Warga..." class="flex-1" />
@@ -32,7 +33,8 @@
             ]" option-value="id" option-label="name" class="w-full md:w-48" />
         </div>
 
-        <div class="overflow-visible min-h-[100px]">
+        {{-- PERBAIKAN 2: overflow-x-auto dengan min-h yang cukup --}}
+        <div class="overflow-x-auto min-h-[380px] pb-4">
             <table class="table w-full">
                 <thead>
                     <tr>
@@ -54,7 +56,8 @@
                         </td>
                         <td>{{ $pengaduan->kategori->nama }}</td>
                         <td>
-                            <div class="font-bold line-clamp-1" title="{{ $pengaduan->judul }}">{{ $pengaduan->judul }}
+                            <div class="font-bold line-clamp-1" title="{{ $pengaduan->judul }}">{{
+                                $pengaduan->judul }}
                             </div>
                             <div class="text-xs text-gray-400 max-w-[200px] truncate"
                                 title="{{ $pengaduan->deskripsi }}">{{ $pengaduan->deskripsi }}</div>
@@ -62,17 +65,17 @@
                         <td>
                             <div>
                                 @if($pengaduan->status == 'menunggu')
-                                <x-badge value="Menunggu" class="badge-warning badge-sm" />
+                                <x-badge value="Menunggu" class="badge-warning badge-sm font-bold" />
                                 @elseif($pengaduan->status == 'diproses')
-                                <x-badge value="Diproses" class="badge-info badge-sm" />
+                                <x-badge value="Diproses" class="badge-info badge-sm font-bold" />
                                 @elseif($pengaduan->status == 'selesai')
-                                <x-badge value="Selesai" class="badge-success badge-sm" />
+                                <x-badge value="Selesai" class="badge-success badge-sm font-bold" />
                                 @elseif($pengaduan->status == 'ditolak')
-                                <x-badge value="Ditolak" class="badge-error badge-sm" />
+                                <x-badge value="Ditolak" class="badge-error badge-sm font-bold" />
                                 @endif
                             </div>
                             @if($pengaduan->petugas)
-                            <div class="text-xs mt-1 text-primary flex items-center gap-1">
+                            <div class="text-xs mt-1 text-primary flex items-center gap-1 font-medium">
                                 <x-icon name="o-user" class="w-3 h-3" />
                                 {{ $pengaduan->petugas->name }}
                             </div>
@@ -80,48 +83,59 @@
                             <div class="text-xs mt-1 text-gray-400 italic">Belum dispo</div>
                             @endif
                         </td>
-                        <td class="text-right whitespace-nowrap overflow-visible">
-                            {{-- Dropdown-left agar menu muncul ke kiri (ke dalam area tabel) --}}
-                            <x-dropdown icon="o-ellipsis-vertical" class="btn-sm btn-ghost dropdown-left dropdown-end">
+                        <td class="text-right whitespace-nowrap">
+
+                            {{-- PERBAIKAN 3: Deteksi baris agar dropdown bisa naik ke atas jika di bawah --}}
+                            @php
+                            // Jika data lebih dari 2 dan ini adalah 2 baris terakhir, buka menu ke atas!
+                            $openUpwards = ($pengaduans->count() > 2) && ($loop->remaining < 2); @endphp <x-dropdown
+                                class="dropdown-left {{ $openUpwards ? 'dropdown-top' : 'dropdown-end' }}">
+                                <x-slot:trigger>
+                                    <x-button icon="o-ellipsis-horizontal"
+                                        class="btn-primary btn-sm rounded-full shadow-md hover:scale-110 transition-all text-white"
+                                        tooltip="Aksi" />
+                                </x-slot:trigger>
+
                                 <x-menu-item title="Detail Lengkap" icon="o-eye"
                                     link="{{ route('admin.pengaduan.detail', $pengaduan->id) }}" wire:navigate />
 
-                                <div class="divider my-1">Ubah Status</div>
+                                <div class="divider my-1 text-[10px] uppercase font-bold opacity-50">Ubah Status
+                                </div>
 
                                 @if($pengaduan->status !== 'menunggu')
-                                <x-menu-item title="Menunggu" icon="o-clock"
+                                <x-menu-item title="Set Menunggu" icon="o-clock"
                                     wire:click="setStatus({{ $pengaduan->id }}, 'menunggu')" />
                                 @endif
 
                                 @if($pengaduan->status !== 'diproses')
                                 @if($pengaduan->petugas_id)
-                                <x-menu-item title="Diproses" icon="o-arrow-path"
+                                <x-menu-item title="Set Diproses" icon="o-arrow-path"
                                     wire:click="setStatus({{ $pengaduan->id }}, 'diproses')" />
                                 @else
-                                <x-menu-item title="Diproses (Butuh Disposisi)" icon="o-arrow-path" class="text-info"
+                                <x-menu-item title="Proses (Disposisi)" icon="o-arrow-path" class="text-info font-bold"
                                     wire:click="openDisposisi({{ $pengaduan->id }})" />
                                 @endif
                                 @endif
 
                                 @if($pengaduan->status !== 'selesai')
-                                <x-menu-item title="Selesai" icon="o-check" class="text-success"
+                                <x-menu-item title="Selesaikan" icon="o-check-circle" class="text-success font-bold"
                                     wire:click="setStatus({{ $pengaduan->id }}, 'selesai')" />
                                 @endif
 
                                 @if($pengaduan->status !== 'ditolak')
-                                <x-menu-item title="Tolak Laporan" icon="o-x-mark" class="text-error"
+                                <x-menu-item title="Tolak Laporan" icon="o-no-symbol" class="text-error font-bold"
                                     wire:click="setStatus({{ $pengaduan->id }}, 'ditolak')" />
                                 @endif
 
-                                <div class="divider my-1">Tugas</div>
-                                <x-menu-item title="Disposisi Petugas" icon="o-user-plus"
+                                <div class="divider my-1 text-[10px] uppercase font-bold opacity-50">Tugas</div>
+                                <x-menu-item title="Atur Disposisi" icon="o-user-plus"
                                     wire:click="openDisposisi({{ $pengaduan->id }})" />
-                            </x-dropdown>
+                                </x-dropdown>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="text-center py-6 text-gray-500">
+                        <td colspan="6" class="text-center py-10 text-gray-500 italic">
                             Tidak ada data pengaduan yang sesuai.
                         </td>
                     </tr>
