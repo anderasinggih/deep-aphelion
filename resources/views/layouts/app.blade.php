@@ -127,9 +127,10 @@
             </div>
             @else
             <div class="hidden sm:flex gap-2">
-                <a href="/login" class="btn btn-ghost btn-sm">Login</a>
-                <a href="/register" class="btn btn-primary btn-sm">Register</a>
+
+                <a href="/register" class="btn btn-primary btn-sm">Daftar</a>
             </div>
+            <a href="/login" class="btn btn-ghost btn-sm">Masuk</a>
             @endauth
         </div>
     </div>
