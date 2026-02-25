@@ -153,7 +153,7 @@
                                 @endif
                                 <button wire:click="upvote({{ $pengaduan->id }})"
                                     class="flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all duration-300 group/vote
-                                    {{ session()->has('success') && session('id') == $pengaduan->id ? 'bg-primary text-white shadow-md scale-105' : 'bg-primary/10 text-primary hover:bg-primary hover:text-white' }}">
+                                    {{ session()->has('success') && session('id') == $pengaduan->id ? 'bg-primary text-white shadow-md scale-105' : 'bg-primary/10 text-primary ' }}">
                                     <x-icon name="o-hand-thumb-up" class="w-6 h-6" />
                                     <span class="text-sm font-black">{{ $pengaduan->dukungans_count }}</span>
                                 </button>
