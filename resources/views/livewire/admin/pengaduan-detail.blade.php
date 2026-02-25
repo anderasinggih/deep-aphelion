@@ -1,0 +1,227 @@
+<div class="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8 text-base-content">
+
+    {{-- Header Content --}}
+    <div class="flex flex-col gap-4 mb-8 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <h1 class="text-3xl font-black tracking-tight text-primary">Detail Laporan</h1>
+            <p class="mt-1 text-sm font-medium text-base-content/70">
+                ID Pengaduan: <span class="font-mono text-base-content/90 font-bold">#{{ $this->pengaduan->id }}</span>
+            </p>
+        </div>
+        <div class="flex items-center gap-3">
+            @php
+            $statusBadgeClass = match($this->pengaduan->status) {
+            'menunggu' => 'badge-warning',
+            'diproses' => 'badge-info',
+            'selesai' => 'badge-success',
+            'ditolak' => 'badge-error',
+            default => 'badge-ghost',
+            };
+            @endphp
+            <div
+                class="badge {{ $statusBadgeClass }} badge-outline font-bold px-4 py-3 uppercase tracking-wider text-xs">
+                {{ $this->pengaduan->status }}
+            </div>
+
+            <a href="{{ route('admin.pengaduan') }}" wire:navigate
+                class="btn btn-outline shadow-sm rounded-xl hover:bg-base-200 hover:text-base-content hover:border-base-300 transition-colors">
+                <x-icon name="o-arrow-left" class="w-4 h-4 mr-1" /> Kembali
+            </a>
+        </div>
+    </div>
+
+    {{-- Main Grid --}}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+
+        {{-- Kolom Kiri: Detil Laporan --}}
+        <div class="lg:col-span-2 space-y-6">
+
+            {{-- Card Utama: Info Laporan --}}
+            <div class="bg-base-100 rounded-2xl shadow-sm border border-base-200 overflow-hidden">
+                <div class="px-6 py-4 bg-base-200/30 border-b border-base-200 flex items-center justify-between">
+                    <h2
+                        class="font-bold text-base-content/80 uppercase text-xs tracking-widest flex items-center gap-2">
+                        <x-icon name="o-document-text" class="w-4 h-4" /> Informasi Utama
+                    </h2>
+                    <span
+                        class="text-xs font-semibold text-base-content/50 flex items-center gap-1.5 bg-base-100 px-2 py-1 rounded-md border border-base-200 shadow-sm">
+                        <x-icon name="o-calendar" class="w-3.5 h-3.5" /> {{ $this->pengaduan->created_at->format('d F Y,
+                        H:i') }}
+                    </span>
+                </div>
+
+                <div class="p-6 md:p-8 space-y-6">
+                    <div>
+                        <div class="flex items-center gap-2 mb-3">
+                            <span
+                                class="badge badge-primary bg-primary/10 text-primary border-primary/20 font-bold px-3 py-3 rounded-lg flex items-center gap-1.5 text-xs">
+                                <x-icon name="{{ $this->pengaduan->kategori->icon ?? 'o-tag' }}" class="w-3.5 h-3.5" />
+                                {{ $this->pengaduan->kategori->nama }}
+                            </span>
+                        </div>
+                        <h3 class="text-2xl md:text-3xl font-black leading-tight text-base-content mb-4">
+                            {{ $this->pengaduan->judul }}
+                        </h3>
+                    </div>
+
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-widest text-base-content/40 block mb-2">Isi
+                            Pengaduan</span>
+                        <div
+                            class="bg-base-200/30 p-5 rounded-xl border border-base-200 text-sm md:text-base leading-relaxed text-base-content/90 font-medium whitespace-pre-wrap">
+                            {{ $this->pengaduan->deskripsi }}
+                        </div>
+                    </div>
+
+                    @if($this->pengaduan->lokasi_kejadian)
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-widest text-base-content/40 block mb-2">Lokasi
+                            Terkait</span>
+                        <div
+                            class="flex items-start md:items-center justify-between gap-4 p-4 rounded-xl border border-base-200 bg-base-100 shadow-sm hover:border-primary/30 transition-colors">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-10 h-10 rounded-lg bg-error/10 flex items-center justify-center shrink-0">
+                                    <x-icon name="o-map-pin" class="w-5 h-5 text-error" />
+                                </div>
+                                <div class="truncate">
+                                    <p class="text-sm font-bold text-base-content truncate">
+                                        {{ $this->pengaduan->lokasi_kejadian }}
+                                    </p>
+                                    @if($this->pengaduan->latitude)
+                                    <p class="text-[10px] font-mono text-base-content/50 truncate mt-0.5">
+                                        {{ $this->pengaduan->latitude }}, {{ $this->pengaduan->longitude }}
+                                    </p>
+                                    @endif
+                                </div>
+                            </div>
+
+                            @if($this->pengaduan->latitude)
+                            <a href="https://www.google.com/maps/search/?api=1&query={{ $this->pengaduan->latitude }},{{ $this->pengaduan->longitude }}"
+                                target="_blank"
+                                class="btn btn-sm btn-ghost hover:bg-error/10 hover:text-error shrink-0">
+                                <x-icon name="o-globe-asia-australia" class="w-4 h-4" /> Buka Peta
+                            </a>
+                            @endif
+                        </div>
+                    </div>
+                    @endif
+                </div>
+            </div>
+
+        </div>
+
+        {{-- Kolom Kanan: Info Pelapor & Lampiran --}}
+        <div class="space-y-6">
+
+            {{-- Card Pelapor --}}
+            <div class="bg-base-100 rounded-2xl shadow-sm border border-base-200 overflow-hidden">
+                <div class="px-5 py-3 bg-base-200/30 border-b border-base-200">
+                    <h2
+                        class="font-bold text-base-content/80 uppercase text-xs tracking-widest flex items-center gap-2">
+                        <x-icon name="o-user" class="w-4 h-4" /> Data Pelapor (Admin View)
+                    </h2>
+                </div>
+                <div class="p-5 flex flex-col gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="avatar placeholder shrink-0">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold border border-primary/20 text-lg shadow-sm">
+                                {{ strtoupper(substr($this->pengaduan->user->name, 0, 1)) }}
+                            </div>
+                        </div>
+                        <div class="overflow-hidden">
+                            <p class="font-bold text-base-content text-sm md:text-base leading-tight truncate">
+                                {{ $this->pengaduan->user->name }}
+                            </p>
+                            <p class="text-xs text-base-content/60 truncate mt-0.5 font-medium">
+                                {{ $this->pengaduan->user->email }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="bg-base-200/50 rounded-xl p-3 border border-base-200 space-y-2">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="font-medium text-base-content/60">NIK</span>
+                            <span class="font-mono font-bold text-base-content/80">{{ $this->pengaduan->user->nik ?? '-'
+                                }}</span>
+                        </div>
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="font-medium text-base-content/60">No. WhatsApp</span>
+                            <span class="font-mono font-bold text-base-content/80">{{ $this->pengaduan->user->wa ??
+                                $this->pengaduan->user->no_wa ?? '-' }}</span>
+                        </div>
+                    </div>
+
+                    @if($this->pengaduan->is_anonymous)
+                    <div
+                        class="bg-warning/10 border border-warning/20 rounded-xl p-3 flex items-start gap-2 text-warning font-medium text-xs">
+                        <x-icon name="o-eye-slash" class="w-4 h-4 shrink-0 mt-0.5" />
+                        <p>Warga ini meminta mode <strong>Anonim</strong> di publik. Data ini hanya tampil untuk Admin
+                            dan Petugas.</p>
+                    </div>
+                    @endif
+                </div>
+            </div>
+
+            {{-- Card Petugas Disposisi --}}
+            <div class="bg-base-100 rounded-2xl shadow-sm border border-base-200 overflow-hidden">
+                <div class="px-5 py-3 bg-base-200/30 border-b border-base-200">
+                    <h2
+                        class="font-bold text-base-content/80 uppercase text-xs tracking-widest flex items-center gap-2">
+                        <x-icon name="o-clipboard-document-check" class="w-4 h-4" /> Petugas Terkait
+                    </h2>
+                </div>
+                <div class="p-5">
+                    @if($this->pengaduan->petugas)
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="w-10 h-10 bg-info/10 text-info rounded-xl flex items-center justify-center border border-info/20 shadow-sm shrink-0">
+                            <x-icon name="o-user-circle" class="w-6 h-6" />
+                        </div>
+                        <div class="overflow-hidden">
+                            <p class="font-bold text-info text-sm leading-tight truncate">
+                                {{ $this->pengaduan->petugas->name }}
+                            </p>
+                            <p class="text-[10px] text-base-content/50 uppercase tracking-widest font-bold mt-1">
+                                Ditugaskan</p>
+                        </div>
+                    </div>
+                    @else
+                    <div class="flex items-center gap-3 text-base-content/50">
+                        <div class="w-10 h-10 bg-base-200 rounded-xl flex items-center justify-center shrink-0">
+                            <x-icon name="o-exclamation-circle" class="w-5 h-5" />
+                        </div>
+                        <p class="text-sm font-medium italic">Belum ada disposisi petugas.</p>
+                    </div>
+                    @endif
+                </div>
+            </div>
+
+            {{-- Card Foto Lampiran --}}
+            @if($this->pengaduan->foto_bukti)
+            <div class="bg-base-100 rounded-2xl shadow-sm border border-base-200 overflow-hidden">
+                <div class="px-5 py-3 bg-base-200/30 border-b border-base-200">
+                    <h2
+                        class="font-bold text-base-content/80 uppercase text-xs tracking-widest flex items-center gap-2">
+                        <x-icon name="o-camera" class="w-4 h-4" /> Foto Keluhan
+                    </h2>
+                </div>
+                <div class="p-4">
+                    <div
+                        class="relative group rounded-xl overflow-hidden shadow-sm border border-base-200 aspect-video md:aspect-[4/3]">
+                        <img src="{{ Storage::url($this->pengaduan->foto_bukti) }}" alt="Bukti Lampiran"
+                            class="w-full h-full object-cover transition duration-500 cursor-zoom-in group-hover:scale-105"
+                            onclick="window.open(this.src, '_blank')">
+                        <div
+                            class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none backdrop-blur-[1px]">
+                            <x-icon name="o-magnifying-glass-plus" class="w-8 h-8 text-white drop-shadow-md" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+
+        </div>
+
+    </div>
+</div>

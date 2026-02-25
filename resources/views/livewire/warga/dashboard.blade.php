@@ -46,15 +46,25 @@
                                 $pengaduan->judul }}</div>
                         </td>
                         <td>
+
                             @if($pengaduan->status == 'menunggu')
-                            <x-badge value="Menunggu" class="font-bold badge-warning badge-outline" />
+
+                            <x-badge value="Menunggu" class="badge-warning badge-sm" />
+
                             @elseif($pengaduan->status == 'diproses')
-                            <x-badge value="Diproses" class="font-bold badge-info badge-outline" />
+
+                            <x-badge value="Diproses" class="badge-info badge-sm" />
+
                             @elseif($pengaduan->status == 'selesai')
-                            <x-badge value="Selesai" class="font-bold badge-success badge-outline" />
+
+                            <x-badge value="Selesai" class="badge-success badge-sm" />
+
                             @elseif($pengaduan->status == 'ditolak')
-                            <x-badge value="Ditolak" class="font-bold badge-error badge-outline" />
+
+                            <x-badge value="Ditolak" class="badge-error badge-sm" />
+
                             @endif
+
                         </td>
                         <td class="text-right">
                             <x-button icon="o-eye" class="rounded-lg btn-sm btn-ghost text-primary hover:bg-primary/10"

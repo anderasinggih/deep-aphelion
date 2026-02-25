@@ -166,10 +166,8 @@
                         <td class="text-right whitespace-nowrap">
 
                             <x-dropdown icon="o-ellipsis-vertical" class="btn-sm btn-ghost">
-
-                                <x-menu-item title="Detail Lengkap" icon="o-eye" />
-
-
+                                <x-menu-item title="Detail Lengkap" icon="o-eye"
+                                    link="{{ route('admin.pengaduan.detail', $pengaduan->id) }}" wire:navigate />
 
                                 <div class="divider my-1">Ubah Status</div>
 

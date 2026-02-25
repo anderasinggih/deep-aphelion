@@ -95,24 +95,26 @@
                                         <span>{{ $lap->created_at->diffForHumans() }}</span>
                                     </div>
                                 </div>
-                                <div class="shrink-0 pt-0.5">
+                                <div>
+
                                     @if($lap->status == 'menunggu')
-                                    <div
-                                        class="w-full py-1.5 px-4 text-xs text-center font-bold rounded-lg bg-warning/20 text-warning transition-colors cursor-default hover:bg-warning/30">
-                                        Menunggu</div>
+
+                                    <x-badge value="Menunggu" class="badge-warning badge-sm" />
+
                                     @elseif($lap->status == 'diproses')
-                                    <div
-                                        class="w-full py-1.5 px-4 text-xs text-center font-bold rounded-lg bg-info/20 text-info transition-colors cursor-default hover:bg-info/30">
-                                        Diproses</div>
+
+                                    <x-badge value="Diproses" class="badge-info badge-sm" />
+
                                     @elseif($lap->status == 'selesai')
-                                    <div
-                                        class="w-full py-1.5 px-4 text-xs text-center font-bold rounded-lg bg-success/20 text-success transition-colors cursor-default hover:bg-success/30">
-                                        Selesai</div>
+
+                                    <x-badge value="Selesai" class="badge-success badge-sm" />
+
                                     @elseif($lap->status == 'ditolak')
-                                    <div
-                                        class="w-full py-1.5 px-4 text-xs text-center font-bold rounded-lg bg-error/20 text-error transition-colors cursor-default hover:bg-error/30">
-                                        Ditolak</div>
+
+                                    <x-badge value="Ditolak" class="badge-error badge-sm" />
+
                                     @endif
+
                                 </div>
                             </div>
                         </li>

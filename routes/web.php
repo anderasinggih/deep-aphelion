@@ -6,6 +6,7 @@ use App\Livewire\Warga\PengaduanForm;
 use App\Livewire\Warga\Dashboard as WargaDashboard;
 use App\Livewire\Admin\Dashboard as AdminDashboard;
 use App\Livewire\Admin\PengaduanManager;
+use App\Livewire\Admin\PengaduanDetail;
 use App\Livewire\Petugas\Disposisi;
 
 Route::get('/', Beranda::class)->name('beranda');
@@ -18,6 +19,7 @@ Route::middleware(['auth'])->group(function () {
     // Admin
     Route::get('/admin/dashboard', AdminDashboard::class)->name('admin.dashboard');
     Route::get('/admin/pengaduan', PengaduanManager::class)->name('admin.pengaduan');
+    Route::get('/admin/pengaduan/{id}', PengaduanDetail::class)->name('admin.pengaduan.detail');
 
     // Petugas
     Route::get('/petugas/disposisi', Disposisi::class)->name('petugas.disposisi');

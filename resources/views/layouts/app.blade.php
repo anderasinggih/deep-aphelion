@@ -47,7 +47,7 @@
                     @endif
                     <li><a href="/pengaduan/create"
                             class="{{ request()->is('pengaduan/create') ? 'active' : '' }}"><x-icon name="o-plus-circle"
-                                class="w-4 h-4" /> Pengaduan Baru</a></li>
+                                class="w-4 h-4" /> Buat Pengaduan</a></li>
                     @endauth
                 </ul>
             </div>
@@ -82,7 +82,7 @@
                 @endif
                 <li><a href="/pengaduan/create"
                         class="{{ request()->is('pengaduan/create') ? 'active bg-base-200 text-base-content' : '' }} rounded-lg"><x-icon
-                            name="o-plus-circle" class="w-4 h-4" /> Lapor!</a></li>
+                            name="o-plus-circle" class="w-4 h-4" /> Buat Pengaduan</a></li>
                 @endauth
             </ul>
         </div>
