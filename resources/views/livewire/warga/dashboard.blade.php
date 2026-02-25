@@ -5,7 +5,7 @@
             <p class="mt-1 text-sm text-base-content/70">Pantau laporan pengaduan yang telah Anda buat</p>
         </div>
         <div>
-            <x-button label="Buat Laporan Baru" icon="o-plus" class="shadow-sm btn-primary rounded-xl"
+            <x-button label="Buat Pengaduan Baru" icon="o-plus" class="shadow-sm btn-primary rounded-xl"
                 link="{{ route('pengaduan.create') }}" />
         </div>
     </div>
