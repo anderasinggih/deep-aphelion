@@ -70,11 +70,11 @@ new #[Layout('layouts.auth')] class extends Component
     class="flex flex-col md:flex-row w-full max-w-5xl mx-4 my-8 bg-base-100 rounded-[2rem] overflow-hidden shadow-xl border border-base-200 max-h-[95vh] md:max-h-[90vh]">
 
     <div class="hidden relative md:block md:w-5/12">
-        <img src="https://images.unsplash.com/photo-1519501025264-65ba15a82390?q=80&w=1000&auto=format&fit=crop"
-            alt="Kecamatan Kembaran" class="absolute inset-0 object-cover w-full h-full" />
+        <img src="{{ asset('storage/assets/banner.jpg') }}" alt="Kecamatan Kembaran"
+            class="absolute inset-0 object-cover w-full h-full" />
         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
         <div class="absolute bottom-0 left-0 w-full p-8">
-            <h2 class="mb-2 text-3xl font-bold text-white shadow-black drop-shadow-md">Pendaftaran Warga</h2>
+            <h2 class="mb-2 text-3xl font-bold text-white shadow-black drop-shadow-md">Pendaftaran Pelapor</h2>
             <p class="font-medium text-white/90 drop-shadow-sm">Bergabunglah untuk melaporkan dan memantau aspirasi
                 lingkungan Anda secara transparan.</p>
         </div>
@@ -87,7 +87,7 @@ new #[Layout('layouts.auth')] class extends Component
             <img src="{{ asset('storage/assets/logobanyumas.png') }}" alt="Logo Banyumas"
                 class="block object-contain w-10 h-10" />
             <div class="flex items-center justify-center w-10 h-10 p-1 rounded-xl bg-primary/10 text-primary">
-                <x-icon name="o-megaphone" class="w-6 h-6" />
+                <x-icon name="o-megaphone" class="w-10 h-10" />
             </div>
         </div>
 

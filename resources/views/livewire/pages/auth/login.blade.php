@@ -54,8 +54,8 @@ new #[Layout('layouts.auth')] class extends Component
     class="flex flex-col md:flex-row w-full max-w-4xl mx-4 bg-base-100 rounded-[2rem] overflow-hidden shadow-xl border border-base-200">
 
     <div class="hidden relative md:block md:w-1/2">
-        <img src="https://images.unsplash.com/photo-1519501025264-65ba15a82390?q=80&w=1000&auto=format&fit=crop"
-            alt="Kabupaten Banyumas" class="absolute inset-0 object-cover w-full h-full" />
+        <img src="{{ asset('storage/assets/banner.jpg') }}" alt="Kabupaten Banyumas"
+            class="absolute inset-0 object-cover w-full h-full" />
         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
         <div class="absolute bottom-0 left-0 p-8">
             <h2 class="mb-2 text-3xl font-bold text-white shadow-black drop-shadow-md">Kembaran Ngadu</h2>
@@ -70,7 +70,7 @@ new #[Layout('layouts.auth')] class extends Component
             <img src="{{ asset('storage/assets/logobanyumas.png') }}" alt="Logo Banyumas"
                 class="block object-contain w-12 h-12" />
             <div class="flex items-center justify-center w-12 h-12 p-1 rounded-xl bg-primary/10 text-primary">
-                <x-icon name="o-megaphone" class="w-7 h-7" />
+                <x-icon name="o-megaphone" class="w-10 h-10" />
             </div>
         </div>
 
