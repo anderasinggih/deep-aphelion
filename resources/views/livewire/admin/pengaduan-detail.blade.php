@@ -9,25 +9,23 @@
             </p>
         </div>
 
-        {{-- Tambahkan gap dan w-full sm:w-auto agar responsif --}}
         <div class="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
             <div class="flex items-center">
                 @if($this->pengaduan->status == 'menunggu')
                 <x-badge value="Menunggu"
-                    class="badge-warning badge-md font-bold px-4 py-3  tracking-wider text-xs shadow-sm" />
+                    class="badge-warning badge-md font-bold px-4 py-3 tracking-wider text-xs shadow-sm" />
                 @elseif($this->pengaduan->status == 'diproses')
                 <x-badge value="Diproses"
-                    class="badge-info badge-md font-bold px-4 py-3  tracking-wider text-xs shadow-sm" />
+                    class="badge-info badge-md font-bold px-4 py-3 tracking-wider text-xs shadow-sm" />
                 @elseif($this->pengaduan->status == 'selesai')
                 <x-badge value="Selesai"
-                    class="badge-success badge-md font-bold px-4 py-3  tracking-wider text-xs shadow-sm" />
+                    class="badge-success badge-md font-bold px-4 py-3 tracking-wider text-xs shadow-sm" />
                 @elseif($this->pengaduan->status == 'ditolak')
                 <x-badge value="Ditolak"
-                    class="badge-error badge-md font-bold px-4 py-3  tracking-wider text-xs shadow-sm" />
+                    class="badge-error badge-md font-bold px-4 py-3 tracking-wider text-xs shadow-sm" />
                 @endif
             </div>
 
-            {{-- Tombol Kembali --}}
             <a href="{{ route('admin.pengaduan') }}" wire:navigate
                 class="btn btn-outline border-base-300 shadow-sm rounded-xl hover:bg-base-200 hover:text-base-content transition-all shrink-0">
                 <x-icon name="o-arrow-left" class="w-4 h-4 mr-1" /> Kembali
@@ -38,7 +36,7 @@
     {{-- Main Grid --}}
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
 
-        {{-- Kolom Kiri: Detil Laporan --}}
+        {{-- Kolom Kiri: Detil Laporan & Lampiran --}}
         <div class="lg:col-span-2 space-y-6">
 
             {{-- Card Utama: Info Laporan --}}
@@ -73,9 +71,8 @@
                         <span class="text-xs font-bold uppercase tracking-widest text-base-content/40 block mb-2">Isi
                             Pengaduan</span>
                         <div
-                            class="bg-base-200/30 p-5 rounded-xl border border-base-200 text-sm md:text-base leading-relaxed text-base-content/90 font-medium whitespace-pre-wrap">
-                            {{ $this->pengaduan->deskripsi }}
-                        </div>
+                            class="bg-base-200/30 p-5 rounded-xl border border-base-200 text-sm md:text-base leading-relaxed text-base-content/90 font-medium ">
+                            {{ $this->pengaduan->deskripsi }}</div>
                     </div>
 
                     @if($this->pengaduan->lokasi_kejadian)
@@ -89,17 +86,14 @@
                                     <x-icon name="o-map-pin" class="w-5 h-5 text-error" />
                                 </div>
                                 <div class="truncate">
-                                    <p class="text-sm font-bold text-base-content truncate">
-                                        {{ $this->pengaduan->lokasi_kejadian }}
-                                    </p>
+                                    <p class="text-sm font-bold text-base-content truncate">{{
+                                        $this->pengaduan->lokasi_kejadian }}</p>
                                     @if($this->pengaduan->latitude)
-                                    <p class="text-[10px] font-mono text-base-content/50 truncate mt-0.5">
-                                        {{ $this->pengaduan->latitude }}, {{ $this->pengaduan->longitude }}
-                                    </p>
+                                    <p class="text-[10px] font-mono text-base-content/50 truncate mt-0.5">{{
+                                        $this->pengaduan->latitude }}, {{ $this->pengaduan->longitude }}</p>
                                     @endif
                                 </div>
                             </div>
-
                             @if($this->pengaduan->latitude)
                             <a href="https://www.google.com/maps/search/?api=1&query={{ $this->pengaduan->latitude }},{{ $this->pengaduan->longitude }}"
                                 target="_blank"
@@ -113,9 +107,35 @@
                 </div>
             </div>
 
+            {{-- Card Foto Lampiran (Sekarang di Kolom Kiri) --}}
+            @if($this->pengaduan->foto_bukti)
+            <div class="bg-base-100 rounded-2xl shadow-sm border border-base-200 overflow-hidden">
+                <div class="px-5 py-3 bg-base-200/30 border-b border-base-200 flex items-center justify-between">
+                    <h2
+                        class="font-bold text-base-content/80 uppercase text-xs tracking-widest flex items-center gap-2">
+                        <x-icon name="o-camera" class="w-4 h-4" /> Lampiran Foto Bukti
+                    </h2>
+                </div>
+                <div class="p-6">
+                    <div
+                        class="relative group rounded-2xl overflow-hidden border border-base-200 bg-base-200 shadow-sm aspect-video md:aspect-auto">
+                        <img src="{{ Storage::url($this->pengaduan->foto_bukti) }}" alt="Bukti Lampiran"
+                            class="w-full h-auto min-h-[300px] md:max-h-[600px] object-cover transition duration-500 cursor-zoom-in group-hover:scale-105"
+                            onclick="window.open(this.src, '_blank')">
+                        <div
+                            class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center pointer-events-none backdrop-blur-[1px]">
+                            <x-icon name="o-magnifying-glass-plus" class="w-12 h-12 text-white drop-shadow-lg mb-2" />
+                            <span class="text-white text-xs font-bold uppercase tracking-widest">Klik untuk
+                                memperbesar</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+
         </div>
 
-        {{-- Kolom Kanan: Info Pelapor & Lampiran --}}
+        {{-- Kolom Kanan: Info Pelapor, Petugas & Riwayat --}}
         <div class="space-y-6">
 
             {{-- Card Pelapor --}}
@@ -135,15 +155,12 @@
                             </div>
                         </div>
                         <div class="overflow-hidden">
-                            <p class="font-bold text-base-content text-sm md:text-base leading-tight truncate">
-                                {{ $this->pengaduan->user->name }}
-                            </p>
-                            <p class="text-xs text-base-content/60 truncate mt-0.5 font-medium">
-                                {{ $this->pengaduan->user->email }}
-                            </p>
+                            <p class="font-bold text-base-content text-sm md:text-base leading-tight truncate">{{
+                                $this->pengaduan->user->name }}</p>
+                            <p class="text-xs text-base-content/60 truncate mt-0.5 font-medium">{{
+                                $this->pengaduan->user->email }}</p>
                         </div>
                     </div>
-
                     <div class="bg-base-200/50 rounded-xl p-4 border border-base-200 space-y-3">
                         <div class="flex justify-between items-center text-xs">
                             <span class="font-bold text-base-content/50 uppercase">NIK Pelapor</span>
@@ -157,13 +174,80 @@
                                 $this->pengaduan->user->no_wa ?? '-' }}</span>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    @if($this->pengaduan->is_anonymous)
-                    <div
-                        class="bg-warning/10 border border-warning/20 rounded-xl p-3 flex items-start gap-2 text-warning font-medium text-xs">
-                        <x-icon name="o-eye-slash" class="w-4 h-4 shrink-0 mt-0.5" />
-                        <p>Warga ini meminta mode <strong>Anonim</strong> di publik. Data ini hanya tampil untuk Admin
-                            dan Petugas.</p>
+            {{-- Card Milestone/Timeline --}}
+            <div class="bg-base-100 rounded-2xl shadow-sm border border-base-200 overflow-hidden">
+                <div class="px-5 py-4 bg-base-200/30 border-b border-base-200 flex items-center gap-2">
+                    <x-icon name="o-clock" class="w-4 h-4 text-primary" />
+                    <h2 class="font-bold text-base-content/80 uppercase text-xs tracking-widest">Riwayat Penanganan</h2>
+                </div>
+                <div class="p-5">
+                    @if($this->pengaduan->histories->count() > 0)
+                    <ul class="timeline timeline-vertical timeline-compact">
+                        @foreach($this->pengaduan->histories as $index => $history)
+                        <li>
+                            @if($index !== 0)
+                            <hr class="bg-base-300" /> @endif
+                            @php
+                            $timelineColor = match($history->status_baru) {
+                            'menunggu' => 'text-warning',
+                            'diproses' => 'text-info',
+                            'selesai' => 'text-success',
+                            'ditolak' => 'text-error',
+                            default => 'text-base-300'
+                            };
+                            $isLatest = $index === 0;
+                            @endphp
+                            <div class="timeline-middle">
+                                <x-icon name="{{ $isLatest ? 'o-check-circle' : 'm-stop-circle' }}"
+                                    class="w-5 h-5 {{ $isLatest ? $timelineColor : 'text-base-300' }}" />
+                            </div>
+                            <div
+                                class="timeline-end timeline-box bg-transparent border-none shadow-none pb-6 pl-2 -mt-1 w-full max-w-full">
+                                <div class="flex justify-between items-start mb-1">
+                                    <div class="font-black text-sm uppercase tracking-wide {{ $timelineColor }}">
+                                        {{ $history->status_baru }}
+                                    </div>
+                                    <div class="text-[10px] font-semibold text-base-content/50">
+                                        {{ $history->created_at->diffForHumans() }}
+                                    </div>
+                                </div>
+                                <div class="text-xs text-base-content/70 font-medium">
+                                    {{ $history->created_at->format('d M Y, H:i') }}
+                                </div>
+                                @if($history->keterangan_admin)
+                                <div
+                                    class="mt-2 text-xs bg-base-200/50 border border-base-200 p-3 rounded-lg leading-relaxed font-medium">
+                                    <span
+                                        class="block text-[10px] font-black uppercase text-base-content/40 mb-1">Catatan
+                                        Internal</span>
+                                    {{ $history->keterangan_admin }}
+                                </div>
+                                @endif
+                            </div>
+                            @if(!$loop->last)
+                            <hr class="bg-base-300" /> @endif
+                        </li>
+                        @endforeach
+                        <li>
+                            <hr class="bg-base-300" />
+                            <div class="timeline-middle"><x-icon name="m-stop-circle" class="w-5 h-5 text-base-300" />
+                            </div>
+                            <div
+                                class="timeline-end timeline-box bg-transparent border-none shadow-none pb-2 pl-2 -mt-1 w-full">
+                                <div class="font-black text-sm text-base-content/60 uppercase tracking-wide">Laporan
+                                    Diterima</div>
+                                <div class="text-[10px] font-semibold text-base-content/50 mt-1">{{
+                                    $this->pengaduan->created_at->format('d M Y, H:i') }}</div>
+                            </div>
+                        </li>
+                    </ul>
+                    @else
+                    <div class="text-center py-6 text-base-content/50">
+                        <x-icon name="o-clock" class="w-8 h-8 opacity-20 mx-auto mb-2" />
+                        <p class="text-xs font-semibold">Belum ada riwayat penanganan.</p>
                     </div>
                     @endif
                 </div>
@@ -185,9 +269,8 @@
                             <x-icon name="o-user-circle" class="w-6 h-6" />
                         </div>
                         <div class="overflow-hidden">
-                            <p class="font-bold text-info text-sm leading-tight truncate">
-                                {{ $this->pengaduan->petugas->name }}
-                            </p>
+                            <p class="font-bold text-info text-sm leading-tight truncate">{{
+                                $this->pengaduan->petugas->name }}</p>
                             <p class="text-[10px] text-base-content/50 uppercase tracking-widest font-bold mt-1">
                                 Ditugaskan</p>
                         </div>
@@ -202,50 +285,16 @@
                     @endif
                 </div>
             </div>
-
-            {{-- Card Foto Lampiran --}}
-            @if($this->pengaduan->foto_bukti)
-            <div class="bg-base-100 rounded-2xl shadow-sm border border-base-200 overflow-hidden">
-                <div class="px-5 py-3 bg-base-200/30 border-b border-base-200">
-                    <h2
-                        class="font-bold text-base-content/80 uppercase text-xs tracking-widest flex items-center gap-2">
-                        <x-icon name="o-camera" class="w-4 h-4" /> Foto Keluhan
-                    </h2>
-                </div>
-                <div class="p-4">
-                    <div
-                        class="relative group rounded-xl overflow-hidden shadow-sm border border-base-200 aspect-video md:aspect-[4/3]">
-                        <img src="{{ Storage::url($this->pengaduan->foto_bukti) }}" alt="Bukti Lampiran"
-                            class="w-full h-full object-cover transition duration-500 cursor-zoom-in group-hover:scale-105"
-                            onclick="window.open(this.src, '_blank')">
-                        <div
-                            class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none backdrop-blur-[1px]">
-                            <x-icon name="o-magnifying-glass-plus" class="w-8 h-8 text-white drop-shadow-md" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-            @endif
-
         </div>
-
-
-
-
-
     </div>
 
-    <!-- Modal Disposisi -->
     <x-modal wire:model="disposisiModal" title="Disposisi Laporan Ke Petugas"
         subtitle="Teruskan pengaduan ini agar segera ditindaklanjuti.">
-
         <x-form wire:submit="saveDisposisi">
             <x-select label="Pilih Petugas Lapangan" wire:model="petugas_id" :options="$list_petugas" option-value="id"
                 option-label="name" placeholder="-- Pilih Petugas --" required />
-
             <x-textarea label="Catatan Administratif (Opsional)" wire:model="disposisi_notes"
                 placeholder="Tambahkan instruksi khusus untuk petugas..." rows="3" />
-
             <x-slot:actions>
                 <x-button label="Batal" @click="$wire.disposisiModal = false" class="btn-ghost" />
                 <x-button label="Simpan Disposisi & Proses" type="submit" icon="o-paper-airplane" class="btn-primary"
