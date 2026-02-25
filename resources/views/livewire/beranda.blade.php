@@ -34,20 +34,24 @@
                 Silakan klik tombol di bawah untuk mulai melaporkan masalah maupun aspirasi Anda.
             </p>
 
-            <a href="/pengaduan/create" wire:navigate
-                class="btn border-none text-white shadow-2xl bg-[#0085FF] hover:bg-white hover:text-[#0085FF] hover:-translate-y-1 px-10 md:px-14 py-4 rounded-full font-black text-sm md:text-lg transition-all duration-300">
-                Mulai Pengajuan
-            </a>
+            @auth
+    {{-- Tombol untuk user yang sudah Login --}}
+    <a href="/pengaduan/create" wire:navigate
+        class="btn border-none text-white shadow-2xl bg-[#0085FF] hover:bg-white hover:text-[#0085FF] hover:-translate-y-1 px-10 md:px-14 py-4 rounded-full font-black text-sm md:text-lg transition-all duration-300">
+        Mulai Pengaduan
+    </a>
+@else
+    {{-- Tombol untuk user yang Belum Login (Guest) --}}
+    <a href="/login" wire:navigate
+        class="btn border-none text-white shadow-2xl bg-[#0085FF] hover:bg-white hover:text-[#0085FF] hover:-translate-y-1 px-10 md:px-14 py-4 rounded-full font-black text-sm md:text-lg transition-all duration-300">
+        Mulai Pengaduan
+    </a>
+@endauth
         </div>
     </div>
 
     <div class="w-full px-0.1 py-6 mx-auto lg:px-4">
-        <x-header title="Kembaran Ngadu" subtitle="Layanan Pengaduan Masyarakat Kecamatan Kembaran" size="text-3xl"
-            class="mb-6">
-            <x-slot:actions>
-                <x-button label="Mulai Ngadu" class="btn-primary" link="/pengaduan/create" wire:navigate />
-            </x-slot:actions>
-        </x-header>
+        
 
         @php
         $sortOptions = [
