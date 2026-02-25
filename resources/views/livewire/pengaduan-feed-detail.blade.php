@@ -20,7 +20,7 @@
                     <div>
                         <div class="flex items-center justify-between gap-4 mb-4">
                             <span
-                                class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-base-200 text-primary font-bold text-xs uppercase tracking-wider">
+                                class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-base-200 text-primary font-bold text-xs tracking-wider">
                                 <x-icon name="{{ $this->pengaduan->kategori->icon ?? 'o-tag' }}" class="w-4 h-4" />
                                 {{ $this->pengaduan->kategori->nama }}
                             </span>
@@ -60,11 +60,10 @@
                     <div class="divider opacity-10"></div>
 
                     {{-- Deskripsi Keluhan --}}
-                    <div>
-                        <div
-                            class="text-sm md:text-base leading-relaxed text-base-content/90 font-medium whitespace-pre-wrap">
-                            {{ $this->pengaduan->deskripsi }}
-                        </div>
+                    <div class="text-sm md:text-base leading-relaxed text-base-content/90 font-medium
+                        ">
+                        {{ $this->pengaduan->deskripsi }}
+
                     </div>
 
                     {{-- Lokasi Kejadian --}}
@@ -89,22 +88,35 @@
                     </div>
                     @endif
 
-                    {{-- Foto Lampiran --}}
+                    {{-- Foto Lampiran: Pas dengan kontainer --}}
                     @if($this->pengaduan->foto_bukti)
-                    <div class="mt-6">
-                        <p class="text-[10px] font-black uppercase text-base-content/40 tracking-wider mb-2">Lampiran
-                            Foto</p>
-                        <div class="rounded-xl overflow-hidden border border-base-200 bg-base-200 relative group cursor-zoom-in aspect-video max-w-2xl"
-                            onclick="window.open('{{ Storage::url($this->pengaduan->foto_bukti) }}', '_blank')">
+                    <div class="mt-8">
+                        <span
+                            class="text-[10px] font-black uppercase text-base-content/40 tracking-[0.2em] block mb-3 ml-1">
+                            Lampiran Foto Bukti
+                        </span>
+
+                        {{-- Container Foto: Hapus max-w-2xl biar selebar card --}}
+                        <div
+                            class="relative group rounded-2xl overflow-hidden border border-base-200 bg-base-200 shadow-sm aspect-video md:aspect-auto">
                             <img src="{{ Storage::url($this->pengaduan->foto_bukti) }}" alt="Bukti Lampiran"
-                                class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                                class="w-full h-auto min-h-[300px] md:max-h-[500px] object-cover transition duration-500 cursor-zoom-in group-hover:scale-105"
+                                onclick="window.open(this.src, '_blank')">
+
+                            {{-- Overlay Hover --}}
                             <div
-                                class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                <x-icon name="o-magnifying-glass-plus" class="w-10 h-10 text-white" />
+                                class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center pointer-events-none backdrop-blur-[1px]">
+                                <x-icon name="o-magnifying-glass-plus"
+                                    class="w-12 h-12 text-white drop-shadow-lg mb-2" />
+                                <span class="text-white text-xs font-bold uppercase tracking-widest">Klik untuk
+                                    memperbesar</span>
                             </div>
+
+
                         </div>
                     </div>
                     @endif
+
 
                 </div>
             </div>
