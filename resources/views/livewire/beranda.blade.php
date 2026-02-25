@@ -105,11 +105,11 @@
 
                 <div class="flex flex-col flex-1 p-4 sm:p-5">
                     <div class="flex items-center justify-between mb-3 text-xs font-medium text-base-content/60">
-                        <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-base-200 text-primary">
+                        <span class="flex items-center gap-1.5 px-1.5 py-1 rounded-md bg-base-200 text-primary">
                             <x-icon name="{{ $pengaduan->kategori->icon ?? 'o-tag' }}" class="w-3.5 h-3.5" />
                             {{ $pengaduan->kategori->nama }}
                         </span>
-                        <span class="flex items-center gap-1">
+                        <span class="flex items-center gap-1 ">
                             <x-icon name="o-clock" class="w-3.5 h-3.5" /> {{ $pengaduan->created_at->diffForHumans() }}
                         </span>
                     </div>

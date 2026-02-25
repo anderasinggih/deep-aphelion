@@ -70,7 +70,7 @@
                             name="o-chart-bar" class="w-4 h-4" /> Dashboard</a></li>
                 <li><a href="/admin/pengaduan"
                         class="{{ request()->is('admin/pengaduan') ? 'active bg-base-200 text-base-content' : '' }} rounded-lg"><x-icon
-                            name="o-inbox-stack" class="w-4 h-4" /> Aduan</a></li>
+                            name="o-inbox-stack" class="w-4 h-4" /> Kelola Aduan</a></li>
                 @elseif(auth()->user()->role === 'petugas')
                 <li><a href="/petugas/disposisi"
                         class="{{ request()->is('petugas/disposisi') ? 'active bg-base-200 text-base-content' : '' }} rounded-lg"><x-icon
