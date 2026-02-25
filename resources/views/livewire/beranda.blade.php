@@ -1,10 +1,43 @@
-<div class="w-full px-0.1 py-6 mx-auto lg:px-4">
-    <x-header title="Kembaran Ngadu" subtitle="Layanan Pengaduan Masyarakat Kecamatan Kembaran" size="text-3xl"
-        class="mb-6">
-        <x-slot:actions>
-            <x-button label="Mulai Ngadu" class="btn-primary" link="/pengaduan/create" />
-        </x-slot:actions>
-    </x-header>
+<div class="w-full lg:px-0">
+    {{-- Banner Wrapper: Negative margin -mt-4 atau -mt-6 untuk membuang space kosong --}}
+    <div
+        class="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden mb-0 -mt-5 md:-mt-5 lg:-mt-5">
+        {{-- Background Banner --}} <div class="absolute inset-0 z-0">
+            <img class="absolute inset-0 opacity-40 w-full h-full object-cover"
+                src="{{ asset('storage/assets/banner.jpg') }}">
+        </div>
+
+        {{-- Content Header --}}
+        <div
+            class="relative z-10 flex flex-col items-center justify-center text-center py-16 md:py-24 lg:py-32 px-6 max-w-7xl mx-auto">
+            <img src="{{ asset('storage/assets/logobanyumas.png') }}"
+                class="w-20 md:w-28 lg:w-32 h-auto mb-6 drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]" alt="Logo" />
+
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-black text-white mb-4 tracking-tight drop-shadow-2xl">
+                Selamat Datang
+            </h1>
+
+            <p
+                class="text-sm md:text-lg lg:text-xl text-white/80 mb-10 max-w-2xl leading-relaxed font-medium drop-shadow-md">
+                Layanan Pengaduan Masyarakat Kecamatan Kembaran.<br class="hidden sm:block" />
+                Silakan klik tombol di bawah untuk mulai melaporkan masalah maupun aspirasi Anda.
+            </p>
+
+            <a href="/pengaduan/create" wire:navigate
+                class="btn border-none text-white shadow-2xl bg-[#0085FF] hover:bg-white hover:text-[#0085FF] hover:-translate-y-1 px-10 md:px-14 py-4 rounded-full font-black text-sm md:text-lg transition-all duration-300">
+                Mulai Pengajuan
+            </a>
+        </div>
+    </div>
+
+
+    <div class="w-full px-0.1 py-6 mx-auto lg:px-4">
+
+
+    </div>
+
+
+
 
     @php
     $sortOptions = [

@@ -19,7 +19,7 @@
 <body class="min-h-screen font-sans antialiased bg-base-200">
 
     <!-- Top Navbar -->
-    <div class="navbar bg-base-100 shadow-sm border-b border-base-200 sm:px-8">
+    <div class="navbar bg-white/5 backdrop-blur-lg sticky top-0 z-[100] shadow-md border- sm:px-8 transition-all">
         <div class="navbar-start">
             <div class="dropdown">
                 <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
@@ -126,17 +126,17 @@
                 </ul>
             </div>
             @else
-            <div class="hidden sm:flex gap-2">
-
-                <a href="/register" class="btn btn-primary btn-sm">Daftar</a>
+            <div class=" sm:flex gap-2">
+                <!-- <div class="div"><a href="/register" class="btn btn-primary btn-sm">Daftar</a> </div> -->
+                <div class="div"><a href="/login" class="btn btn-ghost btn-sm">Masuk</a></div>
             </div>
-            <a href="/login" class="btn btn-ghost btn-sm">Masuk</a>
+
             @endauth
         </div>
     </div>
 
     <!-- Main Content Area -->
-    <x-main full-width>
+    <x-main full-width class="pt-4">
         <x-slot:content>
             @isset($header)
             <div
