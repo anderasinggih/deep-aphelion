@@ -229,35 +229,7 @@
 
         </div>
 
-        <x-dropdown label="Ubah Status Laporan" icon="o-chevron-down"
-            class="btn-block bg-base-200/50 border-base-300 rounded-xl font-bold text-sm hover:bg-base-200 transition-colors">
 
-            @if($this->pengaduan->status !== 'menunggu')
-            <x-menu-item title="Set Menunggu" icon="o-clock"
-                wire:click="setStatus({{ $this->pengaduan->id }}, 'menunggu')" />
-            @endif
-
-            @if($this->pengaduan->status !== 'diproses')
-            @if($this->pengaduan->petugas_id)
-            <x-menu-item title="Proses Laporan" icon="o-arrow-path" class="text-info font-bold"
-                wire:click="setStatus({{ $this->pengaduan->id }}, 'diproses')" />
-            @else
-            <x-menu-item title="Proses (Butuh Disposisi)" icon="o-exclamation-circle" class="text-info font-bold"
-                wire:click="openDisposisi({{ $this->pengaduan->id }})" />
-            @endif
-            @endif
-
-            @if($this->pengaduan->status !== 'selesai')
-            <x-menu-item title="Selesaikan Laporan" icon="o-check-badge" class="text-success font-bold"
-                wire:click="setStatus({{ $this->pengaduan->id }}, 'selesai')" />
-            @endif
-
-            @if($this->pengaduan->status !== 'ditolak')
-            <x-menu-item title="Tolak Laporan" icon="o-x-circle" class="text-error font-bold"
-                wire:click="setStatus({{ $this->pengaduan->id }}, 'ditolak')" />
-            @endif
-
-        </x-dropdown>
 
 
 

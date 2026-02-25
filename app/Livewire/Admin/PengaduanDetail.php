@@ -26,16 +26,17 @@ class PengaduanDetail extends Component
         $this->disposisiModal = true;
     }
 
-    public function setStatus($newStatus)
+    public function changeStatus($newStatus)
     {
         // Prevent if 'diproses' but no petugas assigned yet
         if ($newStatus === 'diproses' && !$this->pengaduan->petugas_id) {
             session()->flash('error', 'Pilih petugas untuk disposisi terlebih dahulu sebelum mengubah status menjadi Diproses.');
+            $this->pengaduan->refresh(); // Revert selcet state
             $this->openDisposisi();
             return;
         }
 
-        $oldStatus = $this->pengaduan->status;
+        $oldStatus = $this->pengaduan->getOriginal('status') ?? $this->pengaduan->status;
         $this->pengaduan->status = $newStatus;
         $this->pengaduan->save();
 
