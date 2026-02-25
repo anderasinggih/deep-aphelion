@@ -228,6 +228,64 @@
             @endif
 
         </div>
+        {{-- Panel Kontrol Admin --}}
+        <div class="bg-base-100 rounded-[2rem] shadow-sm border border-base-200 overflow-hidden">
+            <div class="px-6 py-4 bg-base-200/30 border-b border-base-200 flex items-center gap-2">
+                <div class="p-1.5 rounded-lg bg-primary/10 text-primary">
+                    <x-icon name="o-megaphone" class="w-4 h-4" />
+                </div>
+                <h2 class="font-bold text-base-content/80 uppercase text-[10px] tracking-widest">Kontrol Admin</h2>
+            </div>
+
+            <div class="p-6 space-y-5">
+                {{-- Tombol Disposisi Gaya Login --}}
+                <div>
+                    <span class="text-[10px] font-black uppercase text-base-content/40 block mb-2 ml-1">Penugasan</span>
+                    <x-button label="{{ $this->pengaduan->petugas_id ? 'Ubah Petugas' : 'Tunjuk Petugas' }}"
+                        icon="o-user-plus"
+                        class="w-full text-white border-none shadow-sm btn-primary bg-[#0085FF] hover:bg-[#0073e6] rounded-xl font-bold transition-all"
+                        wire:click="openDisposisi({{ $this->pengaduan->id }})" />
+                </div>
+
+                <div class="divider my-0 opacity-10"></div>
+
+                {{-- Dropdown Status --}}
+                <div>
+                    <span class="text-[10px] font-black uppercase text-base-content/40 block mb-2 ml-1">Update
+                        Status</span>
+                    <x-dropdown label="Pilih Status" icon="o-chevron-down"
+                        class="btn-block bg-base-200/50 border-base-300 rounded-xl font-bold text-sm">
+
+                        @if($this->pengaduan->status !== 'menunggu')
+                        <x-menu-item title="Menunggu" icon="o-clock"
+                            wire:click="setStatus({{ $this->pengaduan->id }}, 'menunggu')" />
+                        @endif
+
+                        @if($this->pengaduan->status !== 'diproses')
+                        @if($this->pengaduan->petugas_id)
+                        <x-menu-item title="Diproses" icon="o-arrow-path" class="text-info"
+                            wire:click="setStatus({{ $this->pengaduan->id }}, 'diproses')" />
+                        @else
+                        <x-menu-item title="Diproses (Disposisi)" icon="o-arrow-path" class="text-info"
+                            wire:click="openDisposisi({{ $this->pengaduan->id }})" />
+                        @endif
+                        @endif
+
+                        @if($this->pengaduan->status !== 'selesai')
+                        <x-menu-item title="Selesai" icon="o-check" class="text-success"
+                            wire:click="setStatus({{ $this->pengaduan->id }}, 'selesai')" />
+                        @endif
+
+                        @if($this->pengaduan->status !== 'ditolak')
+                        <x-menu-item title="Tolak" icon="o-x-mark" class="text-error"
+                            wire:click="setStatus({{ $this->pengaduan->id }}, 'ditolak')" />
+                        @endif
+
+                    </x-dropdown>
+                </div>
+            </div>
+        </div>
+
 
     </div>
 </div>
