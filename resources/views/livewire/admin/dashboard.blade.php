@@ -98,19 +98,19 @@
                                 <div class="shrink-0 pt-0.5">
                                     @if($lap->status == 'menunggu')
                                     <div
-                                        class="px-2.5 py-1 text-[10px] font-bold uppercase rounded-full bg-warning/20 text-warning">
+                                        class="w-full py-1.5 px-4 text-xs text-center font-bold rounded-lg bg-warning/20 text-warning transition-colors cursor-default hover:bg-warning/30">
                                         Menunggu</div>
                                     @elseif($lap->status == 'diproses')
                                     <div
-                                        class="px-2.5 py-1 text-[10px] font-bold uppercase rounded-full bg-info/20 text-info">
+                                        class="w-full py-1.5 px-4 text-xs text-center font-bold rounded-lg bg-info/20 text-info transition-colors cursor-default hover:bg-info/30">
                                         Diproses</div>
                                     @elseif($lap->status == 'selesai')
                                     <div
-                                        class="px-2.5 py-1 text-[10px] font-bold uppercase rounded-full bg-success/20 text-success">
+                                        class="w-full py-1.5 px-4 text-xs text-center font-bold rounded-lg bg-success/20 text-success transition-colors cursor-default hover:bg-success/30">
                                         Selesai</div>
                                     @elseif($lap->status == 'ditolak')
                                     <div
-                                        class="px-2.5 py-1 text-[10px] font-bold uppercase rounded-full bg-error/20 text-error">
+                                        class="w-full py-1.5 px-4 text-xs text-center font-bold rounded-lg bg-error/20 text-error transition-colors cursor-default hover:bg-error/30">
                                         Ditolak</div>
                                     @endif
                                 </div>
