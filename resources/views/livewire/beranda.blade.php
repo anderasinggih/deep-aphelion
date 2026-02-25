@@ -1,4 +1,18 @@
 <div class="w-full lg:px-0">
+    <style>
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active {
+            /* Tahan background biar ga berubah putih */
+            transition: background-color 5000s ease-in-out 0s !important;
+
+            /* PAKSA WARNA TEKS JADI PUTIH BERSIH */
+            -webkit-text-fill-color: #ffffff !important;
+            color: #ffffff !important;
+            font-weight: 500 !important;
+        }
+    </style>
 
     {{-- Banner Wrapper: Negative margin -mt-4 atau -mt-6 untuk membuang space kosong --}}
     <div
