@@ -102,24 +102,33 @@
                         </span>
                     </div>
 
-                    <div class="flex items-center gap-1.5">
-                        @if(session()->has('success') && session('id') == $pengaduan->id)
-                        <span class="mr-2 text-[10px] font-semibold animate-pulse text-success">{{
-                            session('success')
-                            }}</span>
-                        @endif
+                    <div class="flex items-center gap-2">
+                        {{-- Notifikasi Sukses Kecil (Posisi Absolute agar tidak menggeser tombol) --}}
+                        <div class="relative">
+                            @if(session()->has('success') && session('id') == $pengaduan->id)
+                            <span
+                                class="absolute right-0 bottom-full mb-1 whitespace-nowrap text-[10px] font-bold animate-bounce text-success">
+                                Berhasil!
+                            </span>
+                            @endif
 
-                        <x-button label="{{ $pengaduan->dukungans_count }}" icon="o-hand-thumb-up"
-                            class="rounded-lg btn-sm btn-ghost text-primary hover:bg-primary hover:text-primary-content transition-all duration-200 hover:scale-105"
-                            tooltip="Dukung Laporan" wire:click="upvote({{ $pengaduan->id }})" />
+                            {{-- Tombol Dukungan --}}
+                            <button wire:click="upvote({{ $pengaduan->id }})"
+                                class="flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all duration-300 group/vote
+                                {{ session()->has('success') && session('id') == $pengaduan->id ? 'bg-primary text-white shadow-md scale-105' : 'bg-primary/10 text-primary hover:bg-primary hover:text-white' }}">
+                                <x-icon name="o-hand-thumb-up" class="w-6 h-6" />
+                                <span class="text-sm font-black">{{ $pengaduan->dukungans_count }}</span>
+                            </button>
+                        </div>
 
+                        {{-- Tombol Share WhatsApp --}}
                         @php
-                        $waText = urlencode("Bantu dukung dan kawal laporan ini di Kembaran Ngadu: *" .
-                        $pengaduan->judul . "*. Klik tautan ini untuk membaca selengkapnya: " . url('/'));
+                        $waText = urlencode("Bantu dukung laporan ini di Kembaran Ngadu: *" . $pengaduan->judul . "*.
+                        Cek di sini: " . url('/'));
                         @endphp
 
                         <a href="https://wa.me/?text={{ $waText }}" target="_blank"
-                            class="flex items-center justify-center w-8 h-8 rounded-lg btn-ghost text-base-content/70 hover:bg-success hover:text-success-content transition-all duration-200 hover:scale-105"
+                            class="flex items-center justify-center w-9 h-9 transition-all duration-200 rounded-xl  text-base-content/70 hover:bg-success hover:text-white hover:rotate-12"
                             title="Bagikan ke WhatsApp">
                             <x-icon name="o-share" class="w-5 h-5" />
                         </a>
