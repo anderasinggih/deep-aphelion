@@ -104,7 +104,8 @@
 
                     <div class="flex items-center gap-1.5">
                         @if(session()->has('success') && session('id') == $pengaduan->id)
-                        <span class="mr-2 text-[10px] font-semibold animate-pulse text-success">{{ session('success')
+                        <span class="mr-2 text-[10px] font-semibold animate-pulse text-success">{{
+                            session('success')
                             }}</span>
                         @endif
 
@@ -156,7 +157,8 @@
                 <x-icon name="o-inbox" class="w-10 h-10 text-base-content/40" />
             </div>
             <h3 class="text-lg font-bold text-base-content/70">Belum ada laporan pengaduan</h3>
-            <p class="max-w-sm mt-2 text-sm text-base-content/50">Jadilah yang pertama melaporkan masalah atau aspirasi
+            <p class="max-w-sm mt-2 text-sm text-base-content/50">Jadilah yang pertama melaporkan masalah atau
+                aspirasi
                 di lingkungan Kecamatan Kembaran.</p>
         </div>
         @endforelse
@@ -165,4 +167,5 @@
     <div class="mt-8">
         {{ $pengaduans->links() }}
     </div>
+</div>
 </div>
