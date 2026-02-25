@@ -37,7 +37,16 @@ new #[Layout('layouts.auth')] class extends Component
 
         Session::regenerate();
 
-        $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+        $user = auth()->user();
+        $defaultUrl = route('dashboard', absolute: false);
+
+        if ($user->role === 'admin') {
+            $defaultUrl = '/admin/dashboard';
+        } elseif ($user->role === 'petugas') {
+            $defaultUrl = '/petugas/disposisi';
+        }
+
+        $this->redirectIntended(default: $defaultUrl, navigate: true);
     }
 }; ?>
 
