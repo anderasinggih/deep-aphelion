@@ -94,7 +94,7 @@
             </div>
 
             <x-slot:actions>
-                <div class="flex items-center justify-end w-full gap-3 pt-6 mt-2 border-t border-base-200">
+                <div class="flex items-center justify-end w-full gap-3">
                     <x-button label="Batal" link="/" class="rounded-xl btn-ghost hover:bg-base-200" />
 
                     <x-button label="Kirim Laporan" type="submit" icon="o-paper-airplane"
