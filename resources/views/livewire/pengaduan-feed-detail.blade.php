@@ -1,10 +1,10 @@
 <div class="px-0 py-2 sm:py-4 mx-auto max-w-7xl sm:px-0 lg:px-8 text-base-content -mx-5 sm:mx-auto">
 
     {{-- Button Kembali --}}
-    <div class="mb-3 px-3 sm:px-0">
+    <div class="mb-3 px-3 sm:px-0 sm:mb-5">
         <a href="{{ route('beranda') }}" wire:navigate
-            class="btn btn-sm btn-ghost hover:bg-base-200 transition-colors -ml-2 sm:ml-0">
-            <x-icon name="o-arrow-left" class="w-4 h-4 mr-1" /> Kembali
+            class="btn btn-sm sm:h-10 sm:min-h-[2.5rem] sm:px-4 sm:text-sm sm:font-bold btn-ghost hover:bg-base-200 transition-colors -ml-2 sm:ml-0">
+            <x-icon name="o-arrow-left" class="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-1.5" /> Kembali
         </a>
     </div>
 
