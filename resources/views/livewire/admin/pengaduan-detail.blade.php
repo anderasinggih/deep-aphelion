@@ -77,30 +77,41 @@
 
                     @if($this->pengaduan->lokasi_kejadian)
                     <div>
-                        <span class="text-xs font-bold uppercase tracking-widest text-base-content/40 block mb-2">Lokasi
-                            Terkait</span>
+                        <span class="block mb-2 text-xs font-bold tracking-widest uppercase text-base-content/40">
+                            Lokasi Terkait
+                        </span>
                         <div
-                            class="flex items-start md:items-center justify-between gap-4 p-4 rounded-xl border border-base-200 bg-base-100 shadow-sm hover:border-primary/30 transition-colors">
-                            <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-10 h-10 rounded-lg bg-error/10 flex items-center justify-center shrink-0">
+                            class="flex flex-col gap-4 p-4 transition-colors border shadow-sm sm:flex-row sm:items-center sm:justify-between rounded-xl border-base-200 bg-base-100 hover:border-primary/30">
+
+                            {{-- Info Lokasi (min-w-0 penting biar teks mau menyusut dan kepotong rapi) --}}
+                            <div class="flex items-start flex-1 gap-3 min-w-0">
+                                <div class="flex items-center justify-center w-10 h-10 rounded-lg shrink-0 bg-error/10">
                                     <x-icon name="o-map-pin" class="w-5 h-5 text-error" />
                                 </div>
-                                <div class="truncate">
-                                    <p class="text-sm font-bold text-base-content truncate">{{
-                                        $this->pengaduan->lokasi_kejadian }}</p>
+                                <div class="flex flex-col min-w-0 pt-0.5 w-full">
+
+                                    {{-- Pakai truncate agar mentok 1 baris langsung titik-titik --}}
+                                    <p class="text-sm font-bold leading-tight truncate text-base-content">
+                                        {{ $this->pengaduan->lokasi_kejadian }}
+                                    </p>
+
                                     @if($this->pengaduan->latitude)
-                                    <p class="text-[10px] font-mono text-base-content/50 truncate mt-0.5">{{
-                                        $this->pengaduan->latitude }}, {{ $this->pengaduan->longitude }}</p>
+                                    <p class="text-[10px] font-mono text-base-content/50 truncate mt-1">
+                                        {{ $this->pengaduan->latitude }}, {{ $this->pengaduan->longitude }}
+                                    </p>
                                     @endif
                                 </div>
                             </div>
+
+                            {{-- Tombol Buka Peta (Otomatis pindah ke bawah kalau di HP) --}}
                             @if($this->pengaduan->latitude)
                             <a href="https://www.google.com/maps/search/?api=1&query={{ $this->pengaduan->latitude }},{{ $this->pengaduan->longitude }}"
                                 target="_blank"
-                                class="btn btn-sm btn-ghost hover:bg-error/10 hover:text-error shrink-0">
+                                class="w-full sm:w-auto shrink-0 btn btn-sm btn-ghost bg-base-200/50 sm:bg-transparent hover:bg-error/10 hover:text-error text-xs sm:text-sm mt-2 sm:mt-0">
                                 <x-icon name="o-globe-asia-australia" class="w-4 h-4" /> Buka Peta
                             </a>
                             @endif
+
                         </div>
                     </div>
                     @endif
