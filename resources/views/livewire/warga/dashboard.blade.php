@@ -16,94 +16,93 @@
     </x-alert>
     @endif
 
-    <div class="border shadow-sm bg-base-100 rounded-2xl border-base-200">
+    <div class="overflow-hidden border shadow-sm bg-base-100 pb-4 rounded-2xl border-base-200">
         <div class="overflow-x-auto">
-            <table class="table w-full">
-                <!-- head -->
+            {{-- Pakai table-xs untuk padding super tipis di mobile --}}
+            <table class="table w-full table-xs sm:table-sm md:table-md">
                 <thead class="bg-base-200/50 text-base-content/60">
                     <tr>
-                        <th class="rounded-tl-lg">Tanggal</th>
-                        <th>Kategori</th>
-                        <th>Judul Laporan</th>
-                        <th>Status</th>
-                        <th class="text-right rounded-tr-lg">Aksi</th>
+                        <th class="py-3 px-3">Laporan</th>
+                        <th class="hidden sm:table-cell">Kategori</th>
+                        <th class="hidden md:table-cell">Tanggal</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-right px-3">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-base-200">
                     @forelse($pengaduans as $pengaduan)
-                    @php /** @var \App\Models\Pengaduan $pengaduan */ @endphp
                     <tr class="transition-colors hover:bg-base-200/30">
-                        <td class="text-sm whitespace-nowrap text-base-content/80">{{ $pengaduan->created_at->format('d
-                            M Y') }}</td>
-                        <td class="text-sm text-base-content/80">
-                            <span class="flex items-center gap-1">
+                        {{-- Info Utama (Mobile: Muncul Judul + Sub-info) --}}
+                        <td class="py-2 px-3">
+                            <div class="flex flex-col">
+                                <span class="text-[13px] font-bold leading-tight text-base-content line-clamp-1">
+                                    {{ $pengaduan->judul }}
+                                </span>
+                                <div
+                                    class="flex items-center gap-1.5 mt-0.5 text-[10px] sm:hidden text-base-content/50 italic">
+                                    <span>{{ $pengaduan->created_at->format('d/m/y') }}</span>
+                                    <span>•</span>
+                                    <span class="truncate max-w-[70px]">{{ $pengaduan->kategori->nama }}</span>
+                                </div>
+                            </div>
+                        </td>
 
-                                {{ $pengaduan->kategori->nama }}
+                        {{-- Kategori (Desktop Only) --}}
+                        <td class="hidden sm:table-cell text-[12px] text-base-content/70">
+                            {{ $pengaduan->kategori->nama }}
+                        </td>
+
+                        {{-- Tanggal (Desktop Only) --}}
+                        <td class="hidden md:table-cell text-[12px] whitespace-nowrap text-base-content/70">
+                            {{ $pengaduan->created_at->format('d M Y') }}
+                        </td>
+
+                        {{-- Status (Dikecilkan ukurannya) --}}
+                        <td class="text-center py-2">
+                            @php
+                            $statusMap = [
+                            'menunggu' => ['label' => 'Menunggu', 'class' => 'badge-warning'],
+                            'diproses' => ['label' => 'Proses', 'class' => 'badge-info'],
+                            'selesai' => ['label' => 'Selesai', 'class' => 'badge-success'],
+                            'ditolak' => ['label' => 'Ditolak', 'class' => 'badge-error'],
+                            ];
+                            $curr = $statusMap[$pengaduan->status] ?? ['label' => $pengaduan->status, 'class' => ''];
+                            @endphp
+                            <span class="badge {{ $curr['class'] }} badge-outline font-bold text-[13px]  px-1.5 h-4">
+                                {{ $curr['label'] }}
                             </span>
                         </td>
-                        <td>
-                            <div class="text-sm font-bold leading-tight line-clamp-1 text-base-content">{{
-                                $pengaduan->judul }}</div>
-                        </td>
-                        <td>
 
-                            @if($pengaduan->status == 'menunggu')
-
-                            <x-badge value="Menunggu" class="badge-warning badge-sm" />
-
-                            @elseif($pengaduan->status == 'diproses')
-
-                            <x-badge value="Diproses" class="badge-info badge-sm" />
-
-                            @elseif($pengaduan->status == 'selesai')
-
-                            <x-badge value="Selesai" class="badge-success badge-sm" />
-
-                            @elseif($pengaduan->status == 'ditolak')
-
-                            <x-badge value="Ditolak" class="badge-error badge-sm" />
-
-                            @endif
-
-                        </td>
-                        <td class="text-right">
-                            <div class="flex items-center justify-end gap-2">
-                                <x-button icon="o-eye"
-                                    class="rounded-lg btn-sm btn-ghost text-primary hover:bg-primary/10"
-                                    tooltip="Lihat Detail Riwayat"
+                        {{-- Aksi (Icon saja di mobile) --}}
+                        <td class="text-right py-2 px-3">
+                            <div class="flex items-center justify-end gap-0.5 sm:gap-1">
+                                <x-button icon="o-eye" class="btn-ghost btn-xs text-primary hover:bg-primary/10"
                                     link="{{ route('pengaduan.feed-detail', $pengaduan->id) }}" />
 
                                 @if($pengaduan->status === 'menunggu')
                                 <x-button icon="o-pencil-square"
-                                    class="rounded-lg btn-sm btn-ghost text-warning hover:bg-warning/10"
-                                    tooltip="Edit Laporan" link="{{ route('pengaduan.edit', $pengaduan->id) }}" />
+                                    class="btn-ghost btn-xs text-warning hover:bg-warning/10"
+                                    link="{{ route('pengaduan.edit', $pengaduan->id) }}" />
 
-                                <x-button icon="o-trash"
-                                    class="rounded-lg btn-sm btn-ghost text-error hover:bg-error/10"
-                                    tooltip="Hapus Laporan" wire:click="deletePengaduan({{ $pengaduan->id }})"
-                                    wire:confirm="Yakin ingin menghapus laporan ini? Data yang sudah dihapus tidak bisa dikembalikan." />
+                                <x-button icon="o-trash" class="btn-ghost btn-xs text-error hover:bg-error/10"
+                                    wire:click="deletePengaduan({{ $pengaduan->id }})"
+                                    wire:confirm="Hapus laporan ini?" />
                                 @endif
                             </div>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="py-12 text-center border-b border-base-200 text-base-content/50">
-                            <div class="flex flex-col items-center justify-center">
-                                <div class="p-3 mb-3 rounded-full bg-base-200">
-                                    <x-icon name="o-folder-open" class="w-8 h-8 opacity-50 text-base-content/50" />
-                                </div>
-                                <span class="text-sm font-medium">Belum ada laporan yang Anda buat.</span>
-                            </div>
+                        <td colspan="5" class="py-10 text-center text-base-content/50">
+                            <span class="text-xs italic">Belum ada laporan.</span>
                         </td>
                     </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-
-        <div class="p-4 border-t border-base-200">
-            {{ $pengaduans->links() }}
-        </div>
     </div>
-</div>
+
+    <div class="p-4 border-t border-base-200">
+        {{ $pengaduans->links() }}
+    </div>
