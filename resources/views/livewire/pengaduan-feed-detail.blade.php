@@ -263,4 +263,9 @@
 
         </div>
     </div>
+
+    {{-- Footer --}}
+    <div class="relative w-[100vw] left-1/2 -ml-[50vw] mt-16">
+        <x-footer />
+    </div>
 </div>
