@@ -2,31 +2,23 @@
     <div class="px-0.1 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <div class="flex flex-col gap-4 mb-8 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="text-3xl font-black tracking-tight text-primary">Dashboard Warga</h1>
-                <p class="mt-1 text-sm text-base-content/70">Pantau laporan pengaduan yang telah Anda buat</p>
-            </div>
-            <div>
-                <x-button label="Buat Pengaduan" icon="o-plus" class="shadow-sm btn-primary rounded-xl"
-                    link="{{ route('pengaduan.create') }}" />
+                <h1 class="text-3xl font-black tracking-tight text-primary">Pengaturan Profil</h1>
+                <p class="mt-1 text-sm text-base-content/70">Perbarui informasi profil dan kata sandi akun Anda.</p>
             </div>
         </div>
 
-
-        <div class="">
-            <div class="max-w-7xl mx-auto sm:px-0.1 lg:px-8 space-y-6">
-                <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                    <div class="max-w-xl">
-                        <livewire:profile.update-profile-information-form />
-                    </div>
+        <div class="space-y-6">
+            <x-card class="border shadow-sm bg-base-100 rounded-2xl border-base-200">
+                <div class="max-w-xl">
+                    <livewire:profile.update-profile-information-form />
                 </div>
+            </x-card>
 
-                <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                    <div class="max-w-xl">
-                        <livewire:profile.update-password-form />
-                    </div>
+            <x-card class="border shadow-sm bg-base-100 rounded-2xl border-base-200">
+                <div class="max-w-xl">
+                    <livewire:profile.update-password-form />
                 </div>
-
-            </div>
+            </x-card>
         </div>
     </div>
 </x-app-layout>
