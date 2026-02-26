@@ -120,7 +120,7 @@ new class extends Component
         <x-slot:actions>
             <div class="flex items-center gap-4">
                 <x-button label="Simpan" type="submit"
-                    class="text-white border-none shadow-sm rounded-xl btn-primary bg-primary hover:bg-primary/90"
+                    class="text-white border-none shadow-sm p-4 rounded-xl btn-primary bg-primary hover:bg-primary/90"
                     spinner="updateProfileInformation" />
 
                 <x-action-message class="me-3" on="profile-updated">
