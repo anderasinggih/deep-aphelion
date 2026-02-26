@@ -99,7 +99,7 @@
                     <div
                         class="bg-base-200/50 p-3 sm:p-4 rounded-lg sm:rounded-xl border border-base-200 flex items-start gap-2.5 sm:gap-3">
                         <div class="p-1.5 sm:p-2 bg-error/10 rounded-md sm:rounded-lg text-error shrink-0">
-                            <x-icon name="o-map-pin" class="w-4 h-4 sm:w-5 sm:h-5" />
+                            <x-icon name="o-map-pin" class="w-4 h-4 sm:w-5 sm:h-5 mt-0.5" />
                         </div>
 
                         <div class="flex-1 min-w-0">
@@ -108,7 +108,7 @@
                                 Lokasi Terkait
                             </p>
 
-                            <p class="text-[13px] sm:text-sm font-bold text-base-content leading-tight sm:truncate">
+                            <p class="text-[13px] sm:text-sm font-bold text-base-content leading-tight line-clamp-2">
                                 {{ $this->pengaduan->lokasi_kejadian }}
                             </p>
 
