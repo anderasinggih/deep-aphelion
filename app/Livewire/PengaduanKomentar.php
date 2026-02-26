@@ -23,7 +23,7 @@ class PengaduanKomentar extends Component
 
     #[Computed]
     public function komentars() {
-        return KomentarModel::with(['user', 'replies.user'])
+        return KomentarModel::query()->with(['user', 'replies.user'])
             ->where('pengaduan_id', $this->pengaduan_id)
             ->whereNull('parent_id')
             ->latest()
@@ -33,7 +33,7 @@ class PengaduanKomentar extends Component
 
     #[Computed]
     public function totalComments() {
-        return KomentarModel::where('pengaduan_id', $this->pengaduan_id)->whereNull('parent_id')->count();
+        return KomentarModel::query()->where('pengaduan_id', $this->pengaduan_id)->whereNull('parent_id')->count();
     }
 
     public function postComment() {

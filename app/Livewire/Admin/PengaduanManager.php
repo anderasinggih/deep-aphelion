@@ -22,10 +22,11 @@ class PengaduanManager extends Component
     public $petugas_id = '';
     public $disposisi_notes = '';
 
-    // Selesai Modal State
-    public $selesaiModal = false;
-    public $foto_bukti_selesai;
-    public $keterangan_selesai = '';
+    // Update Status Modal State
+    public $updateModal = false;
+    public $update_status = '';
+    public $update_foto;
+    public $update_keterangan = '';
 
     public function openDisposisi($id)
     {
@@ -35,31 +36,7 @@ class PengaduanManager extends Component
         $this->disposisiModal = true;
     }
 
-    public function setStatus($id, $newStatus)
-    {
-        $pengaduan = Pengaduan::findOrFail($id);
 
-        // Prevent if 'diproses' but no petugas assigned yet
-        if ($newStatus === 'diproses' && !$pengaduan->petugas_id) {
-            session()->flash('error', 'Pilih petugas untuk disposisi terlebih dahulu sebelum mengubah status menjadi Diproses.');
-            $this->openDisposisi($id);
-            return;
-        }
-
-        $oldStatus = $pengaduan->status;
-        $pengaduan->status = $newStatus;
-        $pengaduan->save();
-
-        PengaduanHistory::create([
-            'pengaduan_id' => $pengaduan->id,
-            'user_id' => auth()->id(),
-            'status_sebelumnya' => $oldStatus,
-            'status_baru' => $newStatus,
-            'keterangan_admin' => "Status diubah menjadi: " . strtoupper($newStatus),
-        ]);
-
-        session()->flash('success', "Status laporan berhasil diubah menjadi {$newStatus}.");
-    }
 
     public function saveDisposisi()
     {
@@ -91,38 +68,60 @@ class PengaduanManager extends Component
         session()->flash('success', 'Disposisi berhasil disimpan dan laporan diproses.');
     }
 
-    public function openSelesaiModal($id)
+    public function openUpdateStatusModal($id, $newStatus)
     {
+        $pengaduan = Pengaduan::find($id);
+        if ($newStatus === 'diproses' && !$pengaduan->petugas_id) {
+            session()->flash('error', 'Pilih petugas untuk disposisi terlebih dahulu sebelum mengubah status menjadi Diproses.');
+            $this->openDisposisi($id);
+            return;
+        }
+
         $this->selectedPengaduanId = $id;
-        $this->selesaiModal = true;
+        $this->update_status = $newStatus;
+        $this->updateModal = true;
     }
 
-    public function markSelesai()
+    public function saveStatusUpdate()
     {
-        $this->validate([
-            'foto_bukti_selesai' => 'required|image|max:5120',
-            'keterangan_selesai' => 'required|string|min:10',
-            'selectedPengaduanId' => 'required|exists:pengaduans,id'
-        ]);
+        $rules = [
+            'selectedPengaduanId' => 'required|exists:pengaduans,id',
+            'update_status' => 'required|in:menunggu,diproses,selesai,ditolak',
+            'update_keterangan' => 'nullable|string',
+            'update_foto' => 'nullable|image|max:5120',
+        ];
+
+        if ($this->update_status === 'selesai' || $this->update_status === 'ditolak') {
+            $rules['update_keterangan'] = 'required|string|min:5';
+        }
+        if ($this->update_status === 'selesai') {
+            $rules['update_foto'] = 'required|image|max:5120';
+        }
+
+        $this->validate($rules);
 
         $pengaduan = Pengaduan::findOrFail($this->selectedPengaduanId);
-        $path = $this->foto_bukti_selesai->store('bukti_selesai', 'public');
+        $path = null;
+
+        if ($this->update_foto) {
+            $path = $this->update_foto->store('bukti_selesai', 'public');
+        }
 
         $oldStatus = $pengaduan->status;
-        $pengaduan->status = 'selesai';
+        $pengaduan->status = $this->update_status;
         $pengaduan->save();
 
         PengaduanHistory::create([
             'pengaduan_id' => $pengaduan->id,
             'user_id' => auth()->id(),
             'status_sebelumnya' => $oldStatus,
-            'status_baru' => 'selesai',
-            'keterangan_admin' => $this->keterangan_selesai,
+            'status_baru' => $this->update_status,
+            'keterangan_admin' => $this->update_keterangan,
             'foto_bukti' => $path,
         ]);
 
-        $this->reset('selesaiModal', 'foto_bukti_selesai', 'keterangan_selesai', 'selectedPengaduanId');
-        session()->flash('success', 'Laporan berhasil diselesaikan beserta bukti foto terlampir.');
+        $this->reset('updateModal', 'update_status', 'update_foto', 'update_keterangan', 'selectedPengaduanId');
+        session()->flash('success', 'Status laporan berhasil diperbarui.');
     }
 
     public function render()

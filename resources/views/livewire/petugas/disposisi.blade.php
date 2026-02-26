@@ -110,11 +110,11 @@
                             @if($pengaduan->status == 'menunggu')
                             <x-button label="Mulai Proses" icon="o-play"
                                 class="btn-xs sm:btn-sm btn-info text-white rounded-xl shadow-sm"
-                                wire:click="processReport({{ $pengaduan->id }})" />
+                                wire:click="openUpdateStatusModal({{ $pengaduan->id }}, 'diproses')" />
                             @elseif($pengaduan->status == 'diproses')
                             <x-button label="Selesaikan" icon="o-check-badge"
                                 class="btn-xs sm:btn-sm btn-success text-white rounded-xl shadow-sm"
-                                wire:click="openSelesaiModal({{ $pengaduan->id }})" />
+                                wire:click="openUpdateStatusModal({{ $pengaduan->id }}, 'selesai')" />
                             @elseif($pengaduan->status == 'selesai')
                             <x-button label="Ditutup" icon="o-lock-closed"
                                 class="btn-xs sm:btn-sm btn-disabled rounded-xl" />
@@ -138,29 +138,27 @@
         </div>
     </div>
 
-    <!-- Modal Bukti Selesai (After Photo) -->
-    <x-modal wire:model="selesaiModal" title="Selesaikan Tindak Lanjut Laporan"
-        subtitle="Unggah foto 'After' penyelesaian sebagai bukti transparan untuk Warga.">
-        <x-form wire:submit="markSelesai">
-
-            <x-file label="Foto Bukti Penyelesaian (After / Selesai)" wire:model="foto_bukti_selesai" accept="image/*"
-                required hint="Wajib menyertakan foto hasil pekerjaan lapangan." />
-
-            @if ($foto_bukti_selesai)
+    <!-- Modal Update Status -->
+    <x-modal wire:model="updateModal" title="Perbarui Status Laporan"
+        subtitle="Tambahkan catatan dan foto dokumentasi (opsional) untuk update ini.">
+        <x-form wire:submit="saveStatusUpdate">
+            <x-file label="Foto Dokumentasi (Opsional)" wire:model="update_foto" accept="image/*"
+                :required="$update_status === 'selesai'"
+                :hint="$update_status === 'selesai' ? 'Wajib menyertakan foto hasil pekerjaan untuk status Selesai.' : 'Lampirkan foto pendukung bila ada.'" />
+            @if ($update_foto)
             <div class="mt-2 text-center border border-dashed rounded-lg p-2 bg-base-100">
                 <span class="text-sm font-semibold text-gray-500 block">Preview Foto:</span>
-                <img src="{{ $foto_bukti_selesai->temporaryUrl() }}"
+                <img src="{{ $update_foto->temporaryUrl() }}"
                     class="rounded shadow w-48 mx-auto mt-1 border border-base-300">
             </div>
             @endif
-
-            <x-textarea label="Jelaskan Tindak Lanjut" wire:model="keterangan_selesai"
-                placeholder="Catat detail apa yang telah diperbaiki..." rows="3" required minlength="10" />
-
+            <x-textarea label="Catatan / Tindak Lanjut" wire:model="update_keterangan"
+                placeholder="Catat detail aktivitas / alasan perubahan status..." rows="3"
+                :required="$update_status === 'selesai'" />
             <x-slot:actions>
-                <x-button label="Batal" @click="$wire.selesaiModal = false" class="btn-ghost" />
-                <x-button label="Submit Bukti Selesai" type="submit" icon="o-check-circle"
-                    class="btn-success text-white" spinner="markSelesai" />
+                <x-button label="Batal" @click="$wire.updateModal = false" class="btn-ghost" />
+                <x-button label="Simpan Pembaruan" type="submit" icon="o-check-circle" class="btn-primary text-white"
+                    spinner="saveStatusUpdate" />
             </x-slot:actions>
         </x-form>
     </x-modal>

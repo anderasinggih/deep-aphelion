@@ -152,13 +152,13 @@
 
                                 @if($pengaduan->status !== 'menunggu')
                                 <x-menu-item title="Set Menunggu" icon="o-clock"
-                                    wire:click="setStatus({{ $pengaduan->id }}, 'menunggu')" />
+                                    wire:click="openUpdateStatusModal({{ $pengaduan->id }}, 'menunggu')" />
                                 @endif
 
                                 @if($pengaduan->status !== 'diproses')
                                 @if($pengaduan->petugas_id)
                                 <x-menu-item title="Set Diproses" icon="o-arrow-path"
-                                    wire:click="setStatus({{ $pengaduan->id }}, 'diproses')" />
+                                    wire:click="openUpdateStatusModal({{ $pengaduan->id }}, 'diproses')" />
                                 @else
                                 <x-menu-item title="Proses (Dispo)" icon="o-arrow-path" class="font-bold text-info"
                                     wire:click="openDisposisi({{ $pengaduan->id }})" />
@@ -167,12 +167,12 @@
 
                                 @if($pengaduan->status !== 'selesai')
                                 <x-menu-item title="Selesaikan" icon="o-check-circle" class="font-bold text-success"
-                                    wire:click="openSelesaiModal({{ $pengaduan->id }})" />
+                                    wire:click="openUpdateStatusModal({{ $pengaduan->id }}, 'selesai')" />
                                 @endif
 
                                 @if($pengaduan->status !== 'ditolak')
                                 <x-menu-item title="Tolak Laporan" icon="o-x-circle" class="font-bold text-error"
-                                    wire:click="setStatus({{ $pengaduan->id }}, 'ditolak')" />
+                                    wire:click="openUpdateStatusModal({{ $pengaduan->id }}, 'ditolak')" />
                                 @endif
 
                                 <div class="my-1 opacity-50 divider"><span class="text-[10px] font-bold">TUGAS</span>
@@ -216,29 +216,31 @@
         </x-form>
     </x-modal>
 
-    <!-- Modal Bukti Selesai (After Photo) -->
-    <x-modal wire:model="selesaiModal" title="Selesaikan Tindak Lanjut Laporan"
-        subtitle="Unggah foto 'After' penyelesaian sebagai bukti transparan untuk Warga.">
-        <x-form wire:submit="markSelesai">
+    <!-- Modal Update Status -->
+    <x-modal wire:model="updateModal" title="Perbarui Status Laporan"
+        subtitle="Tambahkan catatan dan foto dokumentasi (opsional) untuk update ini.">
+        <x-form wire:submit="saveStatusUpdate">
 
-            <x-file label="Foto Bukti Penyelesaian (After / Selesai)" wire:model="foto_bukti_selesai" accept="image/*"
-                required hint="Wajib menyertakan foto hasil pekerjaan lapangan." />
+            <x-file label="Foto Dokumentasi (Opsional)" wire:model="update_foto" accept="image/*"
+                :required="$update_status === 'selesai'"
+                :hint="$update_status === 'selesai' ? 'Wajib menyertakan foto hasil pekerjaan untuk status Selesai.' : 'Lampirkan foto pendukung bila ada.'" />
 
-            @if ($foto_bukti_selesai)
+            @if ($update_foto)
             <div class="mt-2 text-center border border-dashed rounded-lg p-2 bg-base-100">
                 <span class="text-sm font-semibold text-gray-500 block">Preview Foto:</span>
-                <img src="{{ $foto_bukti_selesai->temporaryUrl() }}"
+                <img src="{{ $update_foto->temporaryUrl() }}"
                     class="rounded shadow w-48 mx-auto mt-1 border border-base-300">
             </div>
             @endif
 
-            <x-textarea label="Jelaskan Tindak Lanjut" wire:model="keterangan_selesai"
-                placeholder="Catat detail apa yang telah diperbaiki..." rows="3" required minlength="10" />
+            <x-textarea label="Catatan / Tindak Lanjut" wire:model="update_keterangan"
+                placeholder="Catat detail aktivitas / alasan perubahan status..." rows="3"
+                :required="in_array($update_status, ['selesai', 'ditolak'])" />
 
             <x-slot:actions>
-                <x-button label="Batal" @click="$wire.selesaiModal = false" class="btn-ghost" />
-                <x-button label="Submit Bukti Selesai" type="submit" icon="o-check-circle"
-                    class="btn-success text-white" spinner="markSelesai" />
+                <x-button label="Batal" @click="$wire.updateModal = false" class="btn-ghost" />
+                <x-button label="Simpan Pembaruan" type="submit" icon="o-check-circle" class="btn-primary text-white"
+                    spinner="saveStatusUpdate" />
             </x-slot:actions>
         </x-form>
     </x-modal>

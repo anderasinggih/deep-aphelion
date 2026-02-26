@@ -18,9 +18,10 @@ class PengaduanDetail extends Component
     public $petugas_id = '';
     public $disposisi_notes = '';
 
-    public $selesaiModal = false;
-    public $foto_bukti_selesai;
-    public $keterangan_selesai = '';
+    public $updateModal = false;
+    public $update_status = '';
+    public $update_foto;
+    public $update_keterangan = '';
 
     public function mount($id)
     {
@@ -33,13 +34,8 @@ class PengaduanDetail extends Component
         $this->disposisiModal = true;
     }
 
-    public function changeStatus($newStatus)
+    public function openUpdateStatusModal($newStatus)
     {
-        if ($newStatus === 'selesai') {
-            $this->selesaiModal = true;
-            return;
-        }
-        // Prevent if 'diproses' but no petugas assigned yet
         if ($newStatus === 'diproses' && !$this->pengaduan->petugas_id) {
             session()->flash('error', 'Pilih petugas untuk disposisi terlebih dahulu sebelum mengubah status menjadi Diproses.');
             $this->pengaduan->refresh(); // Revert selcet state
@@ -47,20 +43,8 @@ class PengaduanDetail extends Component
             return;
         }
 
-        $oldStatus = $this->pengaduan->getOriginal('status') ?? $this->pengaduan->status;
-        $this->pengaduan->status = $newStatus;
-        $this->pengaduan->save();
-
-        PengaduanHistory::create([
-            'pengaduan_id' => $this->pengaduan->id,
-            'user_id' => auth()->id(),
-            'status_sebelumnya' => $oldStatus,
-            'status_baru' => $newStatus,
-            'keterangan_admin' => "Status diubah menjadi: " . strtoupper($newStatus),
-        ]);
-
-        session()->flash('success', "Status laporan berhasil diubah menjadi {$newStatus}.");
-        $this->pengaduan->refresh();
+        $this->update_status = $newStatus;
+        $this->updateModal = true;
     }
 
     public function saveDisposisi()
@@ -93,30 +77,43 @@ class PengaduanDetail extends Component
         $this->pengaduan->refresh();
     }
 
-    public function markSelesai()
+    public function saveStatusUpdate()
     {
-        $this->validate([
-            'foto_bukti_selesai' => 'required|image|max:5120',
-            'keterangan_selesai' => 'required|string|min:10',
-        ]);
+        $rules = [
+            'update_status' => 'required|in:menunggu,diproses,selesai,ditolak',
+            'update_keterangan' => 'nullable|string',
+            'update_foto' => 'nullable|image|max:5120',
+        ];
 
-        $path = $this->foto_bukti_selesai->store('bukti_selesai', 'public');
+        if ($this->update_status === 'selesai' || $this->update_status === 'ditolak') {
+            $rules['update_keterangan'] = 'required|string|min:5';
+        }
+        if ($this->update_status === 'selesai') {
+            $rules['update_foto'] = 'required|image|max:5120';
+        }
+
+        $this->validate($rules);
+
+        $path = null;
+        if ($this->update_foto) {
+            $path = $this->update_foto->store('bukti_selesai', 'public');
+        }
+
         $oldStatus = $this->pengaduan->getOriginal('status') ?? $this->pengaduan->status;
-
-        $this->pengaduan->status = 'selesai';
+        $this->pengaduan->status = $this->update_status;
         $this->pengaduan->save();
 
         PengaduanHistory::create([
             'pengaduan_id' => $this->pengaduan->id,
             'user_id' => auth()->id(),
             'status_sebelumnya' => $oldStatus,
-            'status_baru' => 'selesai',
-            'keterangan_admin' => $this->keterangan_selesai,
+            'status_baru' => $this->update_status,
+            'keterangan_admin' => $this->update_keterangan,
             'foto_bukti' => $path,
         ]);
 
-        $this->reset('selesaiModal', 'foto_bukti_selesai', 'keterangan_selesai');
-        session()->flash('success', 'Laporan berhasil diselesaikan beserta bukti foto terlampir.');
+        $this->reset('updateModal', 'update_status', 'update_foto', 'update_keterangan');
+        session()->flash('success', 'Status laporan berhasil diperbarui.');
         $this->pengaduan->refresh();
     }
 

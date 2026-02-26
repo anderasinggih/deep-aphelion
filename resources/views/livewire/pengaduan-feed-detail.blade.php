@@ -185,33 +185,57 @@
                                     </div>
                                 </div>
 
-                                <div class="text-xs text-base-content/70 font-medium">
+                                <div class="text-xs text-base-content/70 font-medium mb-3">
                                     {{ $history->created_at->format('d M Y, H:i') }}
                                 </div>
 
-                                @if($history->keterangan_admin)
-                                <div
-                                    class="mt-2 text-xs bg-base-200/50 border border-base-200 p-3 rounded-lg leading-relaxed font-medium">
-                                    <span
-                                        class="block text-[10px] font-black uppercase text-base-content/40 mb-1">Catatan
-                                        Admin</span>
-                                    {{ $history->keterangan_admin }}
+                                {{-- User Profil Updater --}}
+                                @if($history->user)
+                                <div class="flex items-center gap-2 mb-2">
+                                    <div class="avatar placeholder">
+                                        <div
+                                            class="bg-base-300 text-base-content rounded-full w-6 h-6 border border-base-200">
+                                            <span class="text-[10px] font-bold">{{
+                                                strtoupper(substr($history->user->name, 0, 1)) }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col leading-tight">
+                                        <span class="text-[11px] font-bold text-base-content">{{ $history->user->name
+                                            }}</span>
+                                        <span
+                                            class="text-[9px] font-semibold text-base-content/50 uppercase tracking-wider">{{
+                                            $history->user->role }}</span>
+                                    </div>
                                 </div>
                                 @endif
 
-                                @if($history->foto_bukti)
-                                <div class="mt-2 text-xs bg-base-200/30 border border-base-200 p-2 rounded-lg inline-block group relative overflow-hidden cursor-zoom-in"
-                                    onclick="window.open('{{ Storage::url($history->foto_bukti) }}', '_blank')">
-                                    <span
-                                        class="block text-[10px] font-black uppercase text-base-content/40 mb-1.5 px-1">Bukti
-                                        Penanganan Selesai</span>
-                                    <img src="{{ Storage::url($history->foto_bukti) }}" alt="Foto Bukti Penanganan"
-                                        class="w-auto h-24 sm:h-32 object-cover rounded shadow-sm border border-base-200 transition-transform duration-300 group-hover:scale-105">
-                                    <div
-                                        class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center pointer-events-none transition-opacity">
-                                        <x-icon name="o-magnifying-glass-plus"
-                                            class="w-6 h-6 text-white drop-shadow-md" />
+                                @if($history->keterangan_admin || $history->foto_bukti)
+                                <div class="mt-2 bg-base-200/40 border border-base-200 p-3 rounded-xl">
+                                    @if($history->keterangan_admin)
+                                    <div class="text-xs leading-relaxed font-medium text-base-content/90">
+                                        <span
+                                            class="block text-[10px] font-black uppercase text-base-content/40 mb-1">Catatan
+                                            Tambahan</span>
+                                        {{ $history->keterangan_admin }}
                                     </div>
+                                    @endif
+
+                                    @if($history->foto_bukti)
+                                    <div class="mt-3 text-xs inline-block group relative overflow-hidden cursor-zoom-in"
+                                        onclick="window.open('{{ Storage::url($history->foto_bukti) }}', '_blank')">
+                                        <span
+                                            class="block text-[10px] font-black uppercase text-base-content/40 mb-1.5 px-1">Lampiran
+                                            Foto</span>
+                                        <img src="{{ Storage::url($history->foto_bukti) }}"
+                                            alt="Foto Update Tindak Lanjut"
+                                            class="w-auto h-24 sm:h-32 object-cover rounded shadow-sm border border-base-200 transition-transform duration-300 group-hover:scale-105">
+                                        <div
+                                            class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center pointer-events-none transition-opacity rounded">
+                                            <x-icon name="o-magnifying-glass-plus"
+                                                class="w-6 h-6 text-white drop-shadow-md" />
+                                        </div>
+                                    </div>
+                                    @endif
                                 </div>
                                 @endif
                             </div>
