@@ -86,7 +86,7 @@
                 </div>
                 <div class="w-28 sm:w-40 lg:w-48 shrink-0">
                     <x-select wire:model.live="kategori_id" :options="$kategoris" option-value="id" option-label="nama"
-                        placeholder="Kategori" icon="o-tag" />
+                        placeholder="Semua Kategori" icon="o-tag" />
                 </div>
                 <div class="w-24 sm:w-36 lg:w-40 shrink-0">
                     <x-select wire:model.live="sort" :options="$sortOptions" option-value="id" option-label="nama"

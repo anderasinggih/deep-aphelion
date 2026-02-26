@@ -150,116 +150,107 @@
                 <div class="px-3 py-4 sm:p-5">
 
                     @if($this->pengaduan->histories->count() > 0)
-                    <ul class="timeline timeline-vertical timeline-compact">
+                    {{-- Custom Timeline Implementation (No DaisyUI bugs/stripes) --}}
+                    <div
+                        class="relative pl-6 sm:pl-8 space-y-6 sm:space-y-8 before:absolute before:inset-y-2 before:left-[11px] sm:before:left-[15px] before:w-[2px] before:bg-base-300">
                         @foreach($this->pengaduan->histories as $index => $history)
-                        <li>
-                            {{-- Garis vertikal (kecuali item pertama/terakhir) --}}
-                            @if($index !== 0)
-                            <hr class="bg-base-300" /> @endif
+                        @php
+                        $timelineColor = match($history->status_baru) {
+                        'menunggu' => 'text-warning',
+                        'diproses' => 'text-info',
+                        'selesai' => 'text-success',
+                        'ditolak' => 'text-error',
+                        default => 'text-base-300'
+                        };
+                        $borderColor = match($history->status_baru) {
+                        'menunggu' => 'border-warning',
+                        'diproses' => 'border-info',
+                        'selesai' => 'border-success',
+                        'ditolak' => 'border-error',
+                        default => 'border-base-300'
+                        };
+                        $isLatest = $index === 0;
+                        @endphp
 
-                            {{-- Lingkaran Timeline --}}
-                            @php
-                            $timelineColor = match($history->status_baru) {
-                            'menunggu' => 'text-warning',
-                            'diproses' => 'text-info',
-                            'selesai' => 'text-success',
-                            'ditolak' => 'text-error',
-                            default => 'text-base-300'
-                            };
-                            $isLatest = $index === 0;
-                            @endphp
-                            <div class="timeline-middle">
-                                <x-icon name="{{ $isLatest ? 'o-check-circle' : 'm-stop-circle' }}"
-                                    class="w-5 h-5 {{ $isLatest ? $timelineColor : 'text-base-300' }}" />
-                            </div>
-
-                            {{-- Konten Timeline --}}
+                        <div class="relative z-10 w-full pl-2 sm:pl-4">
+                            {{-- Titik Milestone --}}
                             <div
-                                class="timeline-end timeline-box bg-transparent border-none shadow-none pb-6 pl-2 -mt-1 w-full max-w-full">
-                                <div class="flex justify-between items-start mb-1">
-                                    <div class="font-black text-sm uppercase tracking-wide {{ $timelineColor }}">
-                                        {{ $history->status_baru }}
-                                    </div>
-                                    <div class="text-[10px] font-semibold text-base-content/50">
-                                        {{ $history->created_at->diffForHumans() }}
-                                    </div>
-                                </div>
-
-                                <div class="text-xs text-base-content/70 font-medium mb-3">
-                                    {{ $history->created_at->format('d M Y, H:i') }}
-                                </div>
-
-                                {{-- User Profil Updater --}}
-                                @if($history->user)
-                                <div class="flex items-center gap-2 mb-2">
-                                    <div class="avatar placeholder">
-                                        <div
-                                            class="bg-base-300 text-base-content rounded-full w-6 h-6 border border-base-200">
-                                            <span class="text-[10px] font-bold">{{
-                                                strtoupper(substr($history->user->name, 0, 1)) }}</span>
-                                        </div>
-                                    </div>
-                                    <div class="flex flex-col leading-tight">
-                                        <span class="text-[11px] font-bold text-base-content">{{ $history->user->name
-                                            }}</span>
-                                        <span
-                                            class="text-[9px] font-semibold text-base-content/50 uppercase tracking-wider">{{
-                                            $history->user->role }}</span>
-                                    </div>
-                                </div>
-                                @endif
-
-                                @if($history->keterangan_admin || $history->foto_bukti)
-                                <div class="mt-2 bg-base-200/40 border border-base-200 p-3 rounded-xl">
-                                    @if($history->keterangan_admin)
-                                    <div class="text-xs leading-relaxed font-medium text-base-content/90">
-                                        <span
-                                            class="block text-[10px] font-black uppercase text-base-content/40 mb-1">Catatan
-                                            Tambahan</span>
-                                        {{ $history->keterangan_admin }}
-                                    </div>
-                                    @endif
-
-                                    @if($history->foto_bukti)
-                                    <div class="mt-3 text-xs inline-block group relative overflow-hidden cursor-zoom-in"
-                                        onclick="window.open('{{ Storage::url($history->foto_bukti) }}', '_blank')">
-                                        <span
-                                            class="block text-[10px] font-black uppercase text-base-content/40 mb-1.5 px-1">Lampiran
-                                            Foto</span>
-                                        <img src="{{ Storage::url($history->foto_bukti) }}"
-                                            alt="Foto Update Tindak Lanjut"
-                                            class="w-auto h-24 sm:h-32 object-cover rounded shadow-sm border border-base-200 transition-transform duration-300 group-hover:scale-105">
-                                        <div
-                                            class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center pointer-events-none transition-opacity rounded">
-                                            <x-icon name="o-magnifying-glass-plus"
-                                                class="w-6 h-6 text-white drop-shadow-md" />
-                                        </div>
-                                    </div>
-                                    @endif
+                                class="absolute -left-[20px] sm:-left-[28px] top-0 sm:top-1 w-4 h-4 sm:w-6 sm:h-6 rounded-full bg-base-100 border-[3px] {{ $isLatest ? $borderColor : 'border-base-300' }} flex items-center justify-center shadow-sm">
+                                @if($isLatest)
+                                <div class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-current {{ $timelineColor }}">
                                 </div>
                                 @endif
                             </div>
 
-                            @if(!$loop->last)
-                            <hr class="bg-base-300" /> @endif
-                        </li>
+                            {{-- Konten Utama --}}
+                            <div class="flex flex-col gap-1.5">
+                                {{-- Status & Waktu --}}
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <span
+                                        class="font-extrabold text-[13px] sm:text-sm uppercase tracking-widest {{ $timelineColor }}">
+                                        {{ $history->status_baru }}
+                                    </span>
+                                    <span class="text-[10.5px] sm:text-[11px] font-semibold text-base-content/40">
+                                        • {{ $history->created_at->diffForHumans() }}
+                                    </span>
+                                </div>
+
+                                {{-- Data User Opsional --}}
+                                @if($history->user)
+                                <div class="flex items-center gap-1.5 text-base-content/70">
+                                    <x-icon name="o-user" class="w-3.5 h-3.5" />
+                                    <span class="text-[11px] sm:text-xs font-medium">Oleh: {{ $history->user->name
+                                        }}</span>
+                                    <span
+                                        class="text-[9px] px-1.5 py-0.5 rounded-full bg-base-300 text-base-content/80 uppercase font-black tracking-widest">{{
+                                        $history->user->role }}</span>
+                                </div>
+                                @endif
+
+                                {{-- Catatan & Foto Opsional --}}
+                                @if($history->keterangan_admin || $history->foto_bukti)
+                                <div class="flex">
+                                    <div class="w-[2px] bg-base-300 rounded-full mr-3 sm:mr-4 mt-2"></div>
+                                    <div class="flex-1 mt-1 space-y-3">
+                                        @if($history->keterangan_admin)
+                                        <p
+                                            class="text-[12px] sm:text-[13px] leading-relaxed font-medium text-base-content/80 italic">
+                                            "{{ $history->keterangan_admin }}"
+                                        </p>
+                                        @endif
+
+                                        @if($history->foto_bukti)
+                                        <div class="cursor-zoom-in w-fit block"
+                                            onclick="window.open('{{ Storage::url($history->foto_bukti) }}', '_blank')">
+                                            <img src="{{ Storage::url($history->foto_bukti) }}"
+                                                alt="Foto Update Tindak Lanjut"
+                                                class="w-auto h-24 sm:h-32 object-cover rounded-xl border border-base-200 shadow-sm transition-transform duration-300 hover:scale-[1.03]">
+                                        </div>
+                                        @endif
+                                    </div>
+                                </div>
+                                @endif
+                            </div>
+                        </div>
                         @endforeach
 
-                        {{-- Laporan Dibuat (Base Case) --}}
-                        <li>
-                            <hr class="bg-base-300" />
-                            <div class="timeline-middle">
-                                <x-icon name="m-stop-circle" class="w-5 h-5 text-base-300" />
-                            </div>
+                        {{-- Base Laporan Dibuat --}}
+                        <div class="relative z-10 w-full pl-2 sm:pl-4 pt-1 sm:pt-2">
                             <div
-                                class="timeline-end timeline-box bg-transparent border-none shadow-none pb-2 pl-2 -mt-1 w-full">
-                                <div class="font-black text-sm text-base-content/60">Laporan Dibuat</div>
-                                <div class="text-[10px] font-semibold text-base-content/50 mt-1">
-                                    {{ $this->pengaduan->created_at->format('d M Y, H:i') }}
-                                </div>
+                                class="absolute -left-[20px] sm:-left-[28px] top-1 sm:top-2.5 w-4 h-4 sm:w-6 sm:h-6 rounded-full bg-base-200 border-[3px] border-base-300 flex items-center justify-center shadow-sm">
+                                <div class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-base-300"></div>
                             </div>
-                        </li>
-                    </ul>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span
+                                    class="font-extrabold text-[13px] sm:text-sm uppercase tracking-widest text-base-content/70">
+                                    Laporan Dibuat
+                                </span>
+                            </div>
+                            <div class="text-[10.5px] sm:text-[11px] font-semibold text-base-content/40">
+                                {{ $this->pengaduan->created_at->format('d M Y, H:i') }}
+                            </div>
+                        </div>
+                    </div>
                     @else
                     <div class="text-center py-6 text-base-content/50">
                         <x-icon name="o-clock" class="w-8 h-8 opacity-20 mx-auto mb-2" />

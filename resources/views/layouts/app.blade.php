@@ -65,11 +65,7 @@
                         <li><a href="/dashboard" class="{{ request()->is('dashboard') ? 'active' : '' }}"><x-icon
                                     name="o-chart-pie" class="w-4 h-4" /> Dashboard</a></li>
                         @endif
-                        @if(auth()->user()->role !== 'admin')
-                        <li><a href="/pengaduan/create"
-                                class="{{ request()->is('pengaduan/create') ? 'active' : '' }}"><x-icon
-                                    name="o-plus-circle" class="w-4 h-4" /> Buat Pengaduan</a></li>
-                        @endif
+
                         @endauth
                     </ul>
                 </div>
@@ -120,11 +116,7 @@
                             class="{{ request()->is('dashboard') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all"><x-icon
                                 name="o-chart-pie" class="w-4 h-4" /> Dashboard</a></li>
                     @endif
-                    @if(auth()->user()->role !== 'admin')
-                    <li><a href="/pengaduan/create"
-                            class="{{ request()->is('pengaduan/create') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all"><x-icon
-                                name="o-plus-circle" class="w-4 h-4" /> Buat Pengaduan</a></li>
-                    @endif
+
                     @endauth
                 </ul>
             </div>
