@@ -23,27 +23,29 @@
     </x-alert>
     @endif
 
-    <div class="pb-4 border shadow-sm bg-base-100 rounded-2xl border-base-200">
+    {{-- Header Filter (Sebaris di Mobile & Desktop) --}}
+    <div class="flex flex-row items-center gap-2 p-1 mb-5 border-b sm:gap-4 sm:p-1 border-base-200 bg-base-100/50">
+        {{-- Search (Ambil sisa ruang) --}}
+        <div class="flex-1 min-w-0">
+            <x-input wire:model.live.debounce="search" icon="o-magnifying-glass" placeholder="Cari Judul / Nama..."
+                class="w-full input-sm sm:input-md" />
+        </div>
 
-        {{-- Header Filter (Sebaris di Mobile & Desktop) --}}
-        <div class="flex flex-row items-center gap-2 p-3 mb-2 border-b sm:gap-4 sm:p-4 border-base-200 bg-base-100/50">
-            {{-- Search (Ambil sisa ruang) --}}
-            <div class="flex-1 min-w-0">
-                <x-input wire:model.live.debounce="search" icon="o-magnifying-glass" placeholder="Cari Judul / Nama..."
-                    class="w-full input-sm sm:input-md" />
-            </div>
-
-            {{-- Dropdown Status (Lebar fix di mobile, agak besar di desktop) --}}
-            <div class="w-32 sm:w-48 shrink-0">
-                <x-select wire:model.live="statusFilter" :options="[
+        {{-- Dropdown Status (Lebar fix di mobile, agak besar di desktop) --}}
+        <div class="w-32 sm:w-48 shrink-0">
+            <x-select wire:model.live="statusFilter" :options="[
                     ['id' => '', 'name' => 'Semua Status'],
                     ['id' => 'menunggu', 'name' => 'Menunggu'],
                     ['id' => 'diproses', 'name' => 'Diproses'],
                     ['id' => 'selesai', 'name' => 'Selesai'],
                     ['id' => 'ditolak', 'name' => 'Ditolak'],
                 ]" option-value="id" option-label="name" class="w-full select-sm sm:select-md" />
-            </div>
         </div>
+    </div>
+
+    <div class="pb-4 border shadow-sm bg-base-100 rounded-2xl border-base-200">
+
+
 
         {{-- Wrapper Tabel (min-h-[350px] agar dropdown MaryUI tidak kepotong) --}}
         <div class="overflow-x-auto min-h-[350px]">
