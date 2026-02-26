@@ -23,6 +23,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/dashboard', AdminDashboard::class)->name('admin.dashboard');
     Route::get('/admin/pengaduan', PengaduanManager::class)->name('admin.pengaduan');
     Route::get('/admin/kategori', \App\Livewire\Admin\KategoriManager::class)->name('admin.kategori');
+    Route::get('/admin/users', \App\Livewire\Admin\UserManager::class)->name('admin.users');
     Route::get('/admin/pengaduan/{id}', PengaduanDetail::class)->name('admin.pengaduan.detail');
 
     // Petugas

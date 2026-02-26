@@ -74,9 +74,21 @@
                     <li><a href="/admin/pengaduan"
                             class="{{ request()->is('admin/pengaduan') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all"><x-icon
                                 name="o-inbox-stack" class="w-4 h-4" /> Kelola Aduan</a></li>
-                    <li><a href="/admin/kategori"
-                            class="{{ request()->is('admin/kategori') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all"><x-icon
-                                name="o-folder-open" class="w-4 h-4" /> Data Kategori</a></li>
+                    <li>
+                        <details {{ request()->is('admin/kategori') || request()->is('admin/users') ? 'open' : '' }}>
+                            <summary
+                                class="{{ request()->is('admin/kategori') || request()->is('admin/users') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all">
+                                <x-icon name="o-circle-stack" class="w-4 h-4" /> Data Set</summary>
+                            <ul class="p-2 bg-base-100 rounded-2xl shadow-xl w-48 mt-3 z-[100] border border-base-200">
+                                <li><a href="/admin/kategori"
+                                        class="{{ request()->is('admin/kategori') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all mb-1"><x-icon
+                                            name="o-folder-open" class="w-4 h-4" /> Kategori</a></li>
+                                <li><a href="/admin/users"
+                                        class="{{ request()->is('admin/users') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all"><x-icon
+                                            name="o-users" class="w-4 h-4" /> Pengguna</a></li>
+                            </ul>
+                        </details>
+                    </li>
                     @elseif(auth()->user()->role === 'petugas')
                     <li><a href="/petugas/disposisi"
                             class="{{ request()->is('petugas/disposisi') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all"><x-icon
