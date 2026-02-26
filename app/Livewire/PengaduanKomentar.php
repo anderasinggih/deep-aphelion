@@ -2,98 +2,74 @@
 
 namespace App\Livewire;
 
-use App\Models\Pengaduan;
+use App\Models\PengaduanKomentar as KomentarModel;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
+use Livewire\Attributes\Computed;
 
 class PengaduanKomentar extends Component
 {
     public $pengaduan_id;
     public $komentar = '';
     public $reply_to = null;
-    public $reply_komentar = []; // Store reply text per comment id
+    public $reply_text = ''; 
+    public $limit = 5;
 
-    // Listen to refresh event
     protected $listeners = ['commentAdded' => '$refresh'];
 
-    public function mount($pengaduan_id)
-    {
+    public function mount($pengaduan_id) {
         $this->pengaduan_id = $pengaduan_id;
     }
 
-    public function render()
-    {
-        $komentars = \App\Models\PengaduanKomentar::with(['user', 'replies.user', 'replies.replies.user'])
+    #[Computed]
+    public function komentars() {
+        return KomentarModel::with(['user', 'replies.user'])
             ->where('pengaduan_id', $this->pengaduan_id)
             ->whereNull('parent_id')
-            ->orderBy('created_at', 'desc')
+            ->latest()
+            ->take($this->limit)
             ->get();
-
-        return view('livewire.pengaduan-komentar', [
-            'komentars' => $komentars
-        ]);
     }
 
-    public function postComment()
-    {
-        if (!Auth::check()) {
-            return redirect()->route('login');
-        }
+    #[Computed]
+    public function totalComments() {
+        return KomentarModel::where('pengaduan_id', $this->pengaduan_id)->whereNull('parent_id')->count();
+    }
 
-        $this->validate([
-            'komentar' => 'required|string|max:1000'
-        ]);
-
-        \App\Models\PengaduanKomentar::create([
+    public function postComment() {
+        $this->validate(['komentar' => 'required|max:1000']);
+        KomentarModel::create([
             'pengaduan_id' => $this->pengaduan_id,
             'user_id' => Auth::id(),
             'komentar' => $this->komentar
         ]);
-
-        $this->komentar = '';
-        $this->dispatch('commentAdded');
+        $this->reset('komentar');
     }
 
-    public function setReply($commentId)
-    {
-        if (!Auth::check()) {
-            return redirect()->route('login');
-        }
-        $this->reply_to = $this->reply_to === $commentId ? null : $commentId;
-        if (!isset($this->reply_komentar[$commentId])) {
-            $this->reply_komentar[$commentId] = '';
-        }
+    public function setReply($id) {
+        $this->reply_to = ($this->reply_to === $id) ? null : $id;
+        $this->reset('reply_text');
     }
 
-    public function postReply($parentId)
-    {
-        if (!Auth::check()) {
-            return redirect()->route('login');
-        }
-
-        $this->validate([
-            "reply_komentar.$parentId" => 'required|string|max:1000'
-        ]);
-
-        \App\Models\PengaduanKomentar::create([
+    public function postReply($parentId) {
+        $this->validate(['reply_text' => 'required|max:1000']);
+        KomentarModel::create([
             'pengaduan_id' => $this->pengaduan_id,
             'user_id' => Auth::id(),
             'parent_id' => $parentId,
-            'komentar' => $this->reply_komentar[$parentId]
+            'komentar' => $this->reply_text
         ]);
-
-        $this->reply_komentar[$parentId] = '';
-        $this->reply_to = null;
-        $this->dispatch('commentAdded');
+        $this->reset(['reply_text', 'reply_to']);
     }
 
-    public function deleteComment($id)
-    {
-        $comment = \App\Models\PengaduanKomentar::find($id);
-
+    public function deleteComment($id) {
+        $comment = KomentarModel::find($id);
         if ($comment && (Auth::id() === $comment->user_id || Auth::user()->role === 'admin')) {
             $comment->delete();
-            $this->dispatch('commentAdded');
         }
     }
+
+    public function loadMore() { $this->limit += 5; }
+
+    public function render() { return view('livewire.pengaduan-komentar'); }
 }

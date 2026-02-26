@@ -1,210 +1,129 @@
-<div class="mt-8 space-y-6">
-    <div class="flex items-center gap-2 pb-2 border-b border-base-200">
-        <x-icon name="o-chat-bubble-left-ellipsis" class="w-5 h-5 text-primary" />
-        <h3 class="font-bold text-lg text-base-content/80">Komentar & Diskusi</h3>
-        <span class="badge badge-primary badge-sm badge-outline ml-auto">{{ $komentars->count() }} Komentar</span>
+<div class="mt-6 space-y-4">
+    {{-- Header --}}
+    <div class="flex items-center justify-between pb-1 border-b border-base-200">
+        <div class="flex items-center gap-2">
+            <x-icon name="o-chat-bubble-left-right" class="w-4 h-4 text-primary" />
+            <h3 class="font-bold text-sm uppercase tracking-wider text-base-content/70">Diskusi</h3>
+        </div>
+        <span class="text-[10px] font-bold opacity-50">{{ $this->totalComments }} Komentar</span>
     </div>
 
-    {{-- Form Tambah Komentar Utama --}}
+    {{-- Form Input Utama --}}
     @auth
-    <div class="bg-base-200/50 p-4 rounded-2xl border border-base-200">
-        <x-form wire:submit="postComment">
-            <div class="flex gap-3">
-                <div class="avatar placeholder hidden sm:flex shrink-0">
-                    <div
-                        class="bg-primary text-white rounded-full w-10 h-10 flex items-center justify-center shadow-sm">
-                        <span class="text-xs font-black">{{ substr(Auth::user()->name, 0, 1) }}</span>
-                    </div>
-                </div>
-                <div class="flex-1 min-w-0 flex flex-col justify-end">
-                    <x-textarea wire:model="komentar" placeholder="Tulis komentar..." rows="1"
-                        class="w-full bg-base-100 border-base-200 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl text-sm transition-all !pt-3 !pb-2 !px-4" />
-                    <div class="flex justify-end mt-2">
-                        <x-button type="submit" label="Kirim" icon="o-paper-airplane"
-                            class="btn-primary btn-sm rounded-lg shadow-sm px-4" spinner="postComment" />
-                    </div>
-                </div>
+    <div class="flex gap-2 items-start bg-base-200/30 p-2 rounded-xl border border-base-200">
+        <div class="avatar placeholder shrink-0">
+            <div class="bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center">
+                <span class="text-[10px] font-black">{{ substr(Auth::user()->name, 0, 1) }}</span>
             </div>
-        </x-form>
-    </div>
-    @else
-    <div class="bg-base-200/50 p-4 rounded-xl border border-base-200 text-center">
-        <p class="text-sm font-medium text-base-content/70 mb-3">Silakan masuk (login) untuk ikut berdiskusi.</p>
-        <x-button label="Masuk Sekarang" icon="o-arrow-right-end-on-rectangle" link="{{ route('login') }}"
-            class="btn-primary btn-sm rounded-lg shadow-sm" />
+        </div>
+        <div class="flex-1 min-w-0">
+            <x-form wire:submit="postComment" class="flex flex-col gap-2">
+                <x-textarea wire:model="komentar" placeholder="Tulis komentar..." rows="1"
+                    class="!min-h-[25px] text-sm bg-base-100 border-none focus:ring-1 focus:ring-primary rounded-lg" />
+                <div class="flex justify-end">
+                    <x-button type="submit" label="Kirim" class="btn-primary btn-xs p-4 rounded-md"
+                        spinner="postComment" />
+                </div>
+            </x-form>
+        </div>
     </div>
     @endauth
 
-    {{-- Daftar Komentar --}}
-    <div class="space-y-4">
-        @forelse($komentars as $comment)
-        {{-- Komentar Item Utama --}}
-        <div class="flex gap-3 {{ $loop->last ? '' : 'pb-4 border-b border-base-200/50' }}">
+    {{-- List Komentar --}}
+    <div class="space-y-5">
+        @forelse($this->komentars as $comment)
+        <div class="flex gap-3">
             {{-- Avatar --}}
-            <div class="avatar placeholder shrink-0 mt-1">
+            <div class="avatar placeholder shrink-0 mt-0.5">
                 @php
-                $avatarColor = $comment->user->role === 'admin' ? 'bg-error' : ($comment->user->role === 'petugas' ?
-                'bg-info' : 'bg-base-300');
-                $textColor = $comment->user->role === 'warga' ? 'text-base-content/70' : 'text-white';
+                $color = match($comment->user->role) { 'admin' => 'bg-error', 'petugas' => 'bg-info', default =>
+                'bg-base-300' };
                 @endphp
                 <div
-                    class="{{ $avatarColor }} {{ $textColor }} rounded-full w-9 h-9 flex items-center justify-center shadow-sm border border-base-100">
-                    <span class="text-xs font-black">{{ substr($comment->user->name, 0, 1) }}</span>
+                    class="{{ $color }} text-white rounded-full w-8 h-8 flex items-center justify-center border border-base-100">
+                    <span class="text-[10px] font-black">{{ substr($comment->user->name, 0, 1) }}</span>
                 </div>
             </div>
 
-            {{-- Konten Komentar --}}
+            {{-- Bubble Konten --}}
             <div class="flex-1 min-w-0">
                 <div
-                    class="bg-base-100 p-3 rounded-2xl border border-base-200/60 shadow-sm relative group overflow-hidden">
-                    {{-- Header Komentar --}}
-                    <div class="flex items-center justify-between mb-1">
-                        <div class="flex items-center gap-1.5 flex-wrap">
-                            <span
-                                class="font-bold text-[13px] text-base-content leading-tight hover:underline cursor-pointer">
-                                {{ $comment->user->name }}
-                            </span>
-                            @if($comment->user->role === 'admin')
-                            <x-badge value="Admin"
-                                class="badge-error badge-xs font-bold px-1 py-0.5 text-[9px] uppercase tracking-wider" />
-                            @elseif($comment->user->role === 'petugas')
-                            <x-badge value="Petugas"
-                                class="badge-info badge-xs font-bold px-1 py-0.5 text-[9px] uppercase tracking-wider" />
-                            @endif
-                            <span class="text-[10px] font-medium text-base-content/50">•</span>
-                            <span class="text-[10px] font-medium text-base-content/50"
-                                title="{{ $comment->created_at->format('d M Y, H:i') }}">
-                                {{ $comment->created_at->diffForHumans(null, true, true) }}
-                            </span>
-                        </div>
-
-                        {{-- Delete Button (Tampil jika hover & owner/admin) --}}
-                        @auth
-                        @if(Auth::id() === $comment->user_id || Auth::user()->role === 'admin')
-                        <button wire:click="deleteComment({{ $comment->id }})" wire:confirm="Hapus komentar ini?"
-                            class="text-error/70 hover:text-error transition-colors p-1 md:opacity-0 md:group-hover:opacity-100 absolute right-2 top-2">
-                            <x-icon name="o-trash" class="w-3.5 h-3.5" />
-                        </button>
+                    class="bg-base-200/50 rounded-2xl rounded-tl-none px-3 py-2 inline-block max-w-full group relative">
+                    <div class="flex items-center gap-2 mb-0.5">
+                        <span class="font-bold text-xs">{{ $comment->user->name }}</span>
+                        @if($comment->user->role !== 'warga')
+                        <span class="text-[9px] px-1 bg-base-300 rounded text-base-content/70 font-bold uppercase">{{
+                            $comment->user->role }}</span>
                         @endif
-                        @endauth
+                        <span class="text-[9px] opacity-40 italic">{{ $comment->created_at->diffForHumans(null, true,
+                            true) }}</span>
                     </div>
+                    <p class="text-[13px] text-base-content/90 leading-snug break-words">{{ $comment->komentar }}</p>
 
-                    {{-- Teks Komentar --}}
-                    <p class="text-sm text-base-content/80 leading-relaxed whitespace-pre-wrap word-break">{{
-                        $comment->komentar }}</p>
-                </div>
-
-                {{-- Actions (Balas) --}}
-                <div class="flex items-center gap-3 mt-1.5 ml-2">
-                    <button wire:click="setReply({{ $comment->id }})"
-                        class="text-[11px] font-bold text-base-content/60 hover:text-primary transition-colors flex items-center gap-1">
-                        <x-icon name="o-chat-bubble-oval-left" class="w-3.5 h-3.5" /> Balas
+                    {{-- Delete icon --}}
+                    @if(Auth::id() === $comment->user_id || Auth::user()?->role === 'admin')
+                    <button wire:click="deleteComment({{ $comment->id }})"
+                        class="absolute -right-6 top-1 text-error/40 hover:text-error opacity-0 group-hover:opacity-100 transition-opacity">
+                        <x-icon name="o-trash" class="w-3 h-3" />
                     </button>
+                    @endif
                 </div>
 
-                {{-- Form Balas --}}
+                {{-- Action Balas --}}
+                <div class="mt-1 ml-1 flex items-center gap-4">
+                    <button wire:click="setReply({{ $comment->id }})"
+                        class="text-[10px] font-bold opacity-60 hover:text-primary">Balas</button>
+                </div>
+
+                {{-- Input Reply --}}
                 @if($reply_to === $comment->id)
-                <div class="mt-3 ml-2 flex gap-2">
-                    <div class="flex-1 min-w-0">
-                        <x-form wire:submit="postReply({{ $comment->id }})">
-                            <x-textarea wire:model="reply_komentar.{{ $comment->id }}"
-                                placeholder="Balas @ {{ $comment->user->name }}..." rows="1"
-                                class="w-full bg-base-100 border-base-300 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl text-xs transition-all !min-h-[2.5rem] !py-2" />
-                            <div class="flex justify-end gap-2 mt-2">
-                                <x-button label="Batal" wire:click="setReply(null)"
-                                    class="btn-ghost btn-xs rounded-lg text-[10px]" />
-                                <x-button type="submit" label="Kirim"
-                                    class="btn-primary btn-xs rounded-lg shadow-sm text-[10px]"
-                                    spinner="postReply({{ $comment->id }})" />
-                            </div>
-                        </x-form>
-                    </div>
+                <div class="mt-2 flex gap-2">
+                    <x-textarea wire:model="reply_text" placeholder="Balas..."
+                        class="!min-h-[32px] text-xs flex-1 rounded-lg" rows="1" />
+                    <x-button wire:click="postReply({{ $comment->id }})" icon="o-paper-airplane"
+                        class="btn-primary btn-sm p-2" />
                 </div>
                 @endif
 
-                {{-- Render Balasan (Nesting Level 1) --}}
+                {{-- Balasan (Replies) --}}
                 @if($comment->replies->count() > 0)
-                <div class="mt-3 space-y-3">
-                    {{-- Indikator Garis Samping Kiri untuk Balasan --}}
-                    <div class="relative pl-6 sm:pl-8">
-                        <div class="absolute left-3 top-0 bottom-6 w-px bg-base-300 rounded-full"></div>
-
-                        @foreach($comment->replies as $reply)
-                        <div class="flex gap-2 relative {{ !$loop->first ? 'mt-3' : '' }}">
-                            {{-- Garis L shaped --}}
-                            <div class="absolute -left-6 top-3 w-4 h-px bg-base-300"></div>
-
-                            {{-- Avatar Balasan --}}
-                            <div class="avatar placeholder shrink-0 relative z-10">
-                                @php
-                                $replyAvatarColor = $reply->user->role === 'admin' ? 'bg-error' : ($reply->user->role
-                                === 'petugas' ? 'bg-info' : 'bg-base-200');
-                                $replyTextColor = $reply->user->role === 'warga' ? 'text-base-content/70' :
-                                'text-white';
-                                @endphp
-                                <div
-                                    class="{{ $replyAvatarColor }} {{ $replyTextColor }} rounded-full w-6 h-6 flex items-center justify-center shadow-sm border border-base-100">
-                                    <span class="text-[10px] font-black">{{ substr($reply->user->name, 0, 1) }}</span>
-                                </div>
-                            </div>
-
-                            {{-- Konten Balasan --}}
-                            <div class="flex-1 min-w-0">
-                                <div
-                                    class="bg-base-200/30 p-2.5 rounded-2xl rounded-tl-sm border border-base-200 shadow-sm relative group overflow-hidden">
-                                    <div class="flex items-center justify-between mb-0.5">
-                                        <div class="flex items-center gap-1.5 flex-wrap">
-                                            <span
-                                                class="font-bold text-xs text-base-content leading-tight hover:underline cursor-pointer">
-                                                {{ $reply->user->name }}
-                                            </span>
-                                            @if($reply->user->role === 'admin')
-                                            <x-badge value="Admin"
-                                                class="badge-error badge-xs font-bold px-1 py-0.5 text-[8px] uppercase tracking-wider" />
-                                            @elseif($reply->user->role === 'petugas')
-                                            <x-badge value="Petugas"
-                                                class="badge-info badge-xs font-bold px-1 py-0.5 text-[8px] uppercase tracking-wider" />
-                                            @endif
-                                            <span class="text-[9px] font-medium text-base-content/50">•</span>
-                                            <span class="text-[9px] font-medium text-base-content/50"
-                                                title="{{ $reply->created_at->format('d M Y, H:i') }}">
-                                                {{ $reply->created_at->diffForHumans(null, true, true) }}
-                                            </span>
-                                        </div>
-
-                                        @auth
-                                        @if(Auth::id() === $reply->user_id || Auth::user()->role === 'admin')
-                                        <button wire:click="deleteComment({{ $reply->id }})"
-                                            wire:confirm="Hapus balasan ini?"
-                                            class="text-error/70 hover:text-error transition-colors p-1 opacity-0 group-hover:opacity-100 absolute right-1 top-1">
-                                            <x-icon name="o-trash" class="w-3 h-3" />
-                                        </button>
-                                        @endif
-                                        @endauth
-                                    </div>
-                                    <p class="text-[13px] text-base-content/80 leading-relaxed word-break">{{
-                                        $reply->komentar }}</p>
-                                </div>
+                <div class="mt-3 ml-2 pl-4 border-l-2 border-base-200 space-y-3">
+                    @foreach($comment->replies as $reply)
+                    <div class="flex gap-2">
+                        <div class="avatar placeholder shrink-0 mt-0.5">
+                            <div
+                                class="bg-base-200 rounded-full w-6 h-6 flex items-center justify-center border border-base-100">
+                                <span class="text-[8px] font-black">{{ substr($reply->user->name, 0, 1) }}</span>
                             </div>
                         </div>
-                        @endforeach
+                        <div
+                            class="bg-base-100 border border-base-200 rounded-xl px-2.5 py-1.5 inline-block max-w-full">
+                            <div class="flex items-center gap-1.5 mb-0.5">
+                                <span class="font-bold text-[11px]">{{ $reply->user->name }}</span>
+                                <span class="text-[8px] opacity-40 italic">{{ $reply->created_at->diffForHumans(null,
+                                    true, true) }}</span>
+                            </div>
+                            <p class="text-xs text-base-content/80 leading-tight">{{ $reply->komentar }}</p>
+                        </div>
                     </div>
+                    @endforeach
                 </div>
                 @endif
             </div>
         </div>
         @empty
-        <div class="text-center py-10 bg-base-100 rounded-2xl border border-dashed border-base-300">
-            <x-icon name="o-chat-bubble-bottom-center-text" class="w-12 h-12 text-base-content/20 mx-auto mb-3" />
-            <p class="text-sm font-bold text-base-content/60">Belum ada komentar.</p>
-            <p class="text-xs text-base-content/40 mt-1">Jadilah yang pertama untuk berpendapat di pengaduan ini!</p>
+        <div class="text-center py-6 opacity-40">
+            <x-icon name="o-chat-bubble-bottom-center" class="w-8 h-8 mx-auto" />
+            <p class="text-xs mt-1">Belum ada diskusi.</p>
         </div>
         @endforelse
     </div>
 
-    <style>
-        .word-break {
-            word-break: break-word;
-        }
-    </style>
+    {{-- Load More --}}
+    @if($this->totalComments > $limit)
+    <button wire:click="loadMore"
+        class="w-full text-center py-2 text-[11px] font-bold opacity-50 hover:opacity-100 transition-opacity">
+        Lihat komentar lainnya...
+    </button>
+    @endif
 </div>

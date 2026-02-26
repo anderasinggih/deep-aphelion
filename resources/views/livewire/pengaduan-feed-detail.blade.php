@@ -21,7 +21,7 @@
                     <div>
                         <div class="flex items-center justify-between gap-3 mb-3 sm:mb-4">
                             <span
-                                class="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-0 py-1 sm:py-1.5 rounded-md sm:rounded-lg bg-base-200 text-primary font-bold text-[10px] sm:text-xs tracking-wider">
+                                class="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg bg-base-200 text-primary font-bold text-[10px] sm:text-xs tracking-wider">
                                 <x-icon name="{{ $this->pengaduan->kategori->icon ?? 'o-tag' }}"
                                     class="w-3 h-3 sm:w-4 sm:h-4" />
                                 {{ $this->pengaduan->kategori->nama }}
