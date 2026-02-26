@@ -5,7 +5,9 @@
             <h1 class="text-3xl font-black tracking-tight text-primary">Manajemen Pengaduan</h1>
             <p class="mt-1 text-sm text-base-content/70">Data seluruh laporan warga Kecamatan Kembaran</p>
         </div>
-        <div class="flex items-center gap-3">
+        <div class="flex flex-wrap items-center gap-3 mt-2 sm:mt-0">
+            <x-button label="Tambah Pengaduan" icon="o-plus-circle" class="shadow-sm btn-primary rounded-xl"
+                link="/pengaduan/create" />
             <x-button label="Export Data" icon="o-document-arrow-down"
                 class="shadow-sm btn-outline btn-primary rounded-xl" link="/admin/pengaduan" />
         </div>

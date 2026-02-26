@@ -39,6 +39,24 @@
                         <li><a href="/admin/pengaduan"
                                 class="{{ request()->is('admin/pengaduan') ? 'active' : '' }}"><x-icon
                                     name="o-inbox-stack" class="w-4 h-4" /> Kelola Pengaduan</a></li>
+                        <li>
+                            {{-- MOBILE: Hapus 'open', tambah class hidden arrow --}}
+                            <details class="[&>summary::after]:hidden">
+                                <summary
+                                    class="{{ request()->is('admin/kategori') || request()->is('admin/users') ? 'active' : '' }}">
+                                    <x-icon name="o-circle-stack" class="w-4 h-4" /> Data Set
+                                </summary>
+                                <ul>
+                                    <li><a href="/admin/kategori"
+                                            onclick="this.closest('details').removeAttribute('open')"
+                                            class="{{ request()->is('admin/kategori') ? 'active' : '' }}"><x-icon
+                                                name="o-folder-open" class="w-4 h-4" /> Kategori</a></li>
+                                    <li><a href="/admin/users" onclick="this.closest('details').removeAttribute('open')"
+                                            class="{{ request()->is('admin/users') ? 'active' : '' }}"><x-icon
+                                                name="o-users" class="w-4 h-4" /> Pengguna</a></li>
+                                </ul>
+                            </details>
+                        </li>
                         @elseif(auth()->user()->role === 'petugas')
                         <li><a href="/petugas/disposisi"
                                 class="{{ request()->is('petugas/disposisi') ? 'active' : '' }}"><x-icon
@@ -47,9 +65,11 @@
                         <li><a href="/dashboard" class="{{ request()->is('dashboard') ? 'active' : '' }}"><x-icon
                                     name="o-chart-pie" class="w-4 h-4" /> Dashboard</a></li>
                         @endif
+                        @if(auth()->user()->role !== 'admin')
                         <li><a href="/pengaduan/create"
                                 class="{{ request()->is('pengaduan/create') ? 'active' : '' }}"><x-icon
                                     name="o-plus-circle" class="w-4 h-4" /> Buat Pengaduan</a></li>
+                        @endif
                         @endauth
                     </ul>
                 </div>
@@ -75,15 +95,17 @@
                             class="{{ request()->is('admin/pengaduan') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all"><x-icon
                                 name="o-inbox-stack" class="w-4 h-4" /> Kelola Aduan</a></li>
                     <li>
-                        <details {{ request()->is('admin/kategori') || request()->is('admin/users') ? 'open' : '' }}>
+                        {{-- DESKTOP: Hapus 'open', tambah class hidden arrow --}}
+                        <details class="[&>summary::after]:hidden">
                             <summary
                                 class="{{ request()->is('admin/kategori') || request()->is('admin/users') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all">
-                                <x-icon name="o-circle-stack" class="w-4 h-4" /> Data Set</summary>
+                                <x-icon name="o-circle-stack" class="w-4 h-4" /> Data Set
+                            </summary>
                             <ul class="p-2 bg-base-100 rounded-2xl shadow-xl w-48 mt-3 z-[100] border border-base-200">
-                                <li><a href="/admin/kategori"
+                                <li><a href="/admin/kategori" onclick="this.closest('details').removeAttribute('open')"
                                         class="{{ request()->is('admin/kategori') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all mb-1"><x-icon
                                             name="o-folder-open" class="w-4 h-4" /> Kategori</a></li>
-                                <li><a href="/admin/users"
+                                <li><a href="/admin/users" onclick="this.closest('details').removeAttribute('open')"
                                         class="{{ request()->is('admin/users') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all"><x-icon
                                             name="o-users" class="w-4 h-4" /> Pengguna</a></li>
                             </ul>
@@ -98,9 +120,11 @@
                             class="{{ request()->is('dashboard') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all"><x-icon
                                 name="o-chart-pie" class="w-4 h-4" /> Dashboard</a></li>
                     @endif
+                    @if(auth()->user()->role !== 'admin')
                     <li><a href="/pengaduan/create"
                             class="{{ request()->is('pengaduan/create') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all"><x-icon
                                 name="o-plus-circle" class="w-4 h-4" /> Buat Pengaduan</a></li>
+                    @endif
                     @endauth
                 </ul>
             </div>
@@ -177,7 +201,7 @@
                 }, function (err) {
                     console.log('ServiceWorker registration failed: ', err);
                 });
-            });
+            }); // Kurung kurawal di sini sudah ditambahkan
         }
     </script>
 </body>
