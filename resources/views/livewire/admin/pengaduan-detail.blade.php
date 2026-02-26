@@ -144,6 +144,9 @@
             </div>
             @endif
 
+            {{-- Komentar Section --}}
+            @livewire('pengaduan-komentar', ['pengaduan_id' => $this->pengaduan->id])
+
         </div>
 
         {{-- Kolom Kanan: Info Pelapor, Petugas & Riwayat --}}

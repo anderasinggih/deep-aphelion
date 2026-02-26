@@ -50,4 +50,9 @@ class Pengaduan extends Model
     {
         return $this->hasMany(PengaduanDukungan::class);
     }
+
+    public function komentars()
+    {
+        return $this->hasMany(PengaduanKomentar::class);
+    }
 }

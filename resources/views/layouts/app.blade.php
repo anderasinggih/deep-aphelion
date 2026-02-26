@@ -20,7 +20,7 @@
 
         {{-- Navbar utamanya dibikin melengkung, blur tinggi, dan ada border kaca --}}
         <div
-            class="navbar bg-base-100/40 backdrop-blur-xl border border-white/30 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-[2rem] px-4 sm:px-6">
+            class="navbar bg-base-100/40 backdrop-blur-md border border-white/30 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-[2rem] px-4 sm:px-6">
 
             <div class="navbar-start ">
                 <div class="dropdown ">

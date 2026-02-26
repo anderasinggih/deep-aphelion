@@ -125,11 +125,8 @@
 
                     </div>
 
-
-
-                    {{-- Foto Lampiran: Pas dengan kontainer --}}
-
-
+                    {{-- Komentar Section --}}
+                    @livewire('pengaduan-komentar', ['pengaduan_id' => $this->pengaduan->id])
 
                 </div>
             </div>
