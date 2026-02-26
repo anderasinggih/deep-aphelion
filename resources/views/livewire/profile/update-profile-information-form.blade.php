@@ -9,6 +9,8 @@ use Livewire\Volt\Component;
 new class extends Component
 {
     public string $name = '';
+    public string $nik = '';
+    public string $no_wa = '';
     public string $email = '';
 
     /**
@@ -17,7 +19,9 @@ new class extends Component
     public function mount(): void
     {
         $this->name = Auth::user()->name;
-        $this->email = Auth::user()->email;
+        $this->nik = Auth::user()->nik ?? '';
+        $this->no_wa = Auth::user()->no_wa ?? '';
+        $this->email = Auth::user()->email ?? '';
     }
 
     /**
@@ -29,7 +33,19 @@ new class extends Component
 
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
+            'nik' => ['required', 'numeric', 'digits:16', Rule::unique(User::class)->ignore($user->id)],
+            'no_wa' => ['required', 'numeric', 'min_digits:10', 'max_digits:15'],
+            'email' => ['nullable', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
+        ], [
+            'name.required' => 'Nama lengkap wajib diisi.',
+            'nik.required' => 'NIK wajib diisi.',
+            'nik.digits' => 'NIK harus berjumlah tepat 16 angka.',
+            'nik.unique' => 'NIK ini sudah digunakan oleh akun lain.',
+            'no_wa.required' => 'Nomor WhatsApp wajib diisi.',
+            'no_wa.min_digits' => 'Nomor WhatsApp minimal 10 angka.',
+            'no_wa.max_digits' => 'Nomor WhatsApp maksimal 15 angka.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email ini sudah digunakan.',
         ]);
 
         $user->fill($validated);
@@ -93,7 +109,13 @@ new class extends Component
             <x-input label="Nama Lengkap" wire:model="name" id="name" required autofocus autocomplete="name"
                 icon="o-user" />
 
-            <x-input label="Email" wire:model="email" id="email" type="email" required autocomplete="username"
+            <x-input label="Nomor Induk Kependudukan (NIK)" wire:model="nik" id="nik" type="number" required
+                autocomplete="off" icon="o-identification" />
+
+            <x-input label="Nomor WhatsApp" wire:model="no_wa" id="no_wa" type="number" required autocomplete="tel"
+                icon="o-phone" />
+
+            <x-input label="Email" wire:model="email" id="email" type="email" autocomplete="username"
                 icon="o-envelope" />
 
             @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && !

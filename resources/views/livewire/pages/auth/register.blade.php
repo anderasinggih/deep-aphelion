@@ -116,7 +116,7 @@ new #[Layout('layouts.auth')] class extends Component
                 </div>
 
                 <div>
-                    <x-input wire:model="email" id="email" label="Email (Opsional)" type="email"
+                    <x-input wire:model="email" id="email" label="Email" type="email"
                         placeholder="Contoh: nama@email.com" autocomplete="email" icon="o-envelope" />
                 </div>
             </div>
