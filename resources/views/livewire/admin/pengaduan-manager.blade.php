@@ -167,7 +167,7 @@
 
                                 @if($pengaduan->status !== 'selesai')
                                 <x-menu-item title="Selesaikan" icon="o-check-circle" class="font-bold text-success"
-                                    wire:click="setStatus({{ $pengaduan->id }}, 'selesai')" />
+                                    wire:click="openSelesaiModal({{ $pengaduan->id }})" />
                                 @endif
 
                                 @if($pengaduan->status !== 'ditolak')
@@ -212,6 +212,33 @@
                 <x-button label="Batal" @click="$wire.disposisiModal = false" class="btn-ghost" />
                 <x-button label="Simpan Disposisi & Proses" type="submit" icon="o-paper-airplane" class="btn-primary"
                     spinner="saveDisposisi" />
+            </x-slot:actions>
+        </x-form>
+    </x-modal>
+
+    <!-- Modal Bukti Selesai (After Photo) -->
+    <x-modal wire:model="selesaiModal" title="Selesaikan Tindak Lanjut Laporan"
+        subtitle="Unggah foto 'After' penyelesaian sebagai bukti transparan untuk Warga.">
+        <x-form wire:submit="markSelesai">
+
+            <x-file label="Foto Bukti Penyelesaian (After / Selesai)" wire:model="foto_bukti_selesai" accept="image/*"
+                required hint="Wajib menyertakan foto hasil pekerjaan lapangan." />
+
+            @if ($foto_bukti_selesai)
+            <div class="mt-2 text-center border border-dashed rounded-lg p-2 bg-base-100">
+                <span class="text-sm font-semibold text-gray-500 block">Preview Foto:</span>
+                <img src="{{ $foto_bukti_selesai->temporaryUrl() }}"
+                    class="rounded shadow w-48 mx-auto mt-1 border border-base-300">
+            </div>
+            @endif
+
+            <x-textarea label="Jelaskan Tindak Lanjut" wire:model="keterangan_selesai"
+                placeholder="Catat detail apa yang telah diperbaiki..." rows="3" required minlength="10" />
+
+            <x-slot:actions>
+                <x-button label="Batal" @click="$wire.selesaiModal = false" class="btn-ghost" />
+                <x-button label="Submit Bukti Selesai" type="submit" icon="o-check-circle"
+                    class="btn-success text-white" spinner="markSelesai" />
             </x-slot:actions>
         </x-form>
     </x-modal>

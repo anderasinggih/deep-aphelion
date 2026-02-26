@@ -4,13 +4,14 @@ namespace App\Livewire\Admin;
 
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\WithFileUploads;
 use App\Models\Pengaduan;
 use App\Models\PengaduanHistory;
 use App\Models\User;
 
 class PengaduanManager extends Component
 {
-    use WithPagination;
+    use WithPagination, WithFileUploads;
 
     public $search = '';
     public $statusFilter = '';
@@ -20,6 +21,11 @@ class PengaduanManager extends Component
     public $selectedPengaduanId = null;
     public $petugas_id = '';
     public $disposisi_notes = '';
+
+    // Selesai Modal State
+    public $selesaiModal = false;
+    public $foto_bukti_selesai;
+    public $keterangan_selesai = '';
 
     public function openDisposisi($id)
     {
@@ -83,6 +89,40 @@ class PengaduanManager extends Component
         $this->disposisiModal = false;
         $this->disposisi_notes = '';
         session()->flash('success', 'Disposisi berhasil disimpan dan laporan diproses.');
+    }
+
+    public function openSelesaiModal($id)
+    {
+        $this->selectedPengaduanId = $id;
+        $this->selesaiModal = true;
+    }
+
+    public function markSelesai()
+    {
+        $this->validate([
+            'foto_bukti_selesai' => 'required|image|max:5120',
+            'keterangan_selesai' => 'required|string|min:10',
+            'selectedPengaduanId' => 'required|exists:pengaduans,id'
+        ]);
+
+        $pengaduan = Pengaduan::findOrFail($this->selectedPengaduanId);
+        $path = $this->foto_bukti_selesai->store('bukti_selesai', 'public');
+
+        $oldStatus = $pengaduan->status;
+        $pengaduan->status = 'selesai';
+        $pengaduan->save();
+
+        PengaduanHistory::create([
+            'pengaduan_id' => $pengaduan->id,
+            'user_id' => auth()->id(),
+            'status_sebelumnya' => $oldStatus,
+            'status_baru' => 'selesai',
+            'keterangan_admin' => $this->keterangan_selesai,
+            'foto_bukti' => $path,
+        ]);
+
+        $this->reset('selesaiModal', 'foto_bukti_selesai', 'keterangan_selesai', 'selectedPengaduanId');
+        session()->flash('success', 'Laporan berhasil diselesaikan beserta bukti foto terlampir.');
     }
 
     public function render()

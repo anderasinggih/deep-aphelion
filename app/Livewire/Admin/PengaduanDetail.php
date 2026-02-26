@@ -3,17 +3,24 @@
 namespace App\Livewire\Admin;
 
 use Livewire\Component;
+use Livewire\WithFileUploads;
 use App\Models\Pengaduan;
 use App\Models\PengaduanHistory;
 use App\Models\User;
 
 class PengaduanDetail extends Component
 {
+    use WithFileUploads;
+
     public Pengaduan $pengaduan;
 
     public $disposisiModal = false;
     public $petugas_id = '';
     public $disposisi_notes = '';
+
+    public $selesaiModal = false;
+    public $foto_bukti_selesai;
+    public $keterangan_selesai = '';
 
     public function mount($id)
     {
@@ -28,6 +35,10 @@ class PengaduanDetail extends Component
 
     public function changeStatus($newStatus)
     {
+        if ($newStatus === 'selesai') {
+            $this->selesaiModal = true;
+            return;
+        }
         // Prevent if 'diproses' but no petugas assigned yet
         if ($newStatus === 'diproses' && !$this->pengaduan->petugas_id) {
             session()->flash('error', 'Pilih petugas untuk disposisi terlebih dahulu sebelum mengubah status menjadi Diproses.');
@@ -79,6 +90,33 @@ class PengaduanDetail extends Component
         $this->disposisiModal = false;
         $this->disposisi_notes = '';
         session()->flash('success', 'Disposisi berhasil disimpan dan laporan diproses.');
+        $this->pengaduan->refresh();
+    }
+
+    public function markSelesai()
+    {
+        $this->validate([
+            'foto_bukti_selesai' => 'required|image|max:5120',
+            'keterangan_selesai' => 'required|string|min:10',
+        ]);
+
+        $path = $this->foto_bukti_selesai->store('bukti_selesai', 'public');
+        $oldStatus = $this->pengaduan->getOriginal('status') ?? $this->pengaduan->status;
+
+        $this->pengaduan->status = 'selesai';
+        $this->pengaduan->save();
+
+        PengaduanHistory::create([
+            'pengaduan_id' => $this->pengaduan->id,
+            'user_id' => auth()->id(),
+            'status_sebelumnya' => $oldStatus,
+            'status_baru' => 'selesai',
+            'keterangan_admin' => $this->keterangan_selesai,
+            'foto_bukti' => $path,
+        ]);
+
+        $this->reset('selesaiModal', 'foto_bukti_selesai', 'keterangan_selesai');
+        session()->flash('success', 'Laporan berhasil diselesaikan beserta bukti foto terlampir.');
         $this->pengaduan->refresh();
     }
 

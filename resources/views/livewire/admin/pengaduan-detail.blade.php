@@ -26,6 +26,44 @@
                 @endif
             </div>
 
+            {{-- Aksi Status (Dropdown) --}}
+            <x-dropdown class="dropdown-end">
+                <x-slot:trigger>
+                    <x-button icon="o-ellipsis-vertical" class="btn-primary btn-outline shadow-sm rounded-xl shrink-0"
+                        label="Aksi" />
+                </x-slot:trigger>
+
+                <div class="my-1 opacity-50 divider"><span class="text-[10px] font-bold">UBAH
+                        STATUS</span></div>
+
+                @if($this->pengaduan->status !== 'menunggu')
+                <x-menu-item title="Set Menunggu" icon="o-clock" wire:click="changeStatus('menunggu')" />
+                @endif
+
+                @if($this->pengaduan->status !== 'diproses')
+                @if($this->pengaduan->petugas_id)
+                <x-menu-item title="Set Diproses" icon="o-arrow-path" wire:click="changeStatus('diproses')" />
+                @else
+                <x-menu-item title="Proses (Dispo)" icon="o-arrow-path" class="font-bold text-info"
+                    wire:click="openDisposisi" />
+                @endif
+                @endif
+
+                @if($this->pengaduan->status !== 'selesai')
+                <x-menu-item title="Selesaikan" icon="o-check-circle" class="font-bold text-success"
+                    wire:click="changeStatus('selesai')" />
+                @endif
+
+                @if($this->pengaduan->status !== 'ditolak')
+                <x-menu-item title="Tolak Laporan" icon="o-x-circle" class="font-bold text-error"
+                    wire:click="changeStatus('ditolak')" />
+                @endif
+
+                <div class="my-1 opacity-50 divider"><span class="text-[10px] font-bold">TUGAS</span>
+                </div>
+                <x-menu-item title="Atur Disposisi" icon="o-user-plus" wire:click="openDisposisi" />
+            </x-dropdown>
+
             <a href="{{ route('admin.pengaduan') }}" wire:navigate
                 class="btn btn-outline border-base-300 shadow-sm rounded-xl hover:bg-base-200 hover:text-base-content transition-all shrink-0">
                 <x-icon name="o-arrow-left" class="w-4 h-4 mr-1" /> Kembali
@@ -240,6 +278,22 @@
                                     {{ $history->keterangan_admin }}
                                 </div>
                                 @endif
+
+                                @if($history->foto_bukti)
+                                <div class="mt-2 text-xs bg-base-200/30 border border-base-200 p-2 rounded-lg inline-block group relative overflow-hidden cursor-zoom-in"
+                                    onclick="window.open('{{ Storage::url($history->foto_bukti) }}', '_blank')">
+                                    <span
+                                        class="block text-[10px] font-black uppercase text-base-content/40 mb-1.5 px-1">Bukti
+                                        Penanganan Selesai</span>
+                                    <img src="{{ Storage::url($history->foto_bukti) }}" alt="Foto Bukti Penanganan"
+                                        class="w-auto h-24 sm:h-32 object-cover rounded shadow-sm border border-base-200 transition-transform duration-300 group-hover:scale-105">
+                                    <div
+                                        class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center pointer-events-none transition-opacity">
+                                        <x-icon name="o-magnifying-glass-plus"
+                                            class="w-6 h-6 text-white drop-shadow-md" />
+                                    </div>
+                                </div>
+                                @endif
                             </div>
                             @if(!$loop->last)
                             <hr class="bg-base-300" /> @endif
@@ -313,6 +367,29 @@
                 <x-button label="Batal" @click="$wire.disposisiModal = false" class="btn-ghost" />
                 <x-button label="Simpan Disposisi & Proses" type="submit" icon="o-paper-airplane" class="btn-primary"
                     spinner="saveDisposisi" />
+            </x-slot:actions>
+        </x-form>
+    </x-modal>
+
+    <!-- Modal Bukti Selesai (After Photo) -->
+    <x-modal wire:model="selesaiModal" title="Selesaikan Tindak Lanjut Laporan"
+        subtitle="Unggah foto 'After' penyelesaian sebagai bukti transparan untuk Warga.">
+        <x-form wire:submit="markSelesai">
+            <x-file label="Foto Bukti Penyelesaian (After / Selesai)" wire:model="foto_bukti_selesai" accept="image/*"
+                required hint="Wajib menyertakan foto hasil pekerjaan lapangan." />
+            @if ($foto_bukti_selesai)
+            <div class="mt-2 text-center border border-dashed rounded-lg p-2 bg-base-100">
+                <span class="text-sm font-semibold text-gray-500 block">Preview Foto:</span>
+                <img src="{{ $foto_bukti_selesai->temporaryUrl() }}"
+                    class="rounded shadow w-48 mx-auto mt-1 border border-base-300">
+            </div>
+            @endif
+            <x-textarea label="Jelaskan Tindak Lanjut" wire:model="keterangan_selesai"
+                placeholder="Catat detail apa yang telah diperbaiki..." rows="3" required minlength="10" />
+            <x-slot:actions>
+                <x-button label="Batal" @click="$wire.selesaiModal = false" class="btn-ghost" />
+                <x-button label="Submit Bukti Selesai" type="submit" icon="o-check-circle"
+                    class="btn-success text-white" spinner="markSelesai" />
             </x-slot:actions>
         </x-form>
     </x-modal>

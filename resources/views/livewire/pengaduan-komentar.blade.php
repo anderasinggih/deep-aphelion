@@ -19,7 +19,7 @@
         <div class="flex-1 min-w-0">
             <x-form wire:submit="postComment" class="flex flex-col gap-2">
                 <x-textarea wire:model="komentar" placeholder="Tulis komentar..." rows="1"
-                    class="!min-h-[25px] text-sm bg-base-100 border-none focus:ring-1 focus:ring-primary rounded-lg" />
+                    class="!min-h-[35px] text-sm bg-base-100 border-none focus:ring-1 focus:ring-primary rounded-lg" />
                 <div class="flex justify-end">
                     <x-button type="submit" label="Kirim" class="btn-primary btn-xs p-4 rounded-md"
                         spinner="postComment" />

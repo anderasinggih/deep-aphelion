@@ -198,6 +198,22 @@
                                     {{ $history->keterangan_admin }}
                                 </div>
                                 @endif
+
+                                @if($history->foto_bukti)
+                                <div class="mt-2 text-xs bg-base-200/30 border border-base-200 p-2 rounded-lg inline-block group relative overflow-hidden cursor-zoom-in"
+                                    onclick="window.open('{{ Storage::url($history->foto_bukti) }}', '_blank')">
+                                    <span
+                                        class="block text-[10px] font-black uppercase text-base-content/40 mb-1.5 px-1">Bukti
+                                        Penanganan Selesai</span>
+                                    <img src="{{ Storage::url($history->foto_bukti) }}" alt="Foto Bukti Penanganan"
+                                        class="w-auto h-24 sm:h-32 object-cover rounded shadow-sm border border-base-200 transition-transform duration-300 group-hover:scale-105">
+                                    <div
+                                        class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center pointer-events-none transition-opacity">
+                                        <x-icon name="o-magnifying-glass-plus"
+                                            class="w-6 h-6 text-white drop-shadow-md" />
+                                    </div>
+                                </div>
+                                @endif
                             </div>
 
                             @if(!$loop->last)
