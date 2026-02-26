@@ -107,7 +107,7 @@
                 <div class="flex justify-end gap-3 mt-4">
                     <x-button label="Batal" wire:click="closeModal" class="btn-ghost" />
                     <x-button label="{{ $isEdit ? 'Simpan Perubahan' : 'Tambah Kategori' }}" type="submit"
-                        class="btn-primary" spinner="{{ $isEdit ? 'update' : 'store' }}" />
+                        class="btn-primary p-4" spinner="{{ $isEdit ? 'update' : 'store' }}" />
                 </div>
             </x-slot:actions>
         </x-form>

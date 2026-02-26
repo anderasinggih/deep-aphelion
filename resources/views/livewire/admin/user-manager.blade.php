@@ -118,8 +118,8 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <x-input label="{{ $isEdit ? 'Password Baru (Kosongkan jika tidak diubah)' : 'Password' }}"
-                    wire:model="password" type="password" required="{{ !$isEdit }}" icon="o-lock-closed" />
+                <x-input label="{{ $isEdit ? 'Password Baru' : 'Password' }}" wire:model="password" type="password"
+                    required="{{ !$isEdit }}" icon="o-lock-closed" />
                 <x-input label="Konfirmasi Password" wire:model="password_confirmation" type="password"
                     required="{{ !$isEdit }}" icon="o-check-circle" />
             </div>
@@ -131,7 +131,7 @@
                 <div class="flex justify-end gap-3 mt-4">
                     <x-button label="Batal" wire:click="closeModal" class="btn-ghost" />
                     <x-button label="{{ $isEdit ? 'Simpan Perubahan' : 'Tambah Pengguna' }}" type="submit"
-                        class="btn-primary" spinner="{{ $isEdit ? 'update' : 'store' }}" />
+                        class="btn-primary p-4" spinner="{{ $isEdit ? 'update' : 'store' }}" />
                 </div>
             </x-slot:actions>
         </x-form>
