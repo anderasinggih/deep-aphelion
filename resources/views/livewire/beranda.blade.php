@@ -9,18 +9,36 @@
             color: #ffffff !important;
             font-weight: 500 !important;
         }
+
+        .banner-paksa-atas {
+            position: relative;
+            width: 100vw;
+            left: 50%;
+            right: 50%;
+            margin-left: -50vw;
+            margin-right: -50vw;
+            /* Tarik ke atas melampaui padding x-main (sesuaikan angka ini) */
+            margin-top: -5rem !important;
+        }
+
+        @media (min-width: 1024px) {
+            .banner-paksa-atas {
+                margin-top: -6.5rem !important;
+            }
+        }
     </style>
 
     {{-- Banner Wrapper --}}
-    <div
-        class="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden mb-0 -mt-8 md:-mt-14 lg:-mt-20">
+    <div class="overflow-hidden mb-0 banner-paksa-atas">
         <div class="absolute inset-0 z-0">
             <img class="absolute inset-0 opacity-40 w-full h-full object-cover"
                 src="{{ asset('storage/assets/banner.jpg') }}">
         </div>
 
+        {{-- Padding Top (pt) di sini diperbesar agar Logo & Tulisan turun dari bawah Navbar --}}
         <div
-            class="relative z-10 flex flex-col items-center justify-center text-center py-16 md:py-24 lg:py-32 px-6 max-w-7xl mx-auto">
+            class="relative z-10 flex flex-col items-center justify-center text-center pt-32 pb-16 md:pt-44 md:pb-24 lg:pt-52 lg:pb-32 px-6 max-w-7xl mx-auto">
+
             <img src="{{ asset('storage/assets/logobanyumas.png') }}"
                 class="w-20 md:w-28 lg:w-32 h-auto mb-6 drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]" alt="Logo" />
 
@@ -34,14 +52,13 @@
                 Silakan klik tombol di bawah untuk mulai melaporkan masalah maupun aspirasi Anda.
             </p>
 
+            {{-- Tombol Auth Tetap Sama --}}
             @auth
-            {{-- Tombol untuk user yang sudah Login --}}
             <a href="/pengaduan/create" wire:navigate
                 class="btn border-none text-white shadow-2xl bg-[#0085FF] hover:bg-white hover:text-[#0085FF] hover:-translate-y-1 px-10 md:px-14 py-4 rounded-full font-black text-sm md:text-lg transition-all duration-300">
                 Mulai Pengaduan
             </a>
             @else
-            {{-- Tombol untuk user yang Belum Login (Guest) --}}
             <a href="/login" wire:navigate
                 class="btn border-none text-white shadow-2xl bg-[#0085FF] hover:bg-white hover:text-[#0085FF] hover:-translate-y-1 px-10 md:px-14 py-4 rounded-full font-black text-sm md:text-lg transition-all duration-300">
                 Mulai Pengaduan

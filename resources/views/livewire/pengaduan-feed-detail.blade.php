@@ -59,36 +59,6 @@
 
                     <div class="divider opacity-10"></div>
 
-                    {{-- Deskripsi Keluhan --}}
-                    <div class="text-sm md:text-base leading-relaxed text-base-content/90 font-medium
-                        ">
-                        {{ $this->pengaduan->deskripsi }}
-
-                    </div>
-
-                    {{-- Lokasi Kejadian --}}
-                    @if($this->pengaduan->lokasi_kejadian)
-                    <div class="bg-base-200/50 p-4 rounded-xl border border-base-200 flex items-start gap-3">
-                        <div class="p-2 bg-error/10 rounded-lg text-error shrink-0">
-                            <x-icon name="o-map-pin" class="w-5 h-5" />
-                        </div>
-                        <div>
-                            <p class="text-[10px] font-black uppercase text-base-content/40 tracking-wider mb-0.5">
-                                Lokasi Terkait</p>
-                            <p class="text-sm font-bold text-base-content leading-tight">
-                                {{ $this->pengaduan->lokasi_kejadian }}
-                            </p>
-                            @if($this->pengaduan->latitude)
-                            <a href="https://www.google.com/maps/search/?api=1&query={{ $this->pengaduan->latitude }},{{ $this->pengaduan->longitude }}"
-                                target="_blank"
-                                class="text-primary hover:underline text-xs mt-1 inline-block font-semibold">Buka di
-                                Peta</a>
-                            @endif
-                        </div>
-                    </div>
-                    @endif
-
-                    {{-- Foto Lampiran: Pas dengan kontainer --}}
                     @if($this->pengaduan->foto_bukti)
                     <div class="mt-8">
                         <span
@@ -116,6 +86,40 @@
                         </div>
                     </div>
                     @endif
+
+                    {{-- Lokasi Kejadian --}}
+                    @if($this->pengaduan->lokasi_kejadian)
+                    <div class="bg-base-200/50 p-4 rounded-xl border border-base-200 flex items-start gap-3">
+                        <div class="p-2 bg-error/10 rounded-lg text-error shrink-0">
+                            <x-icon name="o-map-pin" class="w-5 h-5" />
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-black uppercase text-base-content/40 tracking-wider mb-0.5">
+                                Lokasi Terkait</p>
+                            <p class="text-sm font-bold text-base-content leading-tight">
+                                {{ $this->pengaduan->lokasi_kejadian }}
+                            </p>
+                            @if($this->pengaduan->latitude)
+                            <a href="https://www.google.com/maps/search/?api=1&query={{ $this->pengaduan->latitude }},{{ $this->pengaduan->longitude }}"
+                                target="_blank"
+                                class="text-primary hover:underline text-xs mt-1 inline-block font-semibold">Buka di
+                                Peta</a>
+                            @endif
+                        </div>
+                    </div>
+                    @endif
+
+                    {{-- Deskripsi Keluhan --}}
+                    <div class="text-sm md:text-base leading-relaxed text-base-content/90 font-medium
+                        ">
+                        {{ $this->pengaduan->deskripsi }}
+
+                    </div>
+
+
+
+                    {{-- Foto Lampiran: Pas dengan kontainer --}}
+
 
 
                 </div>
