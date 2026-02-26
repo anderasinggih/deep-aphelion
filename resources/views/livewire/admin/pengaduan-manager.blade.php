@@ -23,10 +23,10 @@
     </x-alert>
     @endif
 
-    <div class="pb-4 overflow-hidden border shadow-sm bg-base-100 rounded-2xl border-base-200">
-        {{-- Header Filter --}}
-        <div class="flex flex-row items-center gap-2 p-3 mb-2 border-b sm:gap-4 sm:p-4 border-base-200 bg-base-100/50">
+    <div class="pb-4 border shadow-sm bg-base-100 rounded-2xl border-base-200">
 
+        {{-- Header Filter (Sebaris di Mobile & Desktop) --}}
+        <div class="flex flex-row items-center gap-2 p-3 mb-2 border-b sm:gap-4 sm:p-4 border-base-200 bg-base-100/50">
             {{-- Search (Ambil sisa ruang) --}}
             <div class="flex-1 min-w-0">
                 <x-input wire:model.live.debounce="search" icon="o-magnifying-glass" placeholder="Cari Judul / Nama..."
@@ -43,11 +43,10 @@
                     ['id' => 'ditolak', 'name' => 'Ditolak'],
                 ]" option-value="id" option-label="name" class="w-full select-sm sm:select-md" />
             </div>
-
         </div>
 
-        {{-- Wrapper Tabel (min-h ditambah agar dropdown tidak tertutup) --}}
-        <div class="overflow-x-auto min-h-[100px]">
+        {{-- Wrapper Tabel (min-h-[350px] agar dropdown MaryUI tidak kepotong) --}}
+        <div class="overflow-x-auto min-h-[350px]">
             <table class="table w-full table-xs sm:table-sm md:table-md">
                 <thead class="bg-base-200/50 text-base-content/60">
                     <tr>
@@ -116,7 +115,7 @@
                             @endphp
 
                             <span
-                                class="badge {{ $curr['class'] }} badge-outline font-bold text-[13px] sm:text-[13px]  px-1.5 h-4 sm:h-5">
+                                class="badge {{ $curr['class'] }} badge-outline font-bold text-[13px] px-1.5 h-4 sm:h-5">
                                 {{ $curr['label'] }}
                             </span>
 
@@ -131,62 +130,52 @@
                             @endif
                         </td>
 
-                        {{-- Aksi (Dropdown Native Sistem) --}}
+                        {{-- Aksi (Menggunakan Mary UI Component) --}}
                         <td class="px-3 py-2 text-right">
-                            <div class="dropdown dropdown-end sm:dropdown-left">
-                                <div tabindex="0" role="button"
-                                    class="text-white rounded-full shadow-sm btn btn-primary btn-xs hover:scale-105">
-                                    <x-icon name="o-ellipsis-horizontal" class="w-4 h-4" />
+                            <x-dropdown class="dropdown-end sm:dropdown-left">
+                                <x-slot:trigger>
+                                    <x-button icon="o-ellipsis-horizontal"
+                                        class="text-white rounded-full shadow-sm btn-primary btn-xs hover:scale-105"
+                                        tooltip="Aksi Laporan" />
+                                </x-slot:trigger>
+
+                                {{-- Daftar Menu --}}
+                                <x-menu-item title="Detail Lengkap" icon="o-eye"
+                                    link="{{ route('admin.pengaduan.detail', $pengaduan->id) }}" wire:navigate />
+
+                                <div class="my-1 opacity-50 divider"><span class="text-[10px] font-bold">UBAH
+                                        STATUS</span></div>
+
+                                @if($pengaduan->status !== 'menunggu')
+                                <x-menu-item title="Set Menunggu" icon="o-clock"
+                                    wire:click="setStatus({{ $pengaduan->id }}, 'menunggu')" />
+                                @endif
+
+                                @if($pengaduan->status !== 'diproses')
+                                @if($pengaduan->petugas_id)
+                                <x-menu-item title="Set Diproses" icon="o-arrow-path"
+                                    wire:click="setStatus({{ $pengaduan->id }}, 'diproses')" />
+                                @else
+                                <x-menu-item title="Proses (Dispo)" icon="o-arrow-path" class="font-bold text-info"
+                                    wire:click="openDisposisi({{ $pengaduan->id }})" />
+                                @endif
+                                @endif
+
+                                @if($pengaduan->status !== 'selesai')
+                                <x-menu-item title="Selesaikan" icon="o-check-circle" class="font-bold text-success"
+                                    wire:click="setStatus({{ $pengaduan->id }}, 'selesai')" />
+                                @endif
+
+                                @if($pengaduan->status !== 'ditolak')
+                                <x-menu-item title="Tolak Laporan" icon="o-x-circle" class="font-bold text-error"
+                                    wire:click="setStatus({{ $pengaduan->id }}, 'ditolak')" />
+                                @endif
+
+                                <div class="my-1 opacity-50 divider"><span class="text-[10px] font-bold">TUGAS</span>
                                 </div>
-                                {{-- Menu Dropdown Bawaan DaisyUI --}}
-                                <ul tabindex="0"
-                                    class="dropdown-content z-[50] menu p-2 shadow-xl bg-base-100 rounded-2xl w-48 border border-base-200 mt-1 sm:mt-0 sm:mr-1">
-                                    <li>
-                                        <a href="{{ route('admin.pengaduan.detail', $pengaduan->id) }}" wire:navigate
-                                            class="text-xs font-bold py-2">
-                                            <x-icon name="o-eye" class="w-4 h-4 opacity-70" /> Detail Lengkap
-                                        </a>
-                                    </li>
-
-                                    <div class="my-0 opacity-30 divider"></div>
-                                    <li class="menu-title text-[9px] py-1 opacity-70">Ubah Status</li>
-
-                                    @if($pengaduan->status !== 'menunggu')
-                                    <li><a wire:click="setStatus({{ $pengaduan->id }}, 'menunggu')"
-                                            class="py-2 text-xs"><x-icon name="o-clock" class="w-4 h-4 opacity-70" />
-                                            Set Menunggu</a></li>
-                                    @endif
-
-                                    @if($pengaduan->status !== 'diproses')
-                                    @if($pengaduan->petugas_id)
-                                    <li><a wire:click="setStatus({{ $pengaduan->id }}, 'diproses')"
-                                            class="py-2 text-xs"><x-icon name="o-arrow-path"
-                                                class="w-4 h-4 opacity-70" /> Set Diproses</a></li>
-                                    @else
-                                    <li><a wire:click="openDisposisi({{ $pengaduan->id }})"
-                                            class="py-2 text-xs font-bold text-info"><x-icon name="o-arrow-path"
-                                                class="w-4 h-4" /> Proses (Dispo)</a></li>
-                                    @endif
-                                    @endif
-
-                                    @if($pengaduan->status !== 'selesai')
-                                    <li><a wire:click="setStatus({{ $pengaduan->id }}, 'selesai')"
-                                            class="py-2 text-xs font-bold text-success"><x-icon name="o-check-circle"
-                                                class="w-4 h-4" /> Selesaikan</a></li>
-                                    @endif
-
-                                    @if($pengaduan->status !== 'ditolak')
-                                    <li><a wire:click="setStatus({{ $pengaduan->id }}, 'ditolak')"
-                                            class="py-2 text-xs font-bold text-error"><x-icon name="o-x-circle"
-                                                class="w-4 h-4" /> Tolak</a></li>
-                                    @endif
-
-                                    <div class="my-0 opacity-30 divider"></div>
-                                    <li class="menu-title text-[9px] py-1 opacity-70">Tugas</li>
-                                    <li><a wire:click="openDisposisi({{ $pengaduan->id }})" class="py-2 text-xs"><x-icon
-                                                name="o-user-plus" class="w-4 h-4 opacity-70" /> Atur Disposisi</a></li>
-                                </ul>
-                            </div>
+                                <x-menu-item title="Atur Disposisi" icon="o-user-plus"
+                                    wire:click="openDisposisi({{ $pengaduan->id }})" />
+                            </x-dropdown>
                         </td>
                     </tr>
                     @empty
