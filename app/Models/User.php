@@ -70,4 +70,23 @@ class User extends Authenticatable
     {
         return $this->hasMany(PengaduanKomentar::class);
     }
+
+    /**
+     * Get initials from user name.
+     */
+    public function getAvatarInitialsAttribute(): string
+    {
+        return collect(explode(' ', $this->name))
+            ->map(fn($part) => substr($part, 0, 1))
+            ->take(2)
+            ->join('') ?: '?';
+    }
+
+    /**
+     * Get a consistent avatar URL.
+     */
+    public function getAvatarUrlAttribute(): string
+    {
+        return "https://ui-avatars.com/api/?name=" . urlencode($this->name) . "&color=FFFFFF&background=0284c7&bold=true";
+    }
 }

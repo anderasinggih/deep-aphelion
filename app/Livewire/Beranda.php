@@ -19,7 +19,11 @@ class Beranda extends Component
 
     public function upvote($pengaduan_id)
     {
-        if (!Auth::check() || Auth::user()->role !== 'warga') {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+        if (Auth::user()->role !== 'warga') {
             session()->flash('error', 'Silakan login sebagai warga untuk memberikan dukungan.');
             return;
         }

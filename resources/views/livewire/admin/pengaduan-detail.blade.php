@@ -199,12 +199,7 @@
                 </div>
                 <div class="p-5 flex flex-col gap-4">
                     <div class="flex items-center gap-4">
-                        <div class="avatar placeholder shrink-0">
-                            <div
-                                class="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold border border-primary/20 text-lg shadow-sm">
-                                {{ strtoupper(substr($this->pengaduan->user->name, 0, 1)) }}
-                            </div>
-                        </div>
+                        <x-user-avatar :user="$this->pengaduan->user" size="w-12 h-12" class="shrink-0" />
                         <div class="overflow-hidden">
                             <p class="font-bold text-base-content text-sm md:text-base leading-tight truncate">{{
                                 $this->pengaduan->user->name }}</p>

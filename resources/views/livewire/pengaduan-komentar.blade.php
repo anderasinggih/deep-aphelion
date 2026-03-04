@@ -11,11 +11,7 @@
     {{-- Form Input Utama --}}
     @auth
     <div class="flex gap-2 items-start bg-base-200/30 p-2 rounded-xl border border-base-200">
-        <div class="avatar placeholder shrink-0">
-            <div class="bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center">
-                <span class="text-[10px] font-black">{{ substr(Auth::user()->name, 0, 1) }}</span>
-            </div>
-        </div>
+        <x-user-avatar :user="auth()->user()" size="w-8 h-8" />
         <div class="flex-1 min-w-0">
             <x-form wire:submit="postComment" class="flex flex-col gap-2">
                 <x-textarea wire:model="komentar" placeholder="Tulis komentar..." rows="1"
@@ -34,16 +30,7 @@
         @forelse($this->komentars as $comment)
         <div class="flex gap-3">
             {{-- Avatar --}}
-            <div class="avatar placeholder shrink-0 mt-0.5">
-                @php
-                $color = match($comment->user->role) { 'admin' => 'bg-error', 'petugas' => 'bg-info', default =>
-                'bg-base-300' };
-                @endphp
-                <div
-                    class="{{ $color }} text-white rounded-full w-8 h-8 flex items-center justify-center border border-base-100">
-                    <span class="text-[10px] font-black">{{ substr($comment->user->name, 0, 1) }}</span>
-                </div>
-            </div>
+            <x-user-avatar :user="$comment->user" size="w-8 h-8" class="mt-0.5 shrink-0" />
 
             {{-- Bubble Konten --}}
             <div class="flex-1 min-w-0">
@@ -90,12 +77,7 @@
                 <div class="mt-3 ml-2 pl-4 border-l-2 border-base-200 space-y-3">
                     @foreach($comment->replies as $reply)
                     <div class="flex gap-2">
-                        <div class="avatar placeholder shrink-0 mt-0.5">
-                            <div
-                                class="bg-base-200 rounded-full w-6 h-6 flex items-center justify-center border border-base-100">
-                                <span class="text-[8px] font-black">{{ substr($reply->user->name, 0, 1) }}</span>
-                            </div>
-                        </div>
+                        <x-user-avatar :user="$reply->user" size="w-6 h-6" class="mt-0.5 shrink-0" />
                         <div
                             class="bg-base-100 border border-base-200 rounded-xl px-2.5 py-1.5 inline-block max-w-full">
                             <div class="flex items-center gap-1.5 mb-0.5">

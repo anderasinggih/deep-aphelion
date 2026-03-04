@@ -130,11 +130,7 @@
                 <div class="dropdown dropdown-end">
                     <div tabindex="0" role="button"
                         class="btn btn-ghost px-2 flex items-center gap-2 hover:bg-base-200/50 rounded-full transition-all border border-transparent hover:border-white/20">
-                        <div class="avatar placeholder shadow-sm">
-                            <div class="bg-primary text-white rounded-full w-9 h-9 flex items-center justify-center">
-                                <span class="text-xs font-black">{{ strtoupper($initials) }}</span>
-                            </div>
-                        </div>
+                        <x-user-avatar :user="auth()->user()" size="w-9 h-9" />
                         <x-icon name="o-chevron-down" class="w-3.5 h-3.5 opacity-50 hidden sm:block" />
                     </div>
                     <ul tabindex="0"
