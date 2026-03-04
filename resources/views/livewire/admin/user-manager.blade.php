@@ -119,9 +119,9 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <x-input label="{{ $isEdit ? 'Password Baru' : 'Password' }}" wire:model="password" type="password"
-                    required="{{ !$isEdit }}" icon="o-lock-closed" />
+                    :required="!$isEdit" icon="o-lock-closed" />
                 <x-input label="Konfirmasi Password" wire:model="password_confirmation" type="password"
-                    required="{{ !$isEdit }}" icon="o-check-circle" />
+                    :required="!$isEdit" icon="o-check-circle" />
             </div>
             @if(!$isEdit || $password)
             <p class="text-xs text-base-content/60 pb-2">Minimal 8 karakter, wajib kombinasi huruf dan angka.</p>
