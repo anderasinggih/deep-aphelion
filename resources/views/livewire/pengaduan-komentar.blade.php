@@ -10,7 +10,7 @@
 
     {{-- Form Input Utama --}}
     @auth
-    <div class="flex gap-2 items-start bg-base-200/30 p-2 rounded-xl border border-base-200">
+    <div class="flex gap-2 items-start bg-base-200/30 p-2 rounded-xl ">
         <x-user-avatar :user="auth()->user()" size="w-8 h-8" />
         <div class="flex-1 min-w-0">
             <x-form wire:submit="postComment" class="flex flex-col gap-2">
@@ -78,8 +78,7 @@
                     @foreach($comment->replies as $reply)
                     <div class="flex gap-2">
                         <x-user-avatar :user="$reply->user" size="w-6 h-6" class="mt-0.5 shrink-0" />
-                        <div
-                            class="bg-base-100 border border-base-200 rounded-xl px-2.5 py-1.5 inline-block max-w-full">
+                        <div class="bg-base-100  rounded-xl px-2.5 py-1.5 inline-block max-w-full">
                             <div class="flex items-center gap-1.5 mb-0.5">
                                 <span class="font-bold text-[11px]">{{ $reply->user->name }}</span>
                                 <span class="text-[8px] opacity-40 italic">{{ $reply->created_at->diffForHumans(null,
