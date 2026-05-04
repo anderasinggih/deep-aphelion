@@ -1,42 +1,41 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@plugin "daisyui";
 
-@layer base {
-    :root {
-        /* Primary Brand Color */
-        --color-primary: #165dfc;
-        /* Text color on top of primary button */
-        --color-primary-content: #ffffff;
+@source "../../vendor/robsontenorio/mary/src/View/Components/**/*.php";
 
-        /* App Title Brand Color */
-        --color-brand: #74d4ff;
+@theme {
+    /* Primary Brand Color */
+    --color-primary: #165dfc;
+    /* Text color on top of primary button */
+    --color-primary-content: #ffffff;
 
-        /* Base Backgrounds */
-        --color-base-100: #172030;
-        /* Inner forms and containers */
-        --color-base-200: #0d1424;
-        /* Main dark background */
-        --color-base-300: #232f45;
-        /* Borders and accents */
-        --color-base-content: #fcfcfd;
-        /* Soft readable white text */
+    /* App Title Brand Color */
+    --color-brand: #74d4ff;
 
-        /* Surface/Neutral Colors (similar to the settings dropdown) */
-        --color-neutral: #3b4252;
-        --color-neutral-content: #e5e9f0;
+    /* Base Backgrounds */
+    --color-base-100: #172030;
+    /* Inner forms and containers */
+    --color-base-200: #0d1424;
+    /* Main dark background */
+    --color-base-300: #232f45;
+    /* Borders and accents */
+    --color-base-content: #fcfcfd;
+    /* Soft readable white text */
 
-        /* Radius Configurations for unified soft corners */
-        --radius-selector: 0.5rem;
-        --radius-field: 0.5rem;
-        --radius-box: 1rem;
-    }
+    /* Surface/Neutral Colors (similar to the settings dropdown) */
+    --color-neutral: #3b4252;
+    --color-neutral-content: #e5e9f0;
 
-    /* Force background application */
-    body {
-        background-color: var(--color-base-100);
-        color: var(--color-base-content);
-    }
+    /* Radius Configurations for unified soft corners */
+    --radius-selector: 0.5rem;
+    --radius-field: 0.5rem;
+    --radius-box: 1rem;
+}
+
+/* Force background application */
+body {
+    background-color: var(--color-base-100);
+    color: var(--color-base-content);
 }
 
 @layer components {

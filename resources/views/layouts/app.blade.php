@@ -192,6 +192,7 @@
             }); // Kurung kurawal di sini sudah ditambahkan
         }
     </script>
+    @stack('scripts')
 </body>
 
 </html>

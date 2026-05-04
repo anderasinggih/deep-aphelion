@@ -82,7 +82,7 @@
                             <div wire:ignore id="map"
                                 class="w-full h-64 rounded-xl border border-base-300 shadow-inner z-[1]"></div>
                         </div>
-                        <div class="grid grid-cols-2 gap-3 mb-3"><x-input label="Latitude" wire:model="latitude"
+                        <div class="grid grid-cols-2 gap-3 mb-3 hidden"><x-input label="Latitude" wire:model="latitude"
                                 placeholder="-7.425..." readonly class="bg-base-200/50" /><x-input label="Longitude"
                                 wire:model="longitude" placeholder="109.255..." readonly class="bg-base-200/50" /></div>
                         <div class="flex items-start gap-1.5 text-[11px] text-info/80 italic"><x-icon
@@ -120,119 +120,104 @@
                         spinner="save" /></div>
             </x-slot:actions>
         </x-form></x-card>
-</div>@push('scripts')
-<script>document.addEventListener('alpine:init', () => {
-        Alpine.data('leafletMap', () => ({
-            map: null,
-            marker: null,
-            searchQuery: '',
+</div>
 
-            initMap() {
-                // Return if already initialized
-                let mapContainer = document.getElementById('map');
-                if (!mapContainer || mapContainer._leaflet_id) return;
+@push('scripts')
+<script>
+    document.addEventListener('alpine:init', () => {
+        window.leafletMap = function () {
+            return {
+                map: null,
+                marker: null,
+                searchQuery: '',
 
-                // Default koordinat Kabupaten Banyumas
-                let defaultLat = -7.4248;
-                let defaultLng = 109.2302;
+                initMap() {
+                    let mapContainer = document.getElementById('map');
+                    if (!mapContainer || mapContainer._leaflet_id) return;
 
-                this.map = L.map('map').setView([defaultLat, defaultLng], 12);
+                    let defaultLat = -7.4248;
+                    let defaultLng = 109.2302;
 
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    maxZoom: 19,
-                    attribution: '© OpenStreetMap'
-                }).addTo(this.map);
+                    this.map = L.map('map', { attributionControl: false }).setView([defaultLat, defaultLng], 12);
 
-                // Initialize with current location if possible automatically
-                this.getCurrentLocation(false);
+                    // Use Google Hybrid (Satellite + Roads/Labels)
+                    L.tileLayer('https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
+                        maxZoom: 20,
+                        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+                    }).addTo(this.map);
 
-                // Map click event handling
-                this.map.on('click', (e) => {
-                    this.placeMarker(e.latlng.lat, e.latlng.lng);
-                });
+                    this.getCurrentLocation(false);
 
-                // Fix map rendering issues inside hidden tabs or delayed renders
-                setTimeout(() => {
-                    this.map.invalidateSize();
-                }
+                    this.map.on('click', (e) => {
+                        this.placeMarker(e.latlng.lat, e.latlng.lng);
+                    });
 
-                    , 500);
-            }
+                    setTimeout(() => {
+                        this.map.invalidateSize();
+                    }, 500);
+                },
 
-            ,
-
-            placeMarker(lat, lng, zoom = null) {
-                if (this.marker) {
-                    this.map.removeLayer(this.marker);
-                }
-
-                this.marker = L.marker([lat, lng]).addTo(this.map);
-
-                if (zoom) {
-                    this.map.setView([lat, lng], zoom);
-                }
-
-                // Perbarui properti Livewire agar form tahu koordinatnya
-                this.$wire.set('latitude', lat.toFixed(6));
-                this.$wire.set('longitude', lng.toFixed(6));
-            }
-
-            ,
-
-            getCurrentLocation(forceZoom = true) {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(position => {
-                        let lat = position.coords.latitude;
-                        let lng = position.coords.longitude;
-                        let zoomTarget = forceZoom ? 16 : 14;
-                        this.map.setView([lat, lng], zoomTarget);
-                        this.placeMarker(lat, lng);
+                placeMarker(lat, lng, zoom = null) {
+                    if (this.marker) {
+                        this.map.removeLayer(this.marker);
                     }
 
-                        , (error) => {
+                    this.marker = L.marker([lat, lng]).addTo(this.map);
 
-                            // Gagal ambil lokasi diam saja kalau auto, alert kalau force
-                            if (forceZoom) {
-                                alert('Tidak dapat mengambil lokasi. Pastikan GPS aktif dan diizinkan.');
+                    if (zoom) {
+                        this.map.setView([lat, lng], zoom);
+                    }
+
+                    this.$wire.set('latitude', lat.toFixed(6));
+                    this.$wire.set('longitude', lng.toFixed(6));
+                },
+
+                getCurrentLocation(forceZoom = true) {
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(
+                            position => {
+                                let lat = position.coords.latitude;
+                                let lng = position.coords.longitude;
+                                let zoomTarget = forceZoom ? 16 : 14;
+                                this.map.setView([lat, lng], zoomTarget);
+                                this.placeMarker(lat, lng);
+                            },
+                            (error) => {
+                                if (forceZoom) {
+                                    alert('Tidak dapat mengambil lokasi. Pastikan GPS aktif dan diizinkan.');
+                                }
                             }
-                        });
-                }
+                        );
+                    } else {
+                        if (forceZoom) {
+                            alert('Browser Anda tidak mendukung deteksi lokasi.');
+                        }
+                    }
+                },
 
-                else {
-                    if (forceZoom) {
-                        alert('Browser Anda tidak mendukung deteksi lokasi.');
+                async searchLocation() {
+                    if (!this.searchQuery.trim()) return;
+
+                    let query = encodeURIComponent(this.searchQuery + ' Banyumas');
+
+                    try {
+                        let response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}`);
+                        let data = await response.json();
+
+                        if (data && data.length > 0) {
+                            let lat = parseFloat(data[0].lat);
+                            let lng = parseFloat(data[0].lon);
+                            this.placeMarker(lat, lng, 16);
+                        } else {
+                            alert('Lokasi tidak ditemukan. Coba gunakan nama jalan atau tempat yang lebih spesifik.');
+                        }
+                    } catch (e) {
+                        console.error('Pencarian lokasi gagal', e);
+                        alert('Terjadi kesalahan saat mencari lokasi.');
                     }
                 }
-            }
-
-            ,
-
-            async searchLocation() {
-                if (!this.searchQuery.trim()) return;
-
-                let query = encodeURIComponent(this.searchQuery + ' Banyumas'); // Bias to local area
-
-                try {
-                    // OpenStreetMap Nominatim API for free geocoding
-                    let response = await fetch(`https: //nominatim.openstreetmap.org/search?format=json&q=${query}`);
-                    let data = await response.json();
-
-                    if (data && data.length > 0) {
-                        let lat = parseFloat(data[0].lat);
-                        let lng = parseFloat(data[0].lon);
-                        this.placeMarker(lat, lng, 16);
-                    }
-
-                    else {
-                        alert('Lokasi tidak ditemukan. Coba gunakan nama jalan atau tempat yang lebih spesifik.');
-                    }
-                }
-
-                catch (e) {
-                    console.error('Pencarian lokasi gagal', e);
-                    alert('Terjadi kesalahan saat mencari lokasi.');
-                }
-            }
-        }))
+            };
+        };
     });
-</script> @endpush
+</script>
+@endpush
