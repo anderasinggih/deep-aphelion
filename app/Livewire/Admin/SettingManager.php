@@ -46,6 +46,13 @@ class SettingManager extends Component
     public $instansi_jam_jumat;
     public $instansi_jam_sabtu;
     
+    // Mail Settings
+    public $mail_host;
+    public $mail_port;
+    public $mail_username;
+    public $mail_password;
+    public $mail_encryption;
+    
     // UI State
     public $activeTab = 'umum';
 
@@ -79,6 +86,12 @@ class SettingManager extends Component
         $this->existing_app_logo = $settings['app_logo'] ?? null;
         $this->existing_app_logo_sekunder = $settings['app_logo_sekunder'] ?? null;
         $this->existing_app_banner = $settings['app_banner'] ?? null;
+
+        $this->mail_host = $settings['mail_host'] ?? config('mail.mailers.smtp.host');
+        $this->mail_port = $settings['mail_port'] ?? config('mail.mailers.smtp.port');
+        $this->mail_username = $settings['mail_username'] ?? config('mail.mailers.smtp.username');
+        $this->mail_password = $settings['mail_password'] ?? config('mail.mailers.smtp.password');
+        $this->mail_encryption = $settings['mail_encryption'] ?? config('mail.mailers.smtp.encryption');
     }
 
     public function saveSettings()
@@ -105,6 +118,11 @@ class SettingManager extends Component
             'app_logo' => 'nullable|image|max:2048',
             'app_logo_sekunder' => 'nullable|image|max:2048',
             'app_banner' => 'nullable|image|max:5120',
+            'mail_host' => 'nullable|string|max:255',
+            'mail_port' => 'nullable|integer',
+            'mail_username' => 'nullable|string|max:255',
+            'mail_password' => 'nullable|string|max:255',
+            'mail_encryption' => 'nullable|string|max:10',
         ]);
 
         $this->updateSetting('sop_waktu_pemrosesan', $this->sop_waktu_pemrosesan);
@@ -124,6 +142,11 @@ class SettingManager extends Component
         $this->updateSetting('instansi_jam_senkam', $this->instansi_jam_senkam);
         $this->updateSetting('instansi_jam_jumat', $this->instansi_jam_jumat);
         $this->updateSetting('instansi_jam_sabtu', $this->instansi_jam_sabtu);
+        $this->updateSetting('mail_host', $this->mail_host);
+        $this->updateSetting('mail_port', $this->mail_port);
+        $this->updateSetting('mail_username', $this->mail_username);
+        $this->updateSetting('mail_password', $this->mail_password);
+        $this->updateSetting('mail_encryption', $this->mail_encryption);
 
         if ($this->ttd_file) {
             $path = $this->ttd_file->store('assets', 'public');

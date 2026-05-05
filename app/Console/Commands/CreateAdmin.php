@@ -25,14 +25,32 @@ class CreateAdmin extends Command
      */
     public function handle()
     {
+        $this->info('--- Membuat Akun Administrator ---');
+        
         $name = $this->ask('Nama Lengkap');
         $nik = $this->ask('NIK (16 digit)');
         $no_wa = $this->ask('Nomor WhatsApp');
         $email = $this->ask('Alamat Email');
         $password = $this->secret('Password');
 
+        // Validasi Sederhana
         if (!$name || !$nik || !$no_wa || !$email || !$password) {
-            $this->error('Semua field wajib diisi!');
+            $this->error('Gagal: Semua field wajib diisi!');
+            return;
+        }
+
+        if (strlen($nik) !== 16) {
+            $this->error('Gagal: NIK harus tepat 16 digit angka!');
+            return;
+        }
+
+        if (\App\Models\User::where('email', $email)->exists()) {
+            $this->error('Gagal: Email ini sudah terdaftar!');
+            return;
+        }
+
+        if (\App\Models\User::where('nik', $nik)->exists()) {
+            $this->error('Gagal: NIK ini sudah terdaftar!');
             return;
         }
 
@@ -47,9 +65,9 @@ class CreateAdmin extends Command
                 'email_verified_at' => now(),
             ]);
 
-            $this->info("Admin '{$user->name}' berhasil dibuat!");
+            $this->info("Sukses: Admin '{$user->name}' berhasil dibuat dan otomatis terverifikasi!");
         } catch (\Exception $e) {
-            $this->error('Gagal membuat admin: ' . $e->getMessage());
+            $this->error('Terjadi kesalahan sistem: ' . $e->getMessage());
         }
     }
 }

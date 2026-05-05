@@ -31,6 +31,10 @@
             class="btn btn-sm rounded-full px-5 transition-all {{ $activeTab === 'aset' ? 'btn-primary text-white shadow-md' : 'btn-ghost bg-base-200/50 hover:bg-base-200' }}">
             <x-icon name="o-photo" class="w-4 h-4" /> Aset Visual
         </button>
+        <button wire:click="setTab('email')" 
+            class="btn btn-sm rounded-full px-5 transition-all {{ $activeTab === 'email' ? 'btn-primary text-white shadow-md' : 'btn-ghost bg-base-200/50 hover:bg-base-200' }}">
+            <x-icon name="o-envelope" class="w-4 h-4" /> Pengaturan Email
+        </button>
     </div>
 
     <div class="pb-4 border shadow-sm bg-base-100 rounded-2xl border-base-200 p-6 md:p-8">
@@ -186,6 +190,39 @@
                                 @endif
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Tab Pengaturan Email --}}
+            <div class="{{ $activeTab === 'email' ? 'block' : 'hidden' }}">
+                <h2 class="text-xl font-bold mb-4 border-b border-base-200 pb-2 flex items-center gap-2">
+                    <x-icon name="o-envelope" class="w-5 h-5 text-primary" /> Konfigurasi SMTP Email
+                </h2>
+                <div class="p-4 mb-6 bg-info/10 border border-info/20 rounded-xl flex gap-3 items-start">
+                    <x-icon name="o-information-circle" class="w-6 h-6 text-info mt-1" />
+                    <div class="text-sm">
+                        <p class="font-bold text-info">Penting!</p>
+                        <p class="text-base-content/70">Pengaturan ini akan menimpa (override) konfigurasi di file .env. Pastikan data yang Anda masukkan benar agar sistem dapat mengirim email verifikasi dan notifikasi laporan.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <x-input label="SMTP Host" wire:model="mail_host" placeholder="Contoh: smtp.gmail.com" icon="o-server" />
+                    <x-input label="SMTP Port" wire:model="mail_port" type="number" placeholder="Contoh: 587 atau 465" icon="o-hashtag" />
+                    <x-input label="Email / Username" wire:model="mail_username" placeholder="Contoh: instansi@gmail.com" icon="o-user" />
+                    <x-input label="App Password" wire:model="mail_password" type="password" placeholder="Masukkan token app password" icon="o-key" />
+                    
+                    <div class="md:col-span-2">
+                        <x-select 
+                            label="Enkripsi" 
+                            wire:model="mail_encryption" 
+                            :options="[
+                                ['id' => 'tls', 'name' => 'TLS (Port 587)'],
+                                ['id' => 'ssl', 'name' => 'SSL (Port 465)'],
+                                ['id' => 'none', 'name' => 'Tanpa Enkripsi']
+                            ]"
+                            icon="o-lock-closed" />
                     </div>
                 </div>
             </div>
