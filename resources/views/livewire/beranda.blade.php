@@ -67,13 +67,13 @@
         {{-- Pengumuman Section --}}
         @if($settings['pengumuman_aktif'] ?? false)
         <div class="mb-4">
-            <div class="alert alert-{{ $settings['pengumuman_tipe'] ?? 'info' }} shadow-xl border-none rounded-2xl p-4 sm:p-5 flex items-start gap-4">
-                <div class="p-2 bg-white/20 rounded-xl shrink-0">
-                    <x-icon name="o-megaphone" class="w-6 h-6 text-white" />
+            <div class="alert alert-{{ $settings['pengumuman_tipe'] ?? 'info' }} shadow-xl border-none rounded-2xl p-6 sm:p-8 flex flex-col items-center text-center gap-4">
+                <div class="p-3 bg-white/20 rounded-2xl shrink-0">
+                    <x-icon name="o-megaphone" class="w-8 h-8 text-white" />
                 </div>
                 <div class="flex-1 text-white">
-                    <h3 class="font-black text-[11px] sm:text-xs uppercase tracking-tight mb-0.5">Pengumuman Penting</h3>
-                    <div class="text-sm font-medium leading-relaxed opacity-95">
+                    <h3 class="font-black text-xs sm:text-sm uppercase tracking-widest mb-2 opacity-80">Pengumuman Penting</h3>
+                    <div class="text-sm sm:text-base font-bold leading-relaxed">
                         {!! $settings['pengumuman_isi'] !!}
                     </div>
                 </div>
