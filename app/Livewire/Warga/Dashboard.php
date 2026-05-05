@@ -12,6 +12,44 @@ class Dashboard extends Component
 {
     use WithPagination;
 
+    public $ratingModal = false;
+    public $selectedPengaduanId = null;
+    public $rating_value = 5;
+    public $rating_komentar = '';
+
+    public function openRatingModal($id)
+    {
+        $pengaduan = Pengaduan::where('id', $id)->where('user_id', Auth::id())->first();
+        if ($pengaduan && $pengaduan->status === 'selesai' && !$pengaduan->rating) {
+            $this->selectedPengaduanId = $pengaduan->id;
+            $this->rating_value = 5; // default 5 stars
+            $this->rating_komentar = '';
+            $this->ratingModal = true;
+        }
+    }
+
+    public function saveRating()
+    {
+        $this->validate([
+            'rating_value' => 'required|integer|min:1|max:5',
+            'rating_komentar' => 'nullable|string|max:500',
+        ]);
+
+        $pengaduan = Pengaduan::where('id', $this->selectedPengaduanId)
+            ->where('user_id', Auth::id())
+            ->first();
+
+        if ($pengaduan && $pengaduan->status === 'selesai') {
+            $pengaduan->update([
+                'rating' => $this->rating_value,
+                'rating_komentar' => $this->rating_komentar
+            ]);
+
+            $this->reset(['ratingModal', 'selectedPengaduanId', 'rating_value', 'rating_komentar']);
+            session()->flash('success', 'Terima kasih atas penilaian Anda!');
+        }
+    }
+
     public function render()
     {
         $pengaduans = Auth::user()->pengaduans()

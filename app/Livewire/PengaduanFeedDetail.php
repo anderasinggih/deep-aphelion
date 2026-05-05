@@ -8,19 +8,48 @@ use App\Models\Pengaduan;
 class PengaduanFeedDetail extends Component
 {
     public Pengaduan $pengaduan;
+    public $rating = 5;
+    public $rating_komentar = '';
+    public $showFeedbackForm = false;
 
-    public function mount($id)
+    public function mount($kode_tracking)
     {
-        // Load the pengaduan with user, kategori, and its history timeline along with the admin user who made the change
         $this->pengaduan = Pengaduan::with([
             'user',
             'kategori',
             'histories' => function ($query) {
-            // Order histories from newest to oldest for a timeline display
-            $query->latest();
-        },
-            'histories.user' // Get the user (admin/petugas) who created the history
-        ])->findOrFail($id);
+                $query->latest();
+            },
+            'histories.user'
+        ])->where('kode_tracking', $kode_tracking)->firstOrFail();
+
+        $this->rating = $this->pengaduan->rating ?? 5;
+        $this->rating_komentar = $this->pengaduan->rating_komentar ?? '';
+        
+        // Show form if status is selesai and user is the reporter and rating is still null
+        if ($this->pengaduan->status === 'selesai' && auth()->id() === $this->pengaduan->user_id && is_null($this->pengaduan->rating)) {
+            $this->showFeedbackForm = true;
+        }
+    }
+
+    public function submitFeedback()
+    {
+        if (auth()->id() !== $this->pengaduan->user_id) return;
+
+        $this->validate([
+            'rating' => 'required|integer|min:1|max:5',
+            'rating_komentar' => 'nullable|string|max:500',
+        ]);
+
+        $this->pengaduan->update([
+            'rating' => $this->rating,
+            'rating_komentar' => $this->rating_komentar,
+        ]);
+
+        $this->showFeedbackForm = false;
+        
+        $this->dispatch('feedback-submitted');
+        session()->flash('success', 'Terima kasih atas feedback Anda!');
     }
 
     public function render()

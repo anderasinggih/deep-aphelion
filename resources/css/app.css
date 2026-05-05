@@ -5,26 +5,11 @@
 
 @theme {
     /* Primary Brand Color */
-    --color-primary: #165dfc;
-    /* Text color on top of primary button */
+    --color-primary: #0085ff;
     --color-primary-content: #ffffff;
 
     /* App Title Brand Color */
     --color-brand: #74d4ff;
-
-    /* Base Backgrounds */
-    --color-base-100: #172030;
-    /* Inner forms and containers */
-    --color-base-200: #0d1424;
-    /* Main dark background */
-    --color-base-300: #232f45;
-    /* Borders and accents */
-    --color-base-content: #fcfcfd;
-    /* Soft readable white text */
-
-    /* Surface/Neutral Colors (similar to the settings dropdown) */
-    --color-neutral: #3b4252;
-    --color-neutral-content: #e5e9f0;
 
     /* Radius Configurations for unified soft corners */
     --radius-selector: 0.5rem;
@@ -32,16 +17,48 @@
     --radius-box: 1rem;
 }
 
-/* Force background application */
-body {
-    background-color: var(--color-base-100);
-    color: var(--color-base-content);
+/* Force override DaisyUI internal variables for Night theme */
+:root, [data-theme="night"] {
+    --p: #0085ff !important;
+    --s: #3b82f6 !important;
+    --a: #60a5fa !important;
+    
+    /* Base colors override to ensure dark mode is really dark */
+    --b1: #0f172a !important; /* Night background */
+    --b2: #1e293b !important;
+    --b3: #334155 !important;
+    --bc: #f8fafc !important; /* Base content (text) */
+}
+
+/* Fix for MaryUI components that might use hardcoded primary colors or old variables */
+.text-primary {
+    color: #0085ff !important;
+}
+.bg-primary {
+    background-color: #0085ff !important;
+}
+.btn-primary {
+    background-color: #0085ff !important;
+    border-color: #0085ff !important;
+    color: #ffffff !important;
 }
 
 @layer components {
-
-    /* Prevent DaisyUI from adding its own chevron background image so it doesn't overlap with MaryUI's SVG chevron */
     .select {
         background-image: none !important;
+    }
+
+    /* Global Chrome Autofill Fix - No more forcing dark colors */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover, 
+    input:-webkit-autofill:focus, 
+    input:-webkit-autofill:active {
+        /* This prevents Chrome from changing the background color */
+        transition: background-color 5000s ease-in-out 0s !important;
+        /* This ensures the text color stays readable (defaults to current color) */
+        -webkit-text-fill-color: currentColor !important;
+        /* Keep the font consistent */
+        font-family: inherit !important;
+        font-size: inherit !important;
     }
 }

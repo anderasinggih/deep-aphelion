@@ -8,6 +8,9 @@ use Livewire\WithFileUploads;
 use App\Models\Pengaduan;
 use App\Models\PengaduanHistory;
 use App\Models\User;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
+use Illuminate\Support\Facades\Storage;
 
 class PengaduanManager extends Component
 {
@@ -15,12 +18,11 @@ class PengaduanManager extends Component
 
     public $search = '';
     public $statusFilter = '';
+    public $kategoriFilter = '';
+    public $startDate = '';
+    public $endDate = '';
 
-    // Disposisi Modal State
-    public $disposisiModal = false;
     public $selectedPengaduanId = null;
-    public $petugas_id = '';
-    public $disposisi_notes = '';
 
     // Update Status Modal State
     public $updateModal = false;
@@ -28,55 +30,13 @@ class PengaduanManager extends Component
     public $update_foto;
     public $update_keterangan = '';
 
-    public function openDisposisi($id)
+    public function goToDetail($kode_tracking)
     {
-        $this->selectedPengaduanId = $id;
-        $pengaduan = Pengaduan::find($id);
-        $this->petugas_id = $pengaduan->petugas_id ?? '';
-        $this->disposisiModal = true;
-    }
-
-
-
-    public function saveDisposisi()
-    {
-        $this->validate([
-            'petugas_id' => 'required|exists:users,id',
-            'disposisi_notes' => 'nullable|string'
-        ]);
-
-        $pengaduan = Pengaduan::findOrFail($this->selectedPengaduanId);
-        $pengaduan->petugas_id = $this->petugas_id;
-
-        // Auto change status if waiting
-        $oldStatus = $pengaduan->status;
-        if ($oldStatus === 'menunggu') {
-            $pengaduan->status = 'diproses';
-        }
-        $pengaduan->save();
-
-        PengaduanHistory::create([
-            'pengaduan_id' => $pengaduan->id,
-            'user_id' => auth()->id(),
-            'status_sebelumnya' => $oldStatus,
-            'status_baru' => $pengaduan->status,
-            'keterangan_admin' => "Disposisi kepada petugas ID {$this->petugas_id}. Catatan: " . $this->disposisi_notes,
-        ]);
-
-        $this->disposisiModal = false;
-        $this->disposisi_notes = '';
-        session()->flash('success', 'Disposisi berhasil disimpan dan laporan diproses.');
+        return $this->redirect(route('admin.pengaduan.detail', $kode_tracking), navigate: true);
     }
 
     public function openUpdateStatusModal($id, $newStatus)
     {
-        $pengaduan = Pengaduan::find($id);
-        if ($newStatus === 'diproses' && !$pengaduan->petugas_id) {
-            session()->flash('error', 'Pilih petugas untuk disposisi terlebih dahulu sebelum mengubah status menjadi Diproses.');
-            $this->openDisposisi($id);
-            return;
-        }
-
         $this->selectedPengaduanId = $id;
         $this->update_status = $newStatus;
         $this->updateModal = true;
@@ -104,7 +64,17 @@ class PengaduanManager extends Component
         $path = null;
 
         if ($this->update_foto) {
-            $path = $this->update_foto->store('bukti_selesai', 'public');
+            $manager = new ImageManager(new Driver());
+            $image = $manager->read($this->update_foto->getRealPath());
+            
+            // Resize to 1200px max width while maintaining aspect ratio
+            $image->scale(width: 1200);
+            
+            $filename = 'bukti_selesai/' . $this->update_foto->hashName();
+            $encoded = $image->toJpeg(75); // Compress to 75% quality
+            
+            Storage::disk('public')->put($filename, (string) $encoded);
+            $path = $filename;
         }
 
         $oldStatus = $pengaduan->status;
@@ -124,26 +94,109 @@ class PengaduanManager extends Component
         session()->flash('success', 'Status laporan berhasil diperbarui.');
     }
 
-    public function render()
+    public function exportCsv()
     {
-        $query = Pengaduan::with(['user', 'petugas', 'kategori'])
-            ->latest();
+        $query = Pengaduan::with(['user', 'kategori'])->latest();
 
         if ($this->search) {
-            $query->where('judul', 'like', '%' . $this->search . '%')
-                ->orWhere('deskripsi', 'like', '%' . $this->search . '%')
-                ->orWhereHas('user', function ($q) {
-                $q->where('name', 'like', '%' . $this->search . '%');
+            $query->where(function($q) {
+                $q->where('judul', 'like', '%' . $this->search . '%')
+                  ->orWhere('deskripsi', 'like', '%' . $this->search . '%')
+                  ->orWhere('kode_tracking', 'like', '%' . $this->search . '%')
+                  ->orWhereHas('user', function ($uq) {
+                      $uq->where('name', 'like', '%' . $this->search . '%');
+                  });
             });
         }
 
         if ($this->statusFilter) {
             $query->where('status', $this->statusFilter);
         }
+        if ($this->kategoriFilter) {
+            $query->where('kategori_id', $this->kategoriFilter);
+        }
+
+        if ($this->startDate) {
+            $query->whereDate('created_at', '>=', $this->startDate);
+        }
+
+        if ($this->endDate) {
+            $query->whereDate('created_at', '<=', $this->endDate);
+        }
+
+        $pengaduans = $query->get();
+        $csvFileName = 'laporan-pengaduan-' . now()->format('Ymd_His') . '.csv';
+
+        $headers = [
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$csvFileName",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $columns = [
+            'Kode Tracking', 'Tanggal Masuk', 'Pelapor', 'Judul Laporan', 
+            'Kategori', 'Lokasi', 'Status', 'Rating IKM', 'Komentar Pelayanan'
+        ];
+
+        $callback = function() use($pengaduans, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+
+            foreach ($pengaduans as $p) {
+                fputcsv($file, [
+                    $p->kode_tracking,
+                    $p->created_at->format('Y-m-d H:i'),
+                    $p->user->name ?? 'Anonim',
+                    $p->judul,
+                    $p->kategori->nama ?? '-',
+                    $p->lokasi_kejadian,
+                    $p->status,
+                    $p->rating ?? '-',
+                    $p->rating_komentar ?? '-'
+                ]);
+            }
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    public function render()
+    {
+        $query = Pengaduan::with(['user', 'kategori'])
+            ->latest();
+
+        if ($this->search) {
+            $query->where(function($q) {
+                $q->where('judul', 'like', '%' . $this->search . '%')
+                  ->orWhere('deskripsi', 'like', '%' . $this->search . '%')
+                  ->orWhere('kode_tracking', 'like', '%' . $this->search . '%')
+                  ->orWhereHas('user', function ($uq) {
+                      $uq->where('name', 'like', '%' . $this->search . '%');
+                  });
+            });
+        }
+
+        if ($this->statusFilter) {
+            $query->where('status', $this->statusFilter);
+        }
+        if ($this->kategoriFilter) {
+            $query->where('kategori_id', $this->kategoriFilter);
+        }
+
+        if ($this->startDate) {
+            $query->whereDate('created_at', '>=', $this->startDate);
+        }
+
+        if ($this->endDate) {
+            $query->whereDate('created_at', '<=', $this->endDate);
+        }
 
         return view('livewire.admin.pengaduan-manager', [
             'pengaduans' => $query->paginate(15),
-            'list_petugas' => User::query()->where('role', 'petugas')->get()
+            'kategoris' => \App\Models\Kategori::all()
         ])->layout('layouts.app');
     }
 }

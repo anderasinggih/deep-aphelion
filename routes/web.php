@@ -7,16 +7,17 @@ use App\Livewire\Warga\Dashboard as WargaDashboard;
 use App\Livewire\Admin\Dashboard as AdminDashboard;
 use App\Livewire\Admin\PengaduanManager;
 use App\Livewire\Admin\PengaduanDetail;
-use App\Livewire\Petugas\Disposisi;
+use App\Livewire\TentangKami;
+
 use App\Livewire\PengaduanFeedDetail;
 
 Route::get('/', Beranda::class)->name('beranda');
-Route::get('/pengaduan/{id}', PengaduanFeedDetail::class)->name('pengaduan.feed-detail')->where('id', '[0-9]+');
+Route::get('/tentang-kami', TentangKami::class)->name('tentang-kami');
 
 Route::middleware(['auth'])->group(function () {
     // Warga
     Route::get('/pengaduan/create', PengaduanForm::class)->name('pengaduan.create');
-    Route::get('/pengaduan/{id}/edit', PengaduanForm::class)->name('pengaduan.edit');
+    Route::get('/pengaduan/{kode_tracking}/edit', PengaduanForm::class)->name('pengaduan.edit')->where('kode_tracking', '.*');
     Route::get('/dashboard', WargaDashboard::class)->name('dashboard');
 
     // Admin
@@ -24,11 +25,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/pengaduan', PengaduanManager::class)->name('admin.pengaduan');
     Route::get('/admin/kategori', \App\Livewire\Admin\KategoriManager::class)->name('admin.kategori');
     Route::get('/admin/users', \App\Livewire\Admin\UserManager::class)->name('admin.users');
-    Route::get('/admin/pengaduan/{id}', PengaduanDetail::class)->name('admin.pengaduan.detail');
+    Route::get('/admin/pengaturan', \App\Livewire\Admin\SettingManager::class)->name('admin.pengaturan');
+    Route::get('/admin/pengaduan/print', [\App\Http\Controllers\PrintController::class, 'laporan'])->name('print.laporan');
+    Route::get('/admin/pengaduan/{kode_tracking}', PengaduanDetail::class)->name('admin.pengaduan.detail')->where('kode_tracking', '.*');
+    
+    // Warga (Print Resi)
+    Route::get('/pengaduan/{id}/print', [\App\Http\Controllers\PrintController::class, 'resi'])->name('print.resi');
 
-    // Petugas
-    Route::get('/petugas/disposisi', Disposisi::class)->name('petugas.disposisi');
 });
+
+Route::get('/pengaduan/{kode_tracking}', PengaduanFeedDetail::class)->name('pengaduan.feed-detail')->where('kode_tracking', '.*');
 
 
 

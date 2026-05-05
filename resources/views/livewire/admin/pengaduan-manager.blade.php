@@ -1,4 +1,4 @@
-<div class="px-0.1 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8 text-base-content">
+<div class="px-2 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8 text-base-content">
 
     <div class="flex flex-col gap-4 mb-8 sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -8,49 +8,64 @@
         <div class="flex flex-wrap items-center gap-3 mt-2 sm:mt-0">
             <x-button label="Tambah Pengaduan" icon="o-plus-circle" class="shadow-sm btn-primary rounded-xl"
                 link="/pengaduan/create" />
-            <x-button label="Export Data" icon="o-document-arrow-down"
-                class="shadow-sm btn-outline btn-primary rounded-xl" link="/admin/pengaduan" />
+            <a href="{{ route('print.laporan', array_filter(['status' => $statusFilter, 'kategori_id' => $kategoriFilter, 'start_date' => $startDate, 'end_date' => $endDate])) }}" target="_blank" class="btn btn-outline btn-success shadow-sm rounded-xl">
+                <x-icon name="o-printer" class="w-4 h-4" /> Cetak PDF
+            </a>
+            <x-button label="Export CSV" icon="o-document-arrow-down"
+                class="shadow-sm btn-outline btn-primary rounded-xl" wire:click="exportCsv" spinner="exportCsv" />
         </div>
     </div>
 
     @if (session()->has('success'))
-    <x-alert icon="o-check-circle" class="mb-5 shadow-sm alert-success rounded-xl">
-        {{ session('success') }}
-    </x-alert>
+        <x-alert icon="o-check-circle" class="mb-5 shadow-sm alert-success rounded-xl">
+            {{ session('success') }}
+        </x-alert>
     @endif
 
     @if (session()->has('error'))
-    <x-alert icon="o-exclamation-triangle" class="mb-5 shadow-sm alert-error rounded-xl">
-        {{ session('error') }}
-    </x-alert>
+        <x-alert icon="o-exclamation-triangle" class="mb-5 shadow-sm alert-error rounded-xl">
+            {{ session('error') }}
+        </x-alert>
     @endif
 
-    {{-- Header Filter (Sebaris di Mobile & Desktop) --}}
-    <div class="flex flex-row items-center gap-2 p-1 mb-5 border-b sm:gap-4 sm:p-1 border-base-200 bg-base-100/50">
-        {{-- Search (Ambil sisa ruang) --}}
-        <div class="flex-1 min-w-0">
-            <x-input wire:model.live.debounce="search" icon="o-magnifying-glass" placeholder="Cari Judul / Nama..."
+    {{-- Header Filter --}}
+    <div class="flex flex-col sm:flex-row items-center gap-2 p-2 mb-5 border-b border-base-200 bg-base-100/50">
+        {{-- Search --}}
+        <div class="flex-1 w-full min-w-0">
+            <x-input wire:model.live.debounce="search" icon="o-magnifying-glass" placeholder="Cari Judul / Kode Tracking..."
                 class="w-full input-sm sm:input-md" />
         </div>
 
-        {{-- Dropdown Status (Lebar fix di mobile, agak besar di desktop) --}}
-        <div class="w-32 sm:w-48 shrink-0">
+        {{-- Date Filters --}}
+        <div class="flex gap-2 w-full sm:w-auto">
+            <x-input type="date" wire:model.live="startDate" class="w-full sm:w-36 input-sm sm:input-md" />
+            <span class="self-center text-sm font-bold">-</span>
+            <x-input type="date" wire:model.live="endDate" class="w-full sm:w-36 input-sm sm:input-md" />
+        </div>
+
+        {{-- Dropdown Kategori --}}
+        <div class="w-full sm:w-40 shrink-0">
+            <x-select wire:model.live="kategoriFilter" :options="$kategoris" option-value="id" option-label="nama"
+                placeholder="Semua Kategori" class="w-full select-sm sm:select-md" />
+        </div>
+
+        {{-- Dropdown Status --}}
+        <div class="w-full sm:w-40 shrink-0">
             <x-select wire:model.live="statusFilter" :options="[
-                    ['id' => '', 'name' => 'Semua Status'],
-                    ['id' => 'menunggu', 'name' => 'Menunggu'],
-                    ['id' => 'diproses', 'name' => 'Diproses'],
-                    ['id' => 'selesai', 'name' => 'Selesai'],
-                    ['id' => 'ditolak', 'name' => 'Ditolak'],
-                ]" option-value="id" option-label="name" class="w-full select-sm sm:select-md" />
+        ['id' => '', 'name' => 'Semua Status'],
+        ['id' => 'menunggu', 'name' => 'Menunggu'],
+        ['id' => 'diproses', 'name' => 'Diproses'],
+        ['id' => 'selesai', 'name' => 'Selesai'],
+        ['id' => 'ditolak', 'name' => 'Ditolak'],
+    ]" option-value="id" option-label="name"
+                class="w-full select-sm sm:select-md" />
         </div>
     </div>
 
     <div class="pb-4 border shadow-sm bg-base-100 rounded-2xl border-base-200">
 
-
-
-        {{-- Wrapper Tabel (min-h-[350px] agar dropdown MaryUI tidak kepotong) --}}
-        <div class="overflow-x-auto min-h-[350px]">
+        {{-- Wrapper Tabel --}}
+        <div class="overflow-visible min-h-[350px]">
             <table class="table w-full table-xs sm:table-sm md:table-md">
                 <thead class="bg-base-200/50 text-base-content/60">
                     <tr>
@@ -58,136 +73,124 @@
                         <th class="hidden sm:table-cell">Pelapor</th>
                         <th class="hidden lg:table-cell">Kategori</th>
                         <th class="hidden md:table-cell">Tanggal</th>
-                        <th class="text-center">Status & Petugas</th>
+                        <th class="text-center">Status</th>
                         <th class="px-3 text-right">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-base-200">
                     @forelse($pengaduans as $pengaduan)
-                    <tr class="transition-colors hover:bg-base-200/30">
-                        {{-- Info Utama (Mobile: Laporan + User + Tanggal gabung) --}}
-                        <td class="px-3 py-2">
-                            <div class="flex flex-col">
-                                <span class="text-[13px] font-bold leading-tight text-base-content line-clamp-1"
-                                    title="{{ $pengaduan->judul }}">
-                                    {{ $pengaduan->judul }}
-                                </span>
-                                {{-- Muncul hanya di Mobile --}}
-                                <div class="flex flex-col gap-0.5 mt-1 sm:hidden">
-                                    <span class="text-[11px] font-medium text-base-content/80 flex items-center gap-1">
-                                        <x-icon name="o-user" class="w-3 h-3" /> {{ $pengaduan->user->name }}
-                                    </span>
-                                    <span class="text-[10px] text-base-content/50 italic flex items-center gap-1">
-                                        <x-icon name="o-clock" class="w-3 h-3" /> {{
-                                        $pengaduan->created_at->format('d/m/y') }} • {{ $pengaduan->kategori->nama }}
-                                    </span>
-                                </div>
-                                {{-- Deskripsi muncul di Desktop --}}
-                                <div
-                                    class="hidden sm:block text-[11px] text-base-content/50 max-w-[200px] truncate mt-0.5">
-                                    {{ $pengaduan->deskripsi }}
-                                </div>
-                            </div>
-                        </td>
+                                    <tr class="transition-colors cursor-pointer hover:bg-base-200/50 group" 
+                                        wire:click="goToDetail('{{ $pengaduan->kode_tracking }}')">
+                                        {{-- Info Utama --}}
+                                        <td class="px-3 py-2">
+                                            <div class="flex flex-col">
+                                                <span class="text-[13px] font-bold leading-tight text-base-content line-clamp-1 group-hover:text-primary transition-colors"
+                                                    title="{{ $pengaduan->judul }}">
+                                                    {{ $pengaduan->judul }}
+                                                </span>
+                                                <div class="flex flex-col gap-0.5 mt-1 sm:hidden">
+                                                    <span class="text-[11px] font-medium text-base-content/80 flex items-center gap-1">
+                                                        <x-icon name="o-user" class="w-3 h-3" /> {{ $pengaduan->user->name }}
+                                                    </span>
+                                                    <span class="text-[10px] text-base-content/50 italic flex items-center gap-1">
+                                                        <x-icon name="o-clock" class="w-3 h-3" /> {{
+                        $pengaduan->created_at->format('d/m/y') }} • {{ $pengaduan->kategori->nama }}
+                                                    </span>
+                                                </div>
+                                                <div
+                                                    class="hidden sm:block text-[11px] text-base-content/50 max-w-[200px] truncate mt-0.5">
+                                                    {{ $pengaduan->deskripsi }}
+                                                </div>
+                                            </div>
+                                        </td>
 
-                        {{-- Pelapor (Desktop Only) --}}
-                        <td class="hidden sm:table-cell py-2">
-                            <div class="text-[12px] font-bold">{{ $pengaduan->user->name }}</div>
-                            <div class="text-[11px] text-base-content/50">{{ $pengaduan->user->nik }}</div>
-                        </td>
+                                        {{-- Pelapor --}}
+                                        <td class="hidden sm:table-cell py-2">
+                                            <div class="text-[12px] font-bold">{{ $pengaduan->user->name }}</div>
+                                            <div class="text-[11px] text-base-content/50">{{ $pengaduan->user->nik }}</div>
+                                        </td>
 
-                        {{-- Kategori (Desktop Large Only) --}}
-                        <td class="hidden lg:table-cell text-[12px] text-base-content/70 py-2">
-                            {{ $pengaduan->kategori->nama }}
-                        </td>
+                                        {{-- Kategori --}}
+                                        <td class="hidden lg:table-cell text-[12px] text-base-content/70 py-2">
+                                            {{ $pengaduan->kategori->nama }}
+                                        </td>
 
-                        {{-- Tanggal (Desktop Only) --}}
-                        <td class="hidden md:table-cell whitespace-nowrap text-[12px] text-base-content/70 py-2">
-                            {{ $pengaduan->created_at->format('d M Y') }}
-                        </td>
+                                        {{-- Tanggal --}}
+                                        <td class="hidden md:table-cell whitespace-nowrap text-[12px] text-base-content/70 py-2">
+                                            {{ $pengaduan->created_at->isoFormat('D MMM YYYY') }}
+                                        </td>
 
-                        {{-- Status & Petugas --}}
-                        <td class="py-2 text-center">
-                            @php
-                            $statusMap = [
-                            'menunggu' => ['label' => 'Menunggu', 'class' => 'badge-warning'],
-                            'diproses' => ['label' => 'Proses', 'class' => 'badge-info'],
-                            'selesai' => ['label' => 'Selesai', 'class' => 'badge-success'],
-                            'ditolak' => ['label' => 'Ditolak', 'class' => 'badge-error'],
-                            ];
-                            $curr = $statusMap[$pengaduan->status] ?? ['label' => $pengaduan->status, 'class' => ''];
-                            @endphp
+                                        {{-- Status --}}
+                                        <td class="py-2 text-center">
+                                            @php
+                                                $statusMap = [
+                                                    'menunggu' => ['label' => 'Menunggu', 'class' => 'badge-warning'],
+                                                    'diproses' => ['label' => 'Diproses', 'class' => 'badge-info'],
+                                                    'selesai' => ['label' => 'Selesai', 'class' => 'badge-success'],
+                                                    'ditolak' => ['label' => 'Ditolak', 'class' => 'badge-error'],
+                                                ];
+                                                $curr = $statusMap[$pengaduan->status] ?? ['label' => $pengaduan->status, 'class' => ''];
+                                            @endphp
 
-                            <span
-                                class="badge {{ $curr['class'] }} badge-outline font-bold text-[13px] px-1.5 h-4 sm:h-5">
-                                {{ $curr['label'] }}
-                            </span>
+                                            <span class="badge {{ $curr['class'] }} font-bold text-[10px] sm:text-xs px-2 py-1 h-auto min-h-0">
+                                                {{ $curr['label'] }}
+                                            </span>
+                                        </td>
 
-                            @if($pengaduan->petugas)
-                            <div
-                                class="text-[9px] sm:text-[10px] mt-1 text-primary flex items-center justify-center gap-0.5 font-medium">
-                                <x-icon name="o-user" class="w-3 h-3 shrink-0" />
-                                <span class="truncate max-w-[70px]">{{ $pengaduan->petugas->name }}</span>
-                            </div>
-                            @else
-                            <div class="text-[9px] sm:text-[10px] mt-1 text-base-content/40 italic">Belum dispo</div>
-                            @endif
-                        </td>
+                                        {{-- Aksi --}}
+                                        <td class="px-3 py-2 text-right" wire:click.stop>
+                                            <x-dropdown class="dropdown-end sm:dropdown-left">
+                                                <x-slot:trigger>
+                                                    <x-button icon="o-ellipsis-horizontal"
+                                                        class="text-white rounded-full shadow-sm btn-primary btn-xs hover:scale-105"
+                                                        tooltip="Aksi Laporan"
+                                                        onclick="document.querySelectorAll('details').forEach(d => { if(d !== this.closest('details')) d.removeAttribute('open') })" />
+                                                </x-slot:trigger>
 
-                        {{-- Aksi (Menggunakan Mary UI Component) --}}
-                        <td class="px-3 py-2 text-right">
-                            <x-dropdown class="dropdown-end sm:dropdown-left">
-                                <x-slot:trigger>
-                                    <x-button icon="o-ellipsis-horizontal"
-                                        class="text-white rounded-full shadow-sm btn-primary btn-xs hover:scale-105"
-                                        tooltip="Aksi Laporan" />
-                                </x-slot:trigger>
+                                                <div class="my-1 opacity-50 divider mt-0"><span class="text-[10px] font-bold">Update Progres</span></div>
+                                                
+                                                @if($pengaduan->status === 'menunggu')
+                                                    <x-menu-item title="Mulai Proses" icon="o-arrow-path" class="font-bold text-info"
+                                                        wire:click="openUpdateStatusModal({{ $pengaduan->id }}, 'diproses')" />
+                                                    <x-menu-item title="Tolak Laporan" icon="o-x-circle" class="text-error"
+                                                        wire:click="openUpdateStatusModal({{ $pengaduan->id }}, 'ditolak')" />
+                                                @endif
 
-                                {{-- Daftar Menu --}}
-                                <x-menu-item title="Detail Lengkap" icon="o-eye"
-                                    link="{{ route('admin.pengaduan.detail', $pengaduan->id) }}" wire:navigate />
+                                                @if($pengaduan->status === 'diproses')
+                                                    <x-menu-item title="Selesaikan" icon="o-check-circle" class="font-bold text-success"
+                                                        wire:click="openUpdateStatusModal({{ $pengaduan->id }}, 'selesai')" />
+                                                    <x-menu-item title="Batalkan (Ke Menunggu)" icon="o-clock"
+                                                        wire:click="openUpdateStatusModal({{ $pengaduan->id }}, 'menunggu')" />
+                                                @endif
 
-                                <div class="my-1 opacity-50 divider"><span class="text-[10px] font-bold">UBAH
-                                        STATUS</span></div>
+                                                @if($pengaduan->status === 'selesai')
+                                                    <x-menu-item title="Buka Kembali (Ke Proses)" icon="o-arrow-path"
+                                                        wire:click="openUpdateStatusModal({{ $pengaduan->id }}, 'diproses')" />
+                                                @endif
 
-                                @if($pengaduan->status !== 'menunggu')
-                                <x-menu-item title="Set Menunggu" icon="o-clock"
-                                    wire:click="openUpdateStatusModal({{ $pengaduan->id }}, 'menunggu')" />
-                                @endif
-
-                                @if($pengaduan->status !== 'diproses')
-                                @if($pengaduan->petugas_id)
-                                <x-menu-item title="Set Diproses" icon="o-arrow-path"
-                                    wire:click="openUpdateStatusModal({{ $pengaduan->id }}, 'diproses')" />
-                                @else
-                                <x-menu-item title="Proses (Dispo)" icon="o-arrow-path" class="font-bold text-info"
-                                    wire:click="openDisposisi({{ $pengaduan->id }})" />
-                                @endif
-                                @endif
-
-                                @if($pengaduan->status !== 'selesai')
-                                <x-menu-item title="Selesaikan" icon="o-check-circle" class="font-bold text-success"
-                                    wire:click="openUpdateStatusModal({{ $pengaduan->id }}, 'selesai')" />
-                                @endif
-
-                                @if($pengaduan->status !== 'ditolak')
-                                <x-menu-item title="Tolak Laporan" icon="o-x-circle" class="font-bold text-error"
-                                    wire:click="openUpdateStatusModal({{ $pengaduan->id }}, 'ditolak')" />
-                                @endif
-
-                                <div class="my-1 opacity-50 divider"><span class="text-[10px] font-bold">TUGAS</span>
-                                </div>
-                                <x-menu-item title="Atur Disposisi" icon="o-user-plus"
-                                    wire:click="openDisposisi({{ $pengaduan->id }})" />
-                            </x-dropdown>
-                        </td>
-                    </tr>
+                                                @if($pengaduan->status === 'ditolak')
+                                                    <x-menu-item title="Pulihkan (Ke Menunggu)" icon="o-clock"
+                                                        wire:click="openUpdateStatusModal({{ $pengaduan->id }}, 'menunggu')" />
+                                                @endif
+                                            </x-dropdown>
+                                        </td>
+                                    </tr>
                     @empty
-                    <tr>
-                        <td colspan="6" class="py-10 italic text-center text-base-content/50">
-                            Tidak ada data pengaduan yang sesuai.
-                        </td>
-                    </tr>
+                            <tr>
+                                <td colspan="6" class="py-16 text-center">
+                                    <div class="flex flex-col items-center justify-center gap-2">
+                                        <div class="w-14 h-14 rounded-2xl bg-base-200 flex items-center justify-center mb-1">
+                                            <x-icon name="{{ $search || $statusFilter ? 'o-magnifying-glass' : 'o-inbox' }}" class="w-7 h-7 text-base-content/30" />
+                                        </div>
+                                        <p class="text-sm font-bold text-base-content/50">
+                                            {{ $search || $statusFilter ? 'Tidak ada hasil ditemukan' : 'Belum ada laporan masuk' }}
+                                        </p>
+                                        <p class="text-xs text-base-content/30">
+                                            {{ $search || $statusFilter ? 'Coba ubah kata kunci atau filter status.' : 'Laporan dari warga akan muncul di sini.' }}
+                                        </p>
+                                    </div>
+                                </td>
+                            </tr>
                     @endforelse
                 </tbody>
             </table>
@@ -198,39 +201,20 @@
         </div>
     </div>
 
-    {{-- Modal Disposisi Tetap Sama --}}
-    <x-modal wire:model="disposisiModal" title="Disposisi Laporan Ke Petugas"
-        subtitle="Teruskan pengaduan ini agar segera ditindaklanjuti.">
-        <x-form wire:submit="saveDisposisi">
-            <x-select label="Pilih Petugas Lapangan" wire:model="petugas_id" :options="$list_petugas" option-value="id"
-                option-label="name" placeholder="-- Pilih Petugas --" required />
-
-            <x-textarea label="Catatan Administratif (Opsional)" wire:model="disposisi_notes"
-                placeholder="Tambahkan instruksi khusus untuk petugas..." rows="3" />
-
-            <x-slot:actions>
-                <x-button label="Batal" @click="$wire.disposisiModal = false" class="btn-ghost" />
-                <x-button label="Simpan Disposisi & Proses" type="submit" icon="o-paper-airplane" class="btn-primary"
-                    spinner="saveDisposisi" />
-            </x-slot:actions>
-        </x-form>
-    </x-modal>
-
     <!-- Modal Update Status -->
     <x-modal wire:model="updateModal" title="Perbarui Status Laporan"
         subtitle="Tambahkan catatan dan foto dokumentasi (opsional) untuk update ini.">
         <x-form wire:submit="saveStatusUpdate">
 
             <x-file label="Foto Dokumentasi (Opsional)" wire:model="update_foto" accept="image/*"
-                :required="$update_status === 'selesai'"
-                :hint="$update_status === 'selesai' ? 'Wajib menyertakan foto hasil pekerjaan untuk status Selesai.' : 'Lampirkan foto pendukung bila ada.'" />
+                :required="$update_status === 'selesai'" :hint="$update_status === 'selesai' ? 'Wajib menyertakan foto hasil pekerjaan untuk status Selesai.' : 'Lampirkan foto pendukung bila ada.'" />
 
             @if ($update_foto)
-            <div class="mt-2 text-center border border-dashed rounded-lg p-2 bg-base-100">
-                <span class="text-sm font-semibold text-gray-500 block">Preview Foto:</span>
-                <img src="{{ $update_foto->temporaryUrl() }}"
-                    class="rounded shadow w-48 mx-auto mt-1 border border-base-300">
-            </div>
+                <div class="mt-2 text-center border border-dashed rounded-lg p-2 bg-base-100">
+                    <span class="text-sm font-semibold text-gray-500 block">Preview Foto:</span>
+                    <img src="{{ $update_foto->temporaryUrl() }}"
+                        class="rounded shadow w-48 mx-auto mt-1 border border-base-300">
+                </div>
             @endif
 
             <x-textarea label="Catatan / Tindak Lanjut" wire:model="update_keterangan"

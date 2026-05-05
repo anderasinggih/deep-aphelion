@@ -44,12 +44,12 @@ class UserManager extends Component
             'nik' => 'required|numeric|digits:16|unique:users,nik',
             'no_wa' => 'required|numeric|min_digits:10|max_digits:15',
             'email' => 'nullable|string|email|max:255|unique:users,email',
-            'role' => 'required|in:admin,petugas,warga',
+            'role' => 'required|in:admin,warga',
             'password' => 'required|string|min:8|confirmed|regex:/[a-zA-Z]/|regex:/[0-9]/',
         ]);
 
         User::create([
-            'name' => $this->name,
+            'name' => strtoupper($this->name),
             'nik' => $this->nik,
             'no_wa' => $this->no_wa,
             'email' => $this->email,
@@ -82,7 +82,7 @@ class UserManager extends Component
             'nik' => ['required', 'numeric', 'digits:16', Rule::unique('users')->ignore($this->userId)],
             'no_wa' => 'required|numeric|min_digits:10|max_digits:15',
             'email' => ['nullable', 'string', 'email', 'max:255', Rule::unique('users')->ignore($this->userId)],
-            'role' => 'required|in:admin,petugas,warga',
+            'role' => 'required|in:admin,warga',
         ];
 
         // Only validate password if it's filled
@@ -95,7 +95,7 @@ class UserManager extends Component
         $user = User::findOrFail($this->userId);
 
         $updateData = [
-            'name' => $this->name,
+            'name' => strtoupper($this->name),
             'nik' => $this->nik,
             'no_wa' => $this->no_wa,
             'email' => $this->email,

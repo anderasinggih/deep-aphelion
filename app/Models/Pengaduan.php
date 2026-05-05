@@ -13,27 +13,38 @@ class Pengaduan extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'kode_tracking',
         'user_id',
-        'petugas_id',
         'kategori_id',
         'judul',
         'deskripsi',
+        'tanggal_kejadian',
+        'prioritas',
+        'harapan_pelapor',
         'foto_bukti',
         'lokasi_kejadian',
         'latitude',
         'longitude',
         'is_anonymous',
+        'is_private',
         'status',
+        'rating',
+        'rating_komentar',
+        'foto_penyelesaian',
+        'pesan_penutup',
+        'catatan_internal',
+    ];
+
+    protected $casts = [
+        'foto_bukti' => 'array',
+        'is_anonymous' => 'boolean',
+        'is_private' => 'boolean',
+        'tanggal_kejadian' => 'date',
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class , 'user_id');
-    }
-
-    public function petugas()
-    {
-        return $this->belongsTo(User::class , 'petugas_id');
     }
 
     public function kategori()

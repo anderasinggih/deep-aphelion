@@ -1,4 +1,4 @@
-<div class="px-0.1 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
+<div class="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
     <div class="flex flex-col gap-4 mb-8 sm:flex-row sm:items-center sm:justify-between">
         <div>
             <h1 class="text-3xl font-black tracking-tight text-primary">Dashboard Warga</h1>
@@ -68,7 +68,7 @@
                             ];
                             $curr = $statusMap[$pengaduan->status] ?? ['label' => $pengaduan->status, 'class' => ''];
                             @endphp
-                            <span class="badge {{ $curr['class'] }} badge-outline font-bold text-[13px]  px-1.5 h-4">
+                            <span class="badge {{ $curr['class'] }} font-bold text-[10px] sm:text-xs px-2 py-1 h-auto min-h-0">
                                 {{ $curr['label'] }}
                             </span>
                         </td>
@@ -76,17 +76,34 @@
                         {{-- Aksi (Icon saja di mobile) --}}
                         <td class="text-right py-2 px-3">
                             <div class="flex items-center justify-end gap-0.5 sm:gap-1">
-                                <x-button icon="o-eye" class="btn-ghost btn-xs text-primary hover:bg-primary/10"
-                                    link="{{ route('pengaduan.feed-detail', $pengaduan->id) }}" />
+                                <x-button icon="o-eye" class="btn-ghost btn-xs text-info hover:bg-info/10"
+                                    link="{{ route('pengaduan.feed-detail', $pengaduan->kode_tracking) }}" />
+                                    
+                                <a href="{{ route('print.resi', $pengaduan->id) }}" target="_blank" class="btn btn-ghost btn-xs text-primary hover:bg-primary/10" title="Cetak Tanda Terima">
+                                    <x-icon name="o-printer" class="w-4 h-4" />
+                                </a>
 
                                 @if($pengaduan->status === 'menunggu')
                                 <x-button icon="o-pencil-square"
                                     class="btn-ghost btn-xs text-warning hover:bg-warning/10"
-                                    link="{{ route('pengaduan.edit', $pengaduan->id) }}" />
+                                    link="{{ route('pengaduan.edit', $pengaduan->kode_tracking) }}" />
 
                                 <x-button icon="o-trash" class="btn-ghost btn-xs text-error hover:bg-error/10"
                                     wire:click="deletePengaduan({{ $pengaduan->id }})"
                                     wire:confirm="Hapus laporan ini?" />
+                                @endif
+
+                                @if($pengaduan->status === 'selesai' && !$pengaduan->rating)
+                                <x-button icon="o-star" class="btn-ghost btn-xs text-warning hover:bg-warning/10"
+                                    wire:click="openRatingModal({{ $pengaduan->id }})" tooltip="Beri Penilaian" />
+                                @endif
+                                
+                                @if($pengaduan->status === 'selesai' && $pengaduan->rating)
+                                <div class="px-2 py-0.5 rounded bg-warning/10 border border-warning/20" title="Penilaian Anda">
+                                    <span class="flex items-center gap-0.5 text-[10px] font-bold text-warning">
+                                        <x-icon name="s-star" class="w-3 h-3" /> {{ $pengaduan->rating }}
+                                    </span>
+                                </div>
                                 @endif
                             </div>
                         </td>
@@ -106,3 +123,30 @@
     <div class="p-4 border-t border-base-200">
         {{ $pengaduans->links() }}
     </div>
+
+    {{-- Modal Rating IKM --}}
+    <x-modal wire:model="ratingModal" title="Penilaian Layanan" separator>
+        <div class="flex flex-col gap-4">
+            <p class="text-sm text-base-content/70">Seberapa puas Anda dengan penanganan laporan ini?</p>
+            
+            <div class="flex justify-center gap-2 my-2">
+                @foreach(range(1, 5) as $i)
+                <button type="button" wire:click="$set('rating_value', {{ $i }})" 
+                    class="transition-transform transform hover:scale-110">
+                    <x-icon name="s-star" class="w-10 h-10 {{ $rating_value >= $i ? 'text-warning' : 'text-base-300' }}" />
+                </button>
+                @endforeach
+            </div>
+            <div class="text-center text-xs font-bold text-warning mb-2">
+                {{ $rating_value }} Bintang
+            </div>
+
+            <x-textarea wire:model="rating_komentar" label="Ulasan (Opsional)" 
+                placeholder="Bagaimana pelayanan dari kecamatan?" rows="3" />
+        </div>
+
+        <x-slot:actions>
+            <x-button label="Batal" @click="$wire.ratingModal = false" />
+            <x-button label="Kirim Penilaian" wire:click="saveRating" class="btn-primary" />
+        </x-slot:actions>
+    </x-modal>

@@ -1,8 +1,8 @@
-<div class="px-0.1 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
+<div class="px-2 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
     <div class="flex flex-col gap-4 mb-8 sm:flex-row sm:items-center sm:justify-between">
         <div>
             <h1 class="text-3xl font-black tracking-tight text-primary">Manajemen Kategori</h1>
-            <p class="mt-1 text-sm text-base-content/70">Kelola data set kategori pengaduan dan target SLA (Hari)</p>
+            <p class="mt-1 text-sm text-base-content/70">Kelola data set kategori pengaduan</p>
         </div>
         <div>
             <x-button label="Tambah Kategori" icon="o-plus" class="shadow-sm btn-primary rounded-xl"
@@ -35,7 +35,6 @@
                         <th class="rounded-tl-lg whitespace-nowrap">No</th>
                         <th class="whitespace-nowrap">Nama Kategori</th>
                         <th>Deskripsi</th>
-                        <th class="whitespace-nowrap">SLA (Hari)</th>
                         <th class="text-right rounded-tr-lg whitespace-nowrap">Aksi</th>
                     </tr>
                 </thead>
@@ -50,9 +49,6 @@
                         </td>
                         <td class="text-xs md:text-sm text-base-content/80">
                             {{ $kategori->deskripsi ?: '-' }}
-                        </td>
-                        <td class="text-xs md:text-sm text-base-content/80 whitespace-nowrap">
-                            <span class="font-semibold">{{ $kategori->sla_hari }}</span> Hari
                         </td>
                         <td class="text-right whitespace-nowrap">
                             <div class="flex items-center justify-end gap-1 md:gap-2">
@@ -95,9 +91,6 @@
             <div class="space-y-4">
                 <x-input label="Nama Kategori" wire:model="nama" placeholder="Contoh: Infrastruktur" required
                     icon="o-tag" />
-
-                <x-input label="Target SLA (Hari)" wire:model="sla_hari" type="number" min="1" placeholder="Contoh: 3"
-                    required hint="Estimasi waktu maksimal penyelesaian laporan dalam hari" icon="o-clock" />
 
                 <x-textarea label="Deskripsi (Opsional)" wire:model="deskripsi"
                     placeholder="Penjelasan singkat mengenai kategori ini..." rows="3" />

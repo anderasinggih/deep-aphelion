@@ -1,8 +1,8 @@
-<div class="px-0.1 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
+<div class="px-2 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
     <div class="flex flex-col gap-4 mb-8 sm:flex-row sm:items-center sm:justify-between">
         <div>
             <h1 class="text-3xl font-black tracking-tight text-primary">Manajemen Pengguna</h1>
-            <p class="mt-1 text-sm text-base-content/70">Kelola data warga, petugas, dan admin sistem</p>
+            <p class="mt-1 text-sm text-base-content/70">Kelola data warga dan admin sistem</p>
         </div>
         <div>
             <x-button label="Tambah Pengguna" icon="o-user-plus" class="shadow-sm btn-primary rounded-xl"
@@ -54,8 +54,6 @@
                         <td class="text-xs md:text-sm text-base-content/80 whitespace-nowrap">
                             @if($user->role === 'admin')
                             <x-badge value="Admin" class="badge-error badge-sm" />
-                            @elseif($user->role === 'petugas')
-                            <x-badge value="Petugas" class="badge-info badge-sm" />
                             @else
                             <x-badge value="Warga" class="badge-success badge-sm" />
                             @endif
@@ -113,7 +111,7 @@
 
             <div class="mb-4">
                 <x-select label="Peran (Role)" wire:model="role"
-                    :options="[['id' => 'warga', 'name' => 'Warga'], ['id' => 'petugas', 'name' => 'Petugas'], ['id' => 'admin', 'name' => 'Admin']]"
+                    :options="[['id' => 'warga', 'name' => 'Warga'], ['id' => 'admin', 'name' => 'Admin']]"
                     option-value="id" option-label="name" required icon="o-shield-check" />
             </div>
 

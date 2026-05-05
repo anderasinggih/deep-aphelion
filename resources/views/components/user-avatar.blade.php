@@ -4,14 +4,16 @@
 'class' => ''
 ])
 
-<div class="avatar shadow-sm {{ $class }}">
-    <div class="{{ $size }} rounded-full">
-        @if($user)
-        <img src="{{ $user->avatar_url }}" alt="{{ $user->name }}" />
-        @else
-        <div class="flex items-center justify-center h-full w-full bg-base-300 text-base-content/40">
-            <x-icon name="o-user" class="w-1/2 h-1/2" />
-        </div>
-        @endif
+@php
+    $initials = '??';
+    if ($user && $user->name) {
+        $nameParts = explode(' ', $user->name);
+        $initials = collect($nameParts)->map(fn($part) => substr($part, 0, 1))->take(2)->join('');
+    }
+@endphp
+
+<div class="avatar placeholder {{ $class }}">
+    <div class="bg-primary text-primary-content rounded-full {{ $size }} shadow-sm flex items-center justify-center">
+        <span class="text-[10px] font-black tracking-tighter">{{ strtoupper($initials) }}</span>
     </div>
 </div>

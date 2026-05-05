@@ -17,7 +17,7 @@ return new class extends Migration {
             $table->foreignId('kategori_id')->constrained('kategoris')->onDelete('cascade');
             $table->string('judul');
             $table->text('deskripsi');
-            $table->string('foto_bukti')->nullable();
+            $table->json('foto_bukti')->nullable();
             $table->string('lokasi_kejadian');
             $table->string('latitude')->nullable();
             $table->string('longitude')->nullable();

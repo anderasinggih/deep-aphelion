@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="light">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="night">
 
 <head>
     <meta charset="utf-8">
@@ -10,6 +10,15 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    
+    {{-- PWA Meta Tags --}}
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Kembaran Ngadu">
+    <link rel="apple-touch-icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Lambang_Kabupaten_Banyumas.png/192px-Lambang_Kabupaten_Banyumas.png">
+
     @stack('styles')
 </head>
 
@@ -20,7 +29,7 @@
 
         {{-- Navbar utamanya dibikin melengkung, blur tinggi, dan ada border kaca --}}
         <div
-            class="navbar bg-base-100/40 backdrop-blur-sm border border-white/30 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-[2rem] px-4 sm:px-6">
+            class="navbar bg-base-100/40 backdrop-blur-sm border border-white/30 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-[2rem] px-4 sm:px-6 min-h-[3.2rem] py-0">
 
             <div class="navbar-start ">
                 <div class="dropdown ">
@@ -30,7 +39,9 @@
                     <ul tabindex="0"
                         class="menu menu-sm dropdown-content mt-5 z-[50] p-2 shadow-2xl bg-base-100 rounded-2xl w-64 border border-base-300">
                         <li><a href="/" class="{{ request()->is('/') ? 'active' : '' }}"><x-icon name="o-home"
-                                    class="w-4 h-4" /> Beranda Publik</a></li>
+                                     class="w-4 h-4" /> Beranda</a></li>
+                        <li><a href="{{ route('tentang-kami') }}" wire:navigate class="{{ request()->is('tentang-kami') ? 'active' : '' }}"><x-icon name="o-information-circle"
+                                     class="w-4 h-4" /> Tentang Kami</a></li>
                         @auth
                         @if(auth()->user()->role === 'admin')
                         <li><a href="/admin/dashboard"
@@ -54,13 +65,14 @@
                                     <li><a href="/admin/users" onclick="this.closest('details').removeAttribute('open')"
                                             class="{{ request()->is('admin/users') ? 'active' : '' }}"><x-icon
                                                 name="o-users" class="w-4 h-4" /> Pengguna</a></li>
+                                    <div class="my-1 opacity-20 divider"></div>
+                                    <li><a href="/admin/pengaturan" onclick="this.closest('details').removeAttribute('open')"
+                                            class="{{ request()->is('admin/pengaturan') ? 'active' : '' }}"><x-icon
+                                                name="o-cog-8-tooth" class="w-4 h-4" /> Pengaturan Web</a></li>
                                 </ul>
                             </details>
                         </li>
-                        @elseif(auth()->user()->role === 'petugas')
-                        <li><a href="/petugas/disposisi"
-                                class="{{ request()->is('petugas/disposisi') ? 'active' : '' }}"><x-icon
-                                    name="o-clipboard-document-check" class="w-4 h-4" /> Disposisi</a></li>
+
                         @else
                         <li><a href="/dashboard" class="{{ request()->is('dashboard') ? 'active' : '' }}"><x-icon
                                     name="o-chart-pie" class="w-4 h-4" /> Dashboard</a></li>
@@ -71,8 +83,11 @@
                 </div>
                 <a href="/"
                     class="text-xl font-bold text-brand flex items-center gap-2 lg:ml-2 whitespace-nowrap hover:scale-105 transition-transform">
-                    <img src="{{ asset('storage/assets/logobanyumas.png') }}" alt="Logo Banyumas"
-                        class="w-9 h-9 object-contain drop-shadow-sm" />
+                    @php
+                        $appLogo = \App\Models\Setting::where('key', 'app_logo')->first()?->value;
+                    @endphp
+                    <img src="{{ $appLogo ? asset('storage/' . $appLogo) : asset('storage/assets/logobanyumas.png') }}" alt="Logo App"
+                        class="w-7 h-7 object-contain drop-shadow-sm" />
                     <span class="hidden lg:block text-base-content/90">Kembaran Ngadu</span>
                 </a>
             </div>
@@ -80,21 +95,24 @@
             <div class="navbar-center hidden lg:flex">
                 <ul class="menu menu-horizontal px-1 gap-1 text-sm font-bold text-base-content/80">
                     <li><a href="/"
-                            class="{{ request()->is('/') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all"><x-icon
-                                name="o-home" class="w-4 h-4" /> Beranda</a></li>
+                            class="{{ request()->is('/') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all py-1.5"><x-icon
+                                 name="o-home" class="w-4 h-4" /> Beranda</a></li>
+                    <li><a href="{{ route('tentang-kami') }}" wire:navigate
+                            class="{{ request()->is('tentang-kami') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all py-1.5"><x-icon
+                                 name="o-information-circle" class="w-4 h-4" /> Tentang Kami</a></li>
                     @auth
                     @if(auth()->user()->role === 'admin')
                     <li><a href="/admin/dashboard"
-                            class="{{ request()->is('admin/dashboard') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all"><x-icon
+                            class="{{ request()->is('admin/dashboard') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all py-1.5"><x-icon
                                 name="o-chart-bar" class="w-4 h-4" /> Dashboard</a></li>
                     <li><a href="/admin/pengaduan"
-                            class="{{ request()->is('admin/pengaduan') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all"><x-icon
+                            class="{{ request()->is('admin/pengaduan') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all py-1.5"><x-icon
                                 name="o-inbox-stack" class="w-4 h-4" /> Kelola Aduan</a></li>
                     <li>
                         {{-- DESKTOP: Hapus 'open', tambah class hidden arrow --}}
                         <details class="[&>summary::after]:hidden">
                             <summary
-                                class="{{ request()->is('admin/kategori') || request()->is('admin/users') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all">
+                                class="{{ request()->is('admin/kategori') || request()->is('admin/users') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all py-1.5">
                                 <x-icon name="o-circle-stack" class="w-4 h-4" /> Data Set
                             </summary>
                             <ul class="p-2 bg-base-100 rounded-2xl shadow-xl w-48 mt-3 z-[100] border border-base-200">
@@ -102,18 +120,19 @@
                                         class="{{ request()->is('admin/kategori') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all mb-1"><x-icon
                                             name="o-folder-open" class="w-4 h-4" /> Kategori</a></li>
                                 <li><a href="/admin/users" onclick="this.closest('details').removeAttribute('open')"
-                                        class="{{ request()->is('admin/users') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all"><x-icon
+                                        class="{{ request()->is('admin/users') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all py-1.5"><x-icon
                                             name="o-users" class="w-4 h-4" /> Pengguna</a></li>
+                                <div class="my-1 opacity-20 divider"></div>
+                                <li><a href="/admin/pengaturan" onclick="this.closest('details').removeAttribute('open')"
+                                        class="{{ request()->is('admin/pengaturan') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all py-1.5"><x-icon
+                                            name="o-cog-8-tooth" class="w-4 h-4" /> Pengaturan Web</a></li>
                             </ul>
                         </details>
                     </li>
-                    @elseif(auth()->user()->role === 'petugas')
-                    <li><a href="/petugas/disposisi"
-                            class="{{ request()->is('petugas/disposisi') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all"><x-icon
-                                name="o-clipboard-document-check" class="w-4 h-4" /> Disposisi</a></li>
+
                     @else
                     <li><a href="/dashboard"
-                            class="{{ request()->is('dashboard') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all"><x-icon
+                            class="{{ request()->is('dashboard') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all py-1.5"><x-icon
                                 name="o-chart-pie" class="w-4 h-4" /> Dashboard</a></li>
                     @endif
 
@@ -128,17 +147,19 @@
                 $initials = collect($nameParts)->map(fn($part) => substr($part, 0, 1))->take(2)->join('');
                 @endphp
                 <div class="dropdown dropdown-end">
-                    <div tabindex="0" role="button"
-                        class="btn btn-ghost px-2 flex items-center gap-2 hover:bg-base-200/50 rounded-full transition-all border border-transparent hover:border-white/20">
-                        <x-user-avatar :user="auth()->user()" size="w-9 h-9" />
-                        <x-icon name="o-chevron-down" class="w-3.5 h-3.5 opacity-50 hidden sm:block" />
+                    <div tabindex="0" role="button" class="avatar placeholder flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity ml-2">
+                        <div class="bg-primary text-primary-content rounded-full w-8 h-8 shadow-md flex items-center justify-center">
+                            <span class="text-[10px] font-black tracking-tighter">{{ $initials }}</span>
+                        </div>
                     </div>
                     <ul tabindex="0"
-                        class="menu menu-sm dropdown-content mt-5 z-[50] p-2 shadow-2xl bg-base-100 rounded-2xl w-64 border border-base-300">
-                        <li class="px-4 py-3 border-b border-base-200/50 mb-1 hover:bg-transparent pointer-events-none">
-                            <div class="font-black text-base-content text-sm">{{ auth()->user()->name }}</div>
-                            <div class="text-xs text-base-content/60 opacity-80 break-all font-medium">{{
-                                auth()->user()->email }}</div>
+                        class="menu menu-sm dropdown-content mt-3 z-[100] p-2 shadow-2xl bg-base-100 rounded-2xl w-56 border border-base-200">
+                        <li class="px-4 py-3 border-b border-base-200/50 mb-1 pointer-events-none">
+                            <div class="flex flex-col w-full min-w-0 overflow-hidden items-start gap-0.5 !bg-transparent !p-0">
+                                <span class="text-[10px] font-black text-primary uppercase">{{ auth()->user()->role }}</span>
+                                <span class="font-bold text-sm truncate w-full text-base-content" title="{{ auth()->user()->name }}">{{ auth()->user()->name }}</span>
+                                <span class="text-xs text-base-content/60 truncate w-full font-medium" title="{{ auth()->user()->email }}">{{ auth()->user()->email }}</span>
+                            </div>
                         </li>
                         @if(auth()->user()->role === 'admin')
                         <li><a href="/admin/dashboard" class="py-2.5 rounded-xl font-bold"><x-icon name="o-squares-2x2"
@@ -164,21 +185,17 @@
             </div>
         </div>
     </div>
-    {{-- Tambahin margin-top ekstra biar konten gak ketutup navbar yang melayang --}}
-    <x-main full-width class="pt-6 sm:pt-10">
-        <x-slot:content>
-            @isset($header)
-            <div
-                class="px-4 py-4 mx-auto mb-6 shadow-sm max-w-7xl sm:px-6 lg:px-8 bg-base-100 rounded-2xl border border-base-200">
-                {{ $header }}
-            </div>
-            @endisset
 
-            <div class="mx-auto max-w-7xl">
-                {{ $slot }}
-            </div>
-        </x-slot:content>
-    </x-main>
+    {{-- Gunakan main tag standar untuk kontrol penuh --}}
+    <main class="w-full pt-6 sm:pt-10">
+        @isset($header)
+        <div class="px-4 py-4 mx-auto mb-6 shadow-sm max-w-7xl sm:px-6 lg:px-8 bg-base-100 rounded-2xl border border-base-200">
+            {{ $header }}
+        </div>
+        @endisset
+
+        {{ $slot }}
+    </main>
 
     <x-toast />
     <script>
@@ -189,7 +206,7 @@
                 }, function (err) {
                     console.log('ServiceWorker registration failed: ', err);
                 });
-            }); // Kurung kurawal di sini sudah ditambahkan
+            }); 
         }
     </script>
     @stack('scripts')

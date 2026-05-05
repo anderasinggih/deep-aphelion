@@ -3,7 +3,7 @@
     <div class="flex items-center justify-between pb-1 border-b border-base-200">
         <div class="flex items-center gap-2">
             <x-icon name="o-chat-bubble-left-right" class="w-4 h-4 text-primary" />
-            <h3 class="font-bold text-sm uppercase tracking-wider text-base-content/70">Diskusi</h3>
+            <h3 class="font-bold text-sm text-base-content/70">Diskusi</h3>
         </div>
         <span class="text-[10px] font-bold opacity-50">{{ $this->totalComments }} Komentar</span>
     </div>
@@ -36,16 +36,18 @@
             <div class="flex-1 min-w-0">
                 <div
                     class="bg-base-200/50 rounded-2xl rounded-tl-none px-3 py-2 inline-block max-w-full group relative">
-                    <div class="flex items-center gap-2 mb-0.5">
-                        <span class="font-bold text-xs">{{ $comment->user->name }}</span>
+                    <div class="flex items-center gap-1.5 mb-1">
+                        <span class="font-bold text-[13px] line-clamp-1 max-w-[120px]">{{ $comment->user->name }}</span>
                         @if($comment->user->role !== 'warga')
-                        <span class="text-[9px] px-1 bg-base-300 rounded text-base-content/70 font-bold uppercase">{{
-                            $comment->user->role }}</span>
+                        <span
+                            class="text-[8px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary font-black ">
+                            {{ $comment->user->role }}
+                        </span>
                         @endif
                         <span class="text-[9px] opacity-40 italic">{{ $comment->created_at->diffForHumans(null, true,
                             true) }}</span>
                     </div>
-                    <p class="text-[13px] text-base-content/90 leading-snug break-words">{{ $comment->komentar }}</p>
+                    <p class="text-[13px] text-base-content/80 leading-relaxed break-words">{{ $comment->komentar }}</p>
 
                     {{-- Delete icon --}}
                     @if(Auth::id() === $comment->user_id || Auth::user()?->role === 'admin')
@@ -80,11 +82,11 @@
                         <x-user-avatar :user="$reply->user" size="w-6 h-6" class="mt-0.5 shrink-0" />
                         <div class="bg-base-100  rounded-xl px-2.5 py-1.5 inline-block max-w-full">
                             <div class="flex items-center gap-1.5 mb-0.5">
-                                <span class="font-bold text-[11px]">{{ $reply->user->name }}</span>
+                                <span class="font-bold text-[11px] line-clamp-1 max-w-[100px]">{{ $reply->user->name }}</span>
                                 <span class="text-[8px] opacity-40 italic">{{ $reply->created_at->diffForHumans(null,
                                     true, true) }}</span>
                             </div>
-                            <p class="text-xs text-base-content/80 leading-tight">{{ $reply->komentar }}</p>
+                            <p class="text-xs text-base-content/80 leading-tight break-words">{{ $reply->komentar }}</p>
                         </div>
                     </div>
                     @endforeach

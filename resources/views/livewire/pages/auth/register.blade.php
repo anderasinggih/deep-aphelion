@@ -49,6 +49,7 @@ new #[Layout('layouts.auth')] class extends Component
             'password.regex' => 'Password wajib mengandung kombinasi huruf dan angka.',
         ]);
 
+        $validated['name'] = strtoupper($validated['name']);
         $validated['password'] = Hash::make($validated['password']);
 
         event(new Registered($user = User::create($validated)));
@@ -100,19 +101,22 @@ new #[Layout('layouts.auth')] class extends Component
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
                     <x-input wire:model="name" id="name" label="Nama Lengkap (Sesuai KTP)" type="text"
-                        placeholder="Contoh: Budi Santoso" required autofocus autocomplete="name" icon="o-user" />
+                        placeholder="Contoh: BUDI SANTOSO" required autofocus autocomplete="name" icon="o-user"
+                        class="uppercase" />
                 </div>
 
                 <div>
-                    <x-input wire:model="nik" id="nik" label="Nomor Induk Kependudukan (NIK)" type="number"
-                        placeholder="Masukkan 16 digit NIK" required autocomplete="off" icon="o-identification" />
+                    <x-input wire:model="nik" id="nik" label="Nomor Induk Kependudukan (NIK)" type="text"
+                        placeholder="16 digit NIK" required autocomplete="off" icon="o-identification"
+                        maxlength="16" oninput="this.value = this.value.replace(/[^0-9]/g, '');" />
                 </div>
             </div>
 
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
-                    <x-input wire:model="no_wa" id="no_wa" label="Nomor WhatsApp" type="number"
-                        placeholder="Contoh: 081234567890" required autocomplete="tel" icon="o-phone" />
+                    <x-input wire:model="no_wa" id="no_wa" label="Nomor WhatsApp" type="text"
+                        placeholder="Contoh: 081234567890" required autocomplete="tel" icon="o-phone"
+                        maxlength="15" oninput="this.value = this.value.replace(/[^0-9]/g, '');" />
                 </div>
 
                 <div>
@@ -130,7 +134,7 @@ new #[Layout('layouts.auth')] class extends Component
                             icon="o-lock-closed" />
 
                         <button type="button" @click="show = !show"
-                            class="absolute inset-y-0 right-0 flex items-center pr-3 transition-colors cursor-pointer text-base-content/40 hover:text-primary">
+                            class="absolute top-0 right-0 h-[48px] flex items-center pr-3 transition-colors cursor-pointer text-base-content/40 hover:text-primary z-10">
                             <x-icon name="o-eye" x-show="!show" class="w-5 h-5" />
                             <x-icon name="o-eye-slash" x-show="show" class="w-5 h-5" style="display: none;" />
                         </button>
@@ -186,21 +190,6 @@ new #[Layout('layouts.auth')] class extends Component
 
         input[type=number] {
             -moz-appearance: textfield;
-        }
-
-        /* ---------------------------------------------------
-           Trik CSS Anti-Autofill Putih & Teks Hitam (Versi Kuat)
-           --------------------------------------------------- */
-        input:-webkit-autofill,
-        input:-webkit-autofill:hover,
-        input:-webkit-autofill:focus,
-        input:-webkit-autofill:active {
-            /* Tahan background agar tetap ikut tema gelap */
-            transition: background-color 5000s ease-in-out 0s !important;
-
-            /* Paksa warna teks jadi putih keabu-abuan (Hex murni, bukan variabel) */
-            -webkit-text-fill-color: #f3f4f6 !important;
-            font-weight: 500 !important;
         }
     </style>
 </div>

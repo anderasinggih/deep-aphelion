@@ -106,17 +106,17 @@ new class extends Component
         </style>
 
         <div class="space-y-4">
-            <x-input label="Nama Lengkap" wire:model="name" id="name" required autofocus autocomplete="name"
-                icon="o-user" />
+            <x-input label="Nama Lengkap (Sesuai KTP)" wire:model="name" id="name" type="text" required autofocus autocomplete="name"
+                icon="o-user" class="uppercase" placeholder="Contoh: BUDI SANTOSO" />
 
-            <x-input label="Nomor Induk Kependudukan (NIK)" wire:model="nik" id="nik" type="number" required
-                autocomplete="off" icon="o-identification" />
+            <x-input label="Nomor Induk Kependudukan (NIK)" wire:model="nik" id="nik" type="text" required
+                autocomplete="off" icon="o-identification" maxlength="16" placeholder="16 digit NIK" oninput="this.value = this.value.replace(/[^0-9]/g, '');" />
 
-            <x-input label="Nomor WhatsApp" wire:model="no_wa" id="no_wa" type="number" required autocomplete="tel"
-                icon="o-phone" />
+            <x-input label="Nomor WhatsApp" wire:model="no_wa" id="no_wa" type="text" required autocomplete="tel"
+                icon="o-phone" maxlength="15" placeholder="Contoh: 081234567890" oninput="this.value = this.value.replace(/[^0-9]/g, '');" />
 
             <x-input label="Email" wire:model="email" id="email" type="email" autocomplete="username"
-                icon="o-envelope" />
+                icon="o-envelope" placeholder="Contoh: nama@email.com" />
 
             @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && !
             auth()->user()->hasVerifiedEmail())

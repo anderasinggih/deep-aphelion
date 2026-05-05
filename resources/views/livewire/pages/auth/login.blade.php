@@ -104,7 +104,7 @@ new #[Layout('layouts.auth')] class extends Component
                         placeholder="Masukkan password" required autocomplete="current-password" icon="o-lock-closed" />
 
                     <button type="button" @click="show = !show"
-                        class="absolute inset-y-0 right-0 flex items-center pr-3 transition-colors cursor-pointer text-base-content/40 hover:text-primary">
+                        class="absolute top-0 right-0 h-[48px] flex items-center pr-3 transition-colors cursor-pointer text-base-content/40 hover:text-primary z-10">
                         <x-icon name="o-eye" x-show="!show" class="w-5 h-5" />
                         <x-icon name="o-eye-slash" x-show="show" class="w-5 h-5" style="display: none;" />
                     </button>
@@ -135,16 +135,5 @@ new #[Layout('layouts.auth')] class extends Component
     </div>
 
     <style>
-        input:-webkit-autofill,
-        input:-webkit-autofill:hover,
-        input:-webkit-autofill:focus,
-        input:-webkit-autofill:active {
-            /* Tahan background agar tetap ikut tema gelap */
-            transition: background-color 5000s ease-in-out 0s !important;
-
-            /* Paksa warna teks jadi putih keabu-abuan (Hex murni, bukan variabel) */
-            -webkit-text-fill-color: #f3f4f6 !important;
-            font-weight: 500 !important;
-        }
     </style>
 </div>

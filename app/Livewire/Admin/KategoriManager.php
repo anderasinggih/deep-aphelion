@@ -10,7 +10,7 @@ class KategoriManager extends Component
 {
     use WithPagination;
 
-    public $kategoriId, $nama, $deskripsi, $sla_hari;
+    public $kategoriId, $nama, $deskripsi;
     public $isEdit = false;
     public $showModal = false;
     public $search = '';
@@ -18,13 +18,10 @@ class KategoriManager extends Component
     protected $rules = [
         'nama' => 'required|string|max:255',
         'deskripsi' => 'nullable|string',
-        'sla_hari' => 'required|integer|min:1',
     ];
 
     protected $messages = [
         'nama.required' => 'Nama kategori wajib diisi.',
-        'sla_hari.required' => 'SLA (Hari) wajib diisi.',
-        'sla_hari.min' => 'SLA minimal 1 hari.',
     ];
 
     public function render()
@@ -50,9 +47,8 @@ class KategoriManager extends Component
         $this->validate();
 
         Kategori::create([
-            'nama' => $this->nama,
+            'nama' => strtoupper($this->nama),
             'deskripsi' => $this->deskripsi,
-            'sla_hari' => $this->sla_hari,
         ]);
 
         session()->flash('success', 'Kategori pengaduan berhasil ditambahkan.');
@@ -65,7 +61,6 @@ class KategoriManager extends Component
         $this->kategoriId = $id;
         $this->nama = $kategori->nama;
         $this->deskripsi = $kategori->deskripsi;
-        $this->sla_hari = $kategori->sla_hari;
         $this->isEdit = true;
         $this->showModal = true;
     }
@@ -76,9 +71,8 @@ class KategoriManager extends Component
 
         $kategori = Kategori::findOrFail($this->kategoriId);
         $kategori->update([
-            'nama' => $this->nama,
+            'nama' => strtoupper($this->nama),
             'deskripsi' => $this->deskripsi,
-            'sla_hari' => $this->sla_hari,
         ]);
 
         session()->flash('success', 'Kategori pengaduan berhasil diperbarui.');
@@ -110,7 +104,6 @@ class KategoriManager extends Component
         $this->kategoriId = null;
         $this->nama = '';
         $this->deskripsi = '';
-        $this->sla_hari = '';
         $this->resetValidation();
     }
 }

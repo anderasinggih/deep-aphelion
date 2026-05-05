@@ -16,6 +16,22 @@ class Beranda extends Component
     public $kategori_id = '';
     public $search = '';
     public $sort = 'terbaru';
+    public $trackingCode = '';
+
+    public function lacakLaporan()
+    {
+        $this->validate([
+            'trackingCode' => 'required|string|max:50'
+        ]);
+
+        $pengaduan = Pengaduan::where('kode_tracking', $this->trackingCode)->first();
+
+        if ($pengaduan) {
+            return redirect()->route('pengaduan.feed-detail', $pengaduan->kode_tracking);
+        } else {
+            session()->flash('error', 'Laporan dengan kode ' . $this->trackingCode . ' tidak ditemukan.');
+        }
+    }
 
     public function upvote($pengaduan_id)
     {
@@ -51,6 +67,7 @@ class Beranda extends Component
         $query = Pengaduan::query()
             ->with(['user', 'kategori', 'dukungans'])
             ->withCount('dukungans')
+            ->where('is_private', false)
             ->where('status', '!=', 'ditolak');
 
         if ($this->kategori_id) {
@@ -71,9 +88,16 @@ class Beranda extends Component
             $query->orderBy('created_at', 'desc');
         }
 
+        $settings = \App\Models\Setting::all()->pluck('value', 'key');
+
         return view('livewire.beranda', [
             'pengaduans' => $query->paginate(10),
-            'kategoris' => Kategori::all()
+            'kategoris' => Kategori::all(),
+            'settings' => $settings,
+            'sop_waktu_pemrosesan' => $settings['sop_waktu_pemrosesan'] ?? 'Laporan akan diverifikasi maksimal 3x24 Jam Kerja sejak dikirimkan.',
+            'sop_jam_operasional' => $settings['sop_jam_operasional'] ?? 'Senin - Jumat <br> Pukul 08:00 - 15:00 WIB.',
+            'sop_dasar_hukum' => $settings['sop_dasar_hukum'] ?? 'Sesuai UU Pelayanan Publik dan UU PDP. Identitas Anda dijamin aman.',
+            'sop_tindak_lanjut' => $settings['sop_tindak_lanjut'] ?? 'Laporan yang valid akan langsung diteruskan ke instansi terkait untuk diselesaikan.',
         ])->layout('layouts.app');
     }
 }
