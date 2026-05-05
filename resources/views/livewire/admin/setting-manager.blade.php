@@ -75,6 +75,42 @@
                 </div>
 
                 <h2 class="text-xl font-bold mb-4 mt-8 border-b border-base-200 pb-2 flex items-center gap-2">
+                    <x-icon name="o-megaphone" class="w-5 h-5 text-primary" /> Papan Informasi (Pengumuman Beranda)
+                </h2>
+                <div class="bg-base-200/30 p-5 rounded-2xl border border-base-200 space-y-6">
+                    <div class="flex items-center justify-between bg-base-100 p-4 rounded-xl border border-base-200 shadow-sm">
+                        <div class="flex-1">
+                            <p class="font-bold text-sm">Status Pengumuman</p>
+                            <p class="text-[10px] text-base-content/60">Aktifkan untuk memunculkan banner di Beranda</p>
+                        </div>
+                        <x-toggle wire:model="pengumuman_aktif" class="toggle-primary" />
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="md:col-span-2">
+                            <x-textarea 
+                                label="Isi Pengumuman" 
+                                wire:model="pengumuman_isi" 
+                                rows="3" 
+                                placeholder="Masukkan pengumuman di sini..." 
+                                hint="Anda dapat menggunakan tag HTML dasar." />
+                        </div>
+                        <div>
+                            <x-select 
+                                label="Tipe Tampilan" 
+                                wire:model="pengumuman_tipe" 
+                                :options="[
+                                    ['id' => 'info', 'name' => 'Info (Biru)'],
+                                    ['id' => 'success', 'name' => 'Sukses (Hijau)'],
+                                    ['id' => 'warning', 'name' => 'Peringatan (Kuning)'],
+                                    ['id' => 'error', 'name' => 'Bahaya (Merah)']
+                                ]" 
+                                icon="o-swatch" />
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="text-xl font-bold mb-4 mt-8 border-b border-base-200 pb-2 flex items-center gap-2">
                     <x-icon name="o-shield-check" class="w-5 h-5 text-primary" /> Keamanan & Pemeliharaan Sistem
                 </h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-base-200/30 p-4 rounded-xl border border-base-200">

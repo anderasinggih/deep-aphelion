@@ -14,6 +14,11 @@ class SettingManager extends Component
     public $sop_jam_operasional;
     public $sop_dasar_hukum;
     public $sop_tindak_lanjut;
+    
+    // Pengumuman (Papan Informasi)
+    public $pengumuman_aktif;
+    public $pengumuman_isi;
+    public $pengumuman_tipe;
 
     // Anti-Spam
     public $anti_spam_aktif;
@@ -65,6 +70,10 @@ class SettingManager extends Component
         $this->sop_jam_operasional = $settings['sop_jam_operasional'] ?? '';
         $this->sop_dasar_hukum = $settings['sop_dasar_hukum'] ?? '';
         $this->sop_tindak_lanjut = $settings['sop_tindak_lanjut'] ?? '';
+        
+        $this->pengumuman_aktif = (bool) ($settings['pengumuman_aktif'] ?? false);
+        $this->pengumuman_isi = $settings['pengumuman_isi'] ?? '';
+        $this->pengumuman_tipe = $settings['pengumuman_tipe'] ?? 'info';
 
         $this->anti_spam_aktif = (bool) ($settings['anti_spam_aktif'] ?? true);
         $this->anti_spam_limit = $settings['anti_spam_limit'] ?? 3;
@@ -102,6 +111,9 @@ class SettingManager extends Component
             'sop_jam_operasional' => 'required|string',
             'sop_dasar_hukum' => 'required|string',
             'sop_tindak_lanjut' => 'required|string',
+            'pengumuman_aktif' => 'boolean',
+            'pengumuman_isi' => 'nullable|string|max:1000',
+            'pengumuman_tipe' => 'required|in:info,success,warning,error',
             'anti_spam_aktif' => 'boolean',
             'anti_spam_limit' => 'required|integer|min:1|max:100',
             'media_cleanup_aktif' => 'boolean',
@@ -130,6 +142,9 @@ class SettingManager extends Component
         $this->updateSetting('sop_jam_operasional', $this->sop_jam_operasional);
         $this->updateSetting('sop_dasar_hukum', $this->sop_dasar_hukum);
         $this->updateSetting('sop_tindak_lanjut', $this->sop_tindak_lanjut);
+        $this->updateSetting('pengumuman_aktif', $this->pengumuman_aktif);
+        $this->updateSetting('pengumuman_isi', $this->pengumuman_isi);
+        $this->updateSetting('pengumuman_tipe', $this->pengumuman_tipe);
         $this->updateSetting('anti_spam_aktif', $this->anti_spam_aktif);
         $this->updateSetting('anti_spam_limit', $this->anti_spam_limit);
         $this->updateSetting('media_cleanup_aktif', $this->media_cleanup_aktif);
