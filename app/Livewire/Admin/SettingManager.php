@@ -61,6 +61,8 @@ class SettingManager extends Component
     // UI State
     public $activeTab = 'umum';
     public $unlock_email = false;
+    public $showUnlockModal = false;
+    public $confirmText = '';
 
     public function mount()
     {
@@ -206,6 +208,26 @@ class SettingManager extends Component
         }
 
         session()->flash('success', 'Pengaturan berhasil disimpan.');
+    }
+
+    public function openUnlockModal()
+    {
+        if ($this->unlock_email) {
+            $this->unlock_email = false;
+        } else {
+            $this->confirmText = '';
+            $this->showUnlockModal = true;
+        }
+    }
+
+    public function confirmUnlock()
+    {
+        if (strtoupper($this->confirmText) === 'SAYA MENGERTI') {
+            $this->unlock_email = true;
+            $this->showUnlockModal = false;
+        } else {
+            $this->addError('confirmText', 'Teks konfirmasi tidak sesuai.');
+        }
     }
 
     public function setTab($tab)

@@ -250,7 +250,7 @@
                             <p class="text-xs font-black text-warning uppercase">Mode Proteksi</p>
                             <p class="text-[10px] text-base-content/60">Aktifkan untuk mengubah data</p>
                         </div>
-                        <x-toggle wire:model.live="unlock_email" class="toggle-warning" />
+                        <x-toggle wire:click="openUnlockModal" :checked="$unlock_email" class="toggle-warning" />
                     </div>
                 </div>
 
@@ -297,4 +297,30 @@
             </x-slot:actions>
         </x-form>
     </div>
+
+    {{-- Modal Konfirmasi Unlock Email --}}
+    <x-modal wire:model="showUnlockModal" title="Konfirmasi Perubahan Sensitif" separator>
+        <div class="space-y-4">
+            <div class="p-4 bg-error/10 border border-error/20 rounded-xl flex gap-3 items-start">
+                <x-icon name="o-exclamation-triangle" class="w-6 h-6 text-error mt-1" />
+                <div class="text-sm">
+                    <p class="font-bold text-error text-base">Hati-hati!</p>
+                    <p class="text-base-content/70">Mengubah pengaturan email dapat menghentikan fungsi verifikasi akun dan pengiriman laporan jika data tidak valid. Server akan melakukan restart konfigurasi secara otomatis.</p>
+                </div>
+            </div>
+
+            <p class="text-sm font-medium">Ketik tulisan <span class="text-error font-black uppercase tracking-widest">SAYA MENGERTI</span> di bawah untuk melanjutkan:</p>
+            
+            <x-input 
+                wire:model.live="confirmText" 
+                placeholder="Tulis di sini..." 
+                class="bg-base-200 font-black uppercase tracking-wider" 
+                @keydown.enter="$wire.confirmUnlock()" />
+        </div>
+
+        <x-slot:actions>
+            <x-button label="Batal" @click="$wire.showUnlockModal = false" />
+            <x-button label="Buka Kunci" wire:click="confirmUnlock" class="btn-error text-white" :disabled="strtoupper($confirmText) !== 'SAYA MENGERTI'" />
+        </x-slot:actions>
+    </x-modal>
 </div>
