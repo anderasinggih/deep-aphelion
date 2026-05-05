@@ -18,10 +18,15 @@ class PengaduanDetail extends Component
 
     public Pengaduan $pengaduan;
 
-    public function mount(Pengaduan $pengaduan)
+    public function mount($kode_tracking)
     {
         abort_unless(in_array(auth()->user()->role, ['admin', 'petugas']), 403);
-        $this->pengaduan = $pengaduan;
+
+        $this->pengaduan = Pengaduan::with(['user', 'kategori', 'histories.user', 'linkedReport'])
+            ->where('kode_tracking', $kode_tracking)
+            ->firstOrFail();
+
+        $this->catatan_internal = $this->pengaduan->catatan_internal;
     }
 
     public $updateModal = false;
@@ -34,12 +39,6 @@ class PengaduanDetail extends Component
     public $linkModal = false;
     public $searchLinkedQuery = '';
     public $linkedReports = [];
-
-    public function mount($kode_tracking)
-    {
-        $this->pengaduan = Pengaduan::with(['user', 'kategori', 'histories.user', 'linkedReport'])->where('kode_tracking', $kode_tracking)->firstOrFail();
-        $this->catatan_internal = $this->pengaduan->catatan_internal;
-    }
 
     public function updatedSearchLinkedQuery()
     {
