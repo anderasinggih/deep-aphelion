@@ -8,9 +8,9 @@
             </span>
         @endif
     </div>
-    <div tabindex="0" class="dropdown-content z-[100] menu p-0 shadow-2xl bg-base-100 rounded-2xl w-80 border border-base-200 mt-3 overflow-hidden animate-in fade-in zoom-in duration-200">
+    <div tabindex="0" class="dropdown-content z-[100] menu p-0 shadow-2xl bg-base-100 rounded-2xl w-[88vw] sm:w-80 border border-base-200 mt-3 -mr-10 sm:mr-0 overflow-hidden animate-in fade-in zoom-in duration-200">
         <div class="px-4 py-3 bg-base-200/50 border-b border-base-200 flex items-center justify-between">
-            <span class="text-[10px] font-black uppercase tracking-wider text-base-content/60">Notifikasi</span>
+            <span class="text-[11px] font-black text-base-content/60">Notifikasi</span>
             @if($this->unreadCount > 0)
                 <button wire:click="markAllAsRead" class="text-[10px] font-bold text-primary hover:underline">Tandai semua dibaca</button>
             @endif
@@ -25,8 +25,8 @@
                     @endif
                     <div class="flex flex-col gap-1">
                         <div class="flex items-center justify-between gap-2">
-                            <span class="text-[9px] font-black text-primary uppercase tracking-tighter">{{ $notification->data['kode_tracking'] ?? 'INFO' }}</span>
-                            <span class="text-[8px] font-bold text-base-content/40 uppercase">{{ $notification->created_at->diffForHumans() }}</span>
+                            <span class="text-[9px] font-black text-primary tracking-tight">{{ $notification->data['kode_tracking'] ?? 'INFO' }}</span>
+                            <span class="text-[9px] font-bold text-base-content/40">{{ $notification->created_at->diffForHumans() }}</span>
                         </div>
                         <p class="text-[12px] font-bold text-base-content leading-snug">
                             {{ $notification->data['pesan'] }}
@@ -38,14 +38,14 @@
                     <div class="w-12 h-12 bg-base-200 rounded-full flex items-center justify-center mx-auto mb-3">
                         <x-icon name="o-bell-slash" class="w-6 h-6 opacity-20" />
                     </div>
-                    <p class="text-[10px] font-black text-base-content/40 uppercase tracking-widest">Belum ada notifikasi</p>
+                    <p class="text-[10px] font-black text-base-content/40">Belum ada notifikasi</p>
                 </div>
             @endforelse
         </div>
         
         @if(count($this->notifications) > 0)
-        <div class="p-2 border-t border-base-200 bg-base-200/20 text-center">
-            <span class="text-[9px] font-bold text-base-content/30 uppercase">Menampilkan 10 notifikasi terbaru</span>
+        <div class="p-2.5 border-t border-base-200 bg-base-200/20 text-center">
+            <span class="text-[9px] font-bold text-base-content/30">Menampilkan 10 notifikasi terbaru</span>
         </div>
         @endif
     </div>
