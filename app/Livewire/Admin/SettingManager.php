@@ -63,6 +63,8 @@ class SettingManager extends Component
     public $unlock_email = false;
     public $showUnlockModal = false;
     public $confirmText = '';
+    public $showSaveEmailModal = false;
+    public $saveConfirmText = '';
 
     public function mount()
     {
@@ -108,6 +110,13 @@ class SettingManager extends Component
 
     public function saveSettings()
     {
+        // If email is unlocked, we need extra confirmation to save
+        if ($this->unlock_email && strtoupper($this->saveConfirmText) !== 'SIMPAN PERUBAHAN') {
+            $this->saveConfirmText = '';
+            $this->showSaveEmailModal = true;
+            return;
+        }
+
         $this->validate([
             'sop_waktu_pemrosesan' => 'required|string',
             'sop_jam_operasional' => 'required|string',
@@ -208,6 +217,11 @@ class SettingManager extends Component
         }
 
         session()->flash('success', 'Pengaturan berhasil disimpan.');
+        
+        // Reset save confirmation and lock again for safety
+        $this->saveConfirmText = '';
+        $this->showSaveEmailModal = false;
+        $this->unlock_email = false;
     }
 
     public function openUnlockModal()

@@ -323,4 +323,30 @@
             <x-button label="Buka Kunci" wire:click="confirmUnlock" class="btn-error text-white" :disabled="strtoupper($confirmText) !== 'SAYA MENGERTI'" />
         </x-slot:actions>
     </x-modal>
+
+    {{-- Modal Konfirmasi Simpan Email --}}
+    <x-modal wire:model="showSaveEmailModal" title="Konfirmasi Simpan Perubahan" separator>
+        <div class="space-y-4">
+            <div class="p-4 bg-warning/10 border border-warning/20 rounded-xl flex gap-3 items-start">
+                <x-icon name="o-information-circle" class="w-6 h-6 text-warning mt-1" />
+                <div class="text-sm">
+                    <p class="font-bold text-warning text-base">Final Check!</p>
+                    <p class="text-base-content/70">Sistem akan memperbarui konfigurasi email dan melakukan restart layanan secara otomatis. Pastikan data SMTP sudah benar.</p>
+                </div>
+            </div>
+
+            <p class="text-sm font-medium">Ketik tulisan <span class="text-warning font-black uppercase tracking-widest">SIMPAN PERUBAHAN</span> di bawah untuk mengeksekusi:</p>
+            
+            <x-input 
+                wire:model.live="saveConfirmText" 
+                placeholder="Tulis di sini..." 
+                class="bg-base-200 font-black uppercase tracking-wider" 
+                @keydown.enter="$wire.saveSettings()" />
+        </div>
+
+        <x-slot:actions>
+            <x-button label="Batal" @click="$wire.showSaveEmailModal = false" />
+            <x-button label="Eksekusi Simpan" wire:click="saveSettings" class="btn-warning text-white" :disabled="strtoupper($saveConfirmText) !== 'SIMPAN PERUBAHAN'" spinner="saveSettings" />
+        </x-slot:actions>
+    </x-modal>
 </div>
