@@ -12,16 +12,57 @@ new class extends Component
     public string $nik = '';
     public string $no_wa = '';
     public string $email = '';
+    
+    // Email Change Security
+    public bool $isEmailEditable = false;
+    public bool $otpSent = false;
+    public string $otpInput = '';
+    public string $generatedOtp = '';
 
     /**
      * Mount the component.
      */
     public function mount(): void
     {
-        $this->name = Auth::user()->name;
-        $this->nik = Auth::user()->nik ?? '';
-        $this->no_wa = Auth::user()->no_wa ?? '';
-        $this->email = Auth::user()->email ?? '';
+        $user = Auth::user();
+        $this->name = $user->name;
+        $this->nik = $user->nik ?? '';
+        $this->no_wa = $user->no_wa ?? '';
+        $this->email = $user->email ?? '';
+        
+        // Admin bisa langsung edit email tanpa OTP (opsional, tapi user minta "ganti email tuh harus verif")
+        // Kita terapkan ke semua saja demi keamanan
+    }
+
+    /**
+     * Send OTP to current email to unlock editing.
+     */
+    public function requestEmailChange(): void
+    {
+        $user = Auth::user();
+        $this->generatedOtp = (string) rand(100000, 999999);
+        
+        \Illuminate\Support\Facades\Mail::to($user->email)->send(
+            new \App\Mail\Security\EmailChangeOTP($user, $this->generatedOtp)
+        );
+
+        $this->otpSent = true;
+        $this->dispatch('notify', message: 'Kode OTP telah dikirim ke email Anda saat ini.', type: 'info');
+    }
+
+    /**
+     * Verify OTP and unlock email field.
+     */
+    public function verifyEmailChangeOtp(): void
+    {
+        if ($this->otpInput === $this->generatedOtp) {
+            $this->isEmailEditable = true;
+            $this->otpSent = false;
+            $this->otpInput = '';
+            $this->dispatch('notify', message: 'Verifikasi berhasil! Silakan masukkan email baru Anda.', type: 'success');
+        } else {
+            $this->addError('otpInput', 'Kode OTP salah atau sudah kedaluwarsa.');
+        }
     }
 
     /**
@@ -31,12 +72,18 @@ new class extends Component
     {
         $user = Auth::user();
 
-        $validated = $this->validate([
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
             'nik' => ['required', 'numeric', 'digits:16', Rule::unique(User::class)->ignore($user->id)],
             'no_wa' => ['required', 'numeric', 'min_digits:10', 'max_digits:15'],
-            'email' => ['nullable', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
-        ], [
+        ];
+
+        // Hanya validasi email jika sedang bisa diedit
+        if ($this->isEmailEditable) {
+            $rules['email'] = ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)];
+        }
+
+        $validated = $this->validate($rules, [
             'name.required' => 'Nama lengkap wajib diisi.',
             'nik.required' => 'NIK wajib diisi.',
             'nik.digits' => 'NIK harus berjumlah tepat 16 angka.',
@@ -44,6 +91,7 @@ new class extends Component
             'no_wa.required' => 'Nomor WhatsApp wajib diisi.',
             'no_wa.min_digits' => 'Nomor WhatsApp minimal 10 angka.',
             'no_wa.max_digits' => 'Nomor WhatsApp maksimal 15 angka.',
+            'email.required' => 'Email baru wajib diisi.',
             'email.email' => 'Format email tidak valid.',
             'email.unique' => 'Email ini sudah digunakan.',
         ]);
@@ -53,7 +101,15 @@ new class extends Component
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;
             $user->save();
-            \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\Security\EmailChanged($user));
+            
+            // Kirim notifikasi ke email LAMA (opsional, tapi bagus untuk keamanan)
+            // \Illuminate\Support\Facades\Mail::to($user->getOriginal('email'))->send(new \App\Mail\Security\EmailChanged($user));
+            
+            // Kirim verifikasi ke email BARU (Otomatis ditangani Laravel MustVerifyEmail)
+            $user->sendEmailVerificationNotification();
+            
+            $this->isEmailEditable = false;
+            $this->dispatch('notify', message: 'Email berhasil diperbarui. Silakan verifikasi email baru Anda.', type: 'success');
         } else {
             $user->save();
         }
@@ -117,11 +173,46 @@ new class extends Component
             <x-input label="Nomor WhatsApp" wire:model="no_wa" id="no_wa" type="text" required autocomplete="tel"
                 icon="o-phone" maxlength="15" placeholder="Contoh: 081234567890" oninput="this.value = this.value.replace(/[^0-9]/g, '');" />
 
-            <x-input label="Email" wire:model="email" id="email" type="email" autocomplete="username"
-                icon="o-envelope" placeholder="Contoh: nama@email.com" />
+            <div class="relative group">
+                <x-input label="Email" wire:model="email" id="email" type="email" autocomplete="username"
+                    icon="o-envelope" placeholder="Contoh: nama@email.com" :disabled="!$isEmailEditable" />
+                
+                @if(!$isEmailEditable && !$otpSent)
+                <div class="absolute right-2 top-[34px]">
+                    <x-button label="Ubah Email" wire:click="requestEmailChange" 
+                        class="btn-xs btn-outline btn-primary rounded-lg" icon="o-pencil-square" />
+                </div>
+                @endif
+            </div>
+
+            @if($otpSent)
+            <div class="p-4 bg-info/5 border border-info/20 rounded-xl space-y-3">
+                <div class="flex items-start gap-3">
+                    <x-icon name="o-shield-check" class="w-5 h-5 text-info mt-0.5" />
+                    <div>
+                        <p class="text-sm font-bold text-info">Verifikasi Email Lama</p>
+                        <p class="text-xs text-base-content/60">Kami telah mengirimkan kode OTP ke email <b>{{ auth()->user()->email }}</b>. Masukkan kode tersebut untuk melanjutkan.</p>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <x-input wire:model="otpInput" placeholder="6 Digit OTP" class="input-sm flex-1" maxlength="6" />
+                    <x-button label="Verifikasi" wire:click="verifyEmailChangeOtp" class="btn-sm btn-primary text-white" />
+                </div>
+                @error('otpInput') <span class="text-xs text-error font-medium italic">{{ $message }}</span> @enderror
+            </div>
+            @endif
+
+            @if ($isEmailEditable)
+            <div class="p-3 bg-warning/5 border border-warning/20 rounded-lg">
+                <p class="text-xs text-warning font-medium flex items-center gap-2">
+                    <x-icon name="o-information-circle" class="w-4 h-4" />
+                    Setelah menyimpan, Anda harus memverifikasi email baru ini sebelum bisa login kembali.
+                </p>
+            </div>
+            @endif
 
             @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && !
-            auth()->user()->hasVerifiedEmail())
+            auth()->user()->hasVerifiedEmail() && !$isEmailEditable)
             <div>
                 <p class="text-sm mt-2 text-base-content/80">
                     {{ __('Alamat email Anda belum diverifikasi.') }}

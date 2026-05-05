@@ -44,30 +44,32 @@ class AppServiceProvider extends ServiceProvider
 
         // Customize Verify Email
         \Illuminate\Auth\Notifications\VerifyEmail::toMailUsing(function ($notifiable, $url) {
+            $appName = config('app.name', 'Kembaran Ngadu');
             return (new \Illuminate\Notifications\Messages\MailMessage)
-                ->subject('[' . config('app.name') . '] Verifikasi Alamat Email')
+                ->subject('Verifikasi Alamat Email - ' . $appName)
                 ->greeting('Halo, ' . $notifiable->name . '!')
                 ->line('Silakan klik tombol di bawah ini untuk memverifikasi alamat email Anda.')
                 ->action('Verifikasi Email', $url)
                 ->line('Jika Anda tidak merasa mendaftar di sistem kami, abaikan email ini.')
-                ->salutation('Salam, Tim ' . config('app.name'));
+                ->salutation('Salam, Tim ' . $appName);
         });
 
         // Customize Reset Password
         \Illuminate\Auth\Notifications\ResetPassword::toMailUsing(function ($notifiable, $token) {
+            $appName = config('app.name', 'Kembaran Ngadu');
             $url = url(route('password.reset', [
                 'token' => $token,
                 'email' => $notifiable->getEmailForPasswordReset(),
             ], false));
 
             return (new \Illuminate\Notifications\Messages\MailMessage)
-                ->subject('[' . config('app.name') . '] Permintaan Reset Kata Sandi')
+                ->subject('Permintaan Reset Kata Sandi - ' . $appName)
                 ->greeting('Halo, ' . $notifiable->name . '!')
                 ->line('Kami menerima permintaan untuk mereset kata sandi akun Anda.')
                 ->action('Reset Kata Sandi', $url)
                 ->line('Tautan reset ini akan kedaluwarsa dalam ' . config('auth.passwords.'.config('auth.defaults.passwords').'.expire') . ' menit.')
                 ->line('Jika Anda tidak merasa meminta reset kata sandi, abaikan email ini.')
-                ->salutation('Salam, Tim ' . config('app.name'));
+                ->salutation('Salam, Tim ' . $appName);
         });
     }
 }
