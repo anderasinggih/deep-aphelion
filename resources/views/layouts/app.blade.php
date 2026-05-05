@@ -43,13 +43,15 @@
                         <li><a href="{{ route('tentang-kami') }}" wire:navigate class="{{ request()->is('tentang-kami') ? 'active' : '' }}"><x-icon name="o-information-circle"
                                      class="w-4 h-4" /> Tentang Kami</a></li>
                         @auth
-                        @if(auth()->user()->role === 'admin')
+                        @if(in_array(auth()->user()->role, ['admin', 'petugas']))
                         <li><a href="/admin/dashboard"
                                 class="{{ request()->is('admin/dashboard') ? 'active' : '' }}"><x-icon
                                     name="o-chart-bar" class="w-4 h-4" /> Dashboard Admin</a></li>
                         <li><a href="/admin/pengaduan"
                                 class="{{ request()->is('admin/pengaduan') ? 'active' : '' }}"><x-icon
                                     name="o-inbox-stack" class="w-4 h-4" /> Kelola Pengaduan</a></li>
+                        
+                        @if(auth()->user()->role === 'admin')
                         <li>
                             {{-- MOBILE: Hapus 'open', tambah class hidden arrow --}}
                             <details class="[&>summary::after]:hidden">
@@ -72,10 +74,11 @@
                                 </ul>
                             </details>
                         </li>
+                        @endif
 
                         @else
                         <li><a href="/dashboard" class="{{ request()->is('dashboard') ? 'active' : '' }}"><x-icon
-                                    name="o-chart-pie" class="w-4 h-4" /> Dashboard</a></li>
+                                     name="o-chart-pie" class="w-4 h-4" /> Dashboard</a></li>
                         @endif
 
                         @endauth
@@ -101,13 +104,15 @@
                             class="{{ request()->is('tentang-kami') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all py-1.5"><x-icon
                                  name="o-information-circle" class="w-4 h-4" /> Tentang Kami</a></li>
                     @auth
-                    @if(auth()->user()->role === 'admin')
+                    @if(in_array(auth()->user()->role, ['admin', 'petugas']))
                     <li><a href="/admin/dashboard"
                             class="{{ request()->is('admin/dashboard') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all py-1.5"><x-icon
                                 name="o-chart-bar" class="w-4 h-4" /> Dashboard</a></li>
                     <li><a href="/admin/pengaduan"
                             class="{{ request()->is('admin/pengaduan') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all py-1.5"><x-icon
                                 name="o-inbox-stack" class="w-4 h-4" /> Kelola Aduan</a></li>
+                    
+                    @if(auth()->user()->role === 'admin')
                     <li>
                         {{-- DESKTOP: Hapus 'open', tambah class hidden arrow --}}
                         <details class="[&>summary::after]:hidden">
@@ -129,6 +134,7 @@
                             </ul>
                         </details>
                     </li>
+                    @endif
 
                     @else
                     <li><a href="/dashboard"

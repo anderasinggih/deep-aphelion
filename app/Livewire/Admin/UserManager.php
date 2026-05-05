@@ -14,8 +14,13 @@ class UserManager extends Component
 
     public $userId, $name, $nik, $no_wa, $email, $role, $password, $password_confirmation;
     public $isEdit = false;
-    public $showModal = false;
     public $search = '';
+    public $showModal = false;
+
+    public function mount()
+    {
+        abort_unless(auth()->user()->role === 'admin', 403);
+    }
 
     public function render()
     {
@@ -44,7 +49,7 @@ class UserManager extends Component
             'nik' => 'required|numeric|digits:16|unique:users,nik',
             'no_wa' => 'required|numeric|min_digits:10|max_digits:15',
             'email' => 'nullable|string|email|max:255|unique:users,email',
-            'role' => 'required|in:admin,warga',
+            'role' => 'required|in:admin,warga,petugas',
             'password' => 'required|string|min:8|confirmed|regex:/[a-zA-Z]/|regex:/[0-9]/',
         ]);
 
@@ -82,7 +87,7 @@ class UserManager extends Component
             'nik' => ['required', 'numeric', 'digits:16', Rule::unique('users')->ignore($this->userId)],
             'no_wa' => 'required|numeric|min_digits:10|max_digits:15',
             'email' => ['nullable', 'string', 'email', 'max:255', Rule::unique('users')->ignore($this->userId)],
-            'role' => 'required|in:admin,warga',
+            'role' => 'required|in:admin,warga,petugas',
         ];
 
         // Only validate password if it's filled

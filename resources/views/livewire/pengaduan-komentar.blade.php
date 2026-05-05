@@ -50,7 +50,7 @@
                     <p class="text-[13px] text-base-content/80 leading-relaxed break-words">{{ $comment->komentar }}</p>
 
                     {{-- Delete icon --}}
-                    @if(Auth::id() === $comment->user_id || Auth::user()?->role === 'admin')
+                    @if(Auth::id() === $comment->user_id || in_array(Auth::user()?->role, ['admin', 'petugas']))
                     <button wire:click="deleteComment({{ $comment->id }})"
                         class="absolute -right-6 top-1 text-error/40 hover:text-error opacity-0 group-hover:opacity-100 transition-opacity">
                         <x-icon name="o-trash" class="w-3 h-3" />

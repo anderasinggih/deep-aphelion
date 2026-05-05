@@ -16,6 +16,11 @@ use App\Notifications\Pengaduan\StatusUpdateNotification;
 class PengaduanManager extends Component
 {
     use WithPagination, WithFileUploads;
+ 
+    public function mount()
+    {
+        abort_unless(in_array(auth()->user()->role, ['admin', 'petugas']), 403);
+    }
 
     public $search = '';
     public $statusFilter = '';

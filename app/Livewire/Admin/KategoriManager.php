@@ -15,6 +15,11 @@ class KategoriManager extends Component
     public $showModal = false;
     public $search = '';
 
+    public function mount()
+    {
+        abort_unless(auth()->user()->role === 'admin', 403);
+    }
+
     protected $rules = [
         'nama' => 'required|string|max:255',
         'deskripsi' => 'nullable|string',

@@ -18,6 +18,12 @@ class PengaduanDetail extends Component
 
     public Pengaduan $pengaduan;
 
+    public function mount(Pengaduan $pengaduan)
+    {
+        abort_unless(in_array(auth()->user()->role, ['admin', 'petugas']), 403);
+        $this->pengaduan = $pengaduan;
+    }
+
     public $updateModal = false;
     public $update_status = '';
     public $update_foto;

@@ -54,6 +54,8 @@
                         <td class="text-xs md:text-sm text-base-content/80 whitespace-nowrap">
                             @if($user->role === 'admin')
                             <x-badge value="Admin" class="badge-error badge-sm" />
+                            @elseif($user->role === 'petugas')
+                            <x-badge value="Petugas" class="badge-warning badge-sm" />
                             @else
                             <x-badge value="Warga" class="badge-success badge-sm" />
                             @endif
@@ -111,7 +113,7 @@
 
             <div class="mb-4">
                 <x-select label="Peran (Role)" wire:model="role"
-                    :options="[['id' => 'warga', 'name' => 'Warga'], ['id' => 'admin', 'name' => 'Admin']]"
+                    :options="[['id' => 'warga', 'name' => 'Warga'], ['id' => 'petugas', 'name' => 'Petugas'], ['id' => 'admin', 'name' => 'Admin']]"
                     option-value="id" option-label="name" required icon="o-shield-check" />
             </div>
 

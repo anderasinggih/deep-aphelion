@@ -68,6 +68,8 @@ class SettingManager extends Component
 
     public function mount()
     {
+        abort_unless(auth()->user()->role === 'admin', 403);
+
         $settings = Setting::all()->pluck('value', 'key');
         
         $this->sop_waktu_pemrosesan = $settings['sop_waktu_pemrosesan'] ?? '';

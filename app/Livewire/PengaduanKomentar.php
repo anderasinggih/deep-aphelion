@@ -64,7 +64,7 @@ class PengaduanKomentar extends Component
 
     public function deleteComment($id) {
         $comment = KomentarModel::find($id);
-        if ($comment && (Auth::id() === $comment->user_id || Auth::user()->role === 'admin')) {
+        if ($comment && (Auth::id() === $comment->user_id || in_array(Auth::user()->role, ['admin', 'petugas']))) {
             $comment->delete();
         }
     }

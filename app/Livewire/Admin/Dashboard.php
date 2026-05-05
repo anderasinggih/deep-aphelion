@@ -10,6 +10,11 @@ use Carbon\Carbon;
 
 class Dashboard extends Component
 {
+    public function mount()
+    {
+        abort_unless(in_array(auth()->user()->role, ['admin', 'petugas']), 403);
+    }
+
     public function render()
     {
         // 1. Stats untuk Kotak Ringkasan
