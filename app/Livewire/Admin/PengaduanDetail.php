@@ -42,6 +42,7 @@ class PengaduanDetail extends Component
         }
 
         $this->linkedReports = Pengaduan::where('status', 'selesai')
+            ->whereNull('linked_id') // Hanya bisa merujuk ke laporan yang selesai "asli" (bukan rujukan juga)
             ->where('id', '!=', $this->pengaduan->id)
             ->where(function($q) {
                 $q->where('judul', 'like', '%' . $this->searchLinkedQuery . '%')
