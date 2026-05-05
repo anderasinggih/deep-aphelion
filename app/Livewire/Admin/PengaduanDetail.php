@@ -10,6 +10,7 @@ use App\Models\User;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use Illuminate\Support\Facades\Storage;
+use App\Notifications\Pengaduan\StatusUpdateNotification;
 
 class PengaduanDetail extends Component
 {
@@ -73,6 +74,11 @@ class PengaduanDetail extends Component
             'keterangan_admin' => 'Laporan dirujuk ke laporan selesai (' . $targetReport->kode_tracking . ')',
             'foto_bukti' => $targetReport->foto_penyelesaian,
         ]);
+
+        // Kirim Notifikasi Internal (Database)
+        if ($this->pengaduan->user) {
+            $this->pengaduan->user->notify(new StatusUpdateNotification($this->pengaduan));
+        }
 
         // Kirim Email Update Status ke Pelapor
         if ($this->pengaduan->user && $this->pengaduan->user->email) {
@@ -149,6 +155,11 @@ class PengaduanDetail extends Component
         }
         
         $this->pengaduan->save();
+
+        // Kirim Notifikasi Internal (Database)
+        if ($this->pengaduan->user) {
+            $this->pengaduan->user->notify(new StatusUpdateNotification($this->pengaduan));
+        }
 
         // Kirim Email Update Status ke Pelapor
         if ($this->pengaduan->user && $this->pengaduan->user->email) {

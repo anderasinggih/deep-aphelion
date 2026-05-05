@@ -142,6 +142,9 @@
 
             <div class="navbar-end gap-2">
                 @auth
+                {{-- Notification Bell --}}
+                @livewire('warga.notification-bell')
+
                 @php
                 $nameParts = explode(' ', auth()->user()->name);
                 $initials = collect($nameParts)->map(fn($part) => substr($part, 0, 1))->take(2)->join('');

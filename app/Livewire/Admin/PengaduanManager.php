@@ -11,6 +11,7 @@ use App\Models\User;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use Illuminate\Support\Facades\Storage;
+use App\Notifications\Pengaduan\StatusUpdateNotification;
 
 class PengaduanManager extends Component
 {
@@ -90,6 +91,11 @@ class PengaduanManager extends Component
             'foto_bukti' => $targetReport->foto_penyelesaian,
         ]);
 
+        // Kirim Notifikasi Internal (Database)
+        if ($pengaduan->user) {
+            $pengaduan->user->notify(new StatusUpdateNotification($pengaduan));
+        }
+
         // Kirim Email Update Status ke Pelapor
         if ($pengaduan->user && $pengaduan->user->email) {
             try {
@@ -155,6 +161,11 @@ class PengaduanManager extends Component
         }
 
         $pengaduan->save();
+
+        // Kirim Notifikasi Internal (Database)
+        if ($pengaduan->user) {
+            $pengaduan->user->notify(new StatusUpdateNotification($pengaduan));
+        }
 
         // Kirim Email Update Status ke Pelapor
         if ($pengaduan->user && $pengaduan->user->email) {
