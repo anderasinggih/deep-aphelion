@@ -55,6 +55,7 @@ class SettingManager extends Component
     
     // UI State
     public $activeTab = 'umum';
+    public $unlock_email = false;
 
     public function mount()
     {

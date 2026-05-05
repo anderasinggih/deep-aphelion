@@ -14,6 +14,30 @@ class User extends Authenticatable implements MustVerifyEmail
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, SoftDeletes;
 
+    protected static function booted()
+    {
+        static::deleting(function ($user) {
+            // Jika ini soft delete (bukan force delete)
+            if (!$user->isForceDeleting()) {
+                $suffix = '.deleted.' . time();
+                
+                // Ubah email dan NIK agar bisa dipakai lagi oleh orang lain
+                $user->email = $user->email . $suffix;
+                
+                if ($user->nik) {
+                    // Karena NIK terbatas 16 karakter, kita harus hati-hati.
+                    // Tapi di migration NIK adalah string(16). 
+                    // Kita akan hapus saja NIK-nya atau ubah jadi null jika dibolehkan,
+                    // atau sekedar tambahkan suffix jika kolomnya kita perlebar nanti.
+                    // Untuk sekarang, kita set null saja agar NIK tersebut bebas dipakai lagi.
+                    $user->nik = null;
+                }
+                
+                $user->save();
+            }
+        });
+    }
+
     /**
      * The attributes that are mass assignable.
      *

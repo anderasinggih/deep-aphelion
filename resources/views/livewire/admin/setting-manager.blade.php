@@ -199,19 +199,30 @@
                 <h2 class="text-xl font-bold mb-4 border-b border-base-200 pb-2 flex items-center gap-2">
                     <x-icon name="o-envelope" class="w-5 h-5 text-primary" /> Konfigurasi SMTP Email
                 </h2>
-                <div class="p-4 mb-6 bg-info/10 border border-info/20 rounded-xl flex gap-3 items-start">
-                    <x-icon name="o-information-circle" class="w-6 h-6 text-info mt-1" />
-                    <div class="text-sm">
-                        <p class="font-bold text-info">Penting!</p>
-                        <p class="text-base-content/70">Pengaturan ini akan menimpa (override) konfigurasi di file .env. Pastikan data yang Anda masukkan benar agar sistem dapat mengirim email verifikasi dan notifikasi laporan.</p>
+
+                <div class="flex flex-col lg:flex-row gap-6 mb-6">
+                    <div class="flex-1 p-4 bg-info/10 border border-info/20 rounded-xl flex gap-3 items-start">
+                        <x-icon name="o-information-circle" class="w-6 h-6 text-info mt-1" />
+                        <div class="text-sm">
+                            <p class="font-bold text-info">Penting!</p>
+                            <p class="text-base-content/70">Pengaturan ini akan menimpa konfigurasi di file .env. Pastikan data benar agar sistem dapat mengirim email verifikasi.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="p-4 bg-warning/10 border border-warning/20 rounded-xl flex items-center gap-4">
+                        <div class="flex-1">
+                            <p class="text-xs font-black text-warning uppercase">Mode Proteksi</p>
+                            <p class="text-[10px] text-base-content/60">Aktifkan untuk mengubah data</p>
+                        </div>
+                        <x-toggle wire:model.live="unlock_email" class="toggle-warning" />
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <x-input label="SMTP Host" wire:model="mail_host" placeholder="Contoh: smtp.gmail.com" icon="o-server" />
-                    <x-input label="SMTP Port" wire:model="mail_port" type="number" placeholder="Contoh: 587 atau 465" icon="o-hashtag" />
-                    <x-input label="Email / Username" wire:model="mail_username" placeholder="Contoh: instansi@gmail.com" icon="o-user" />
-                    <x-input label="App Password" wire:model="mail_password" type="password" placeholder="Masukkan token app password" icon="o-key" />
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 {{ !$unlock_email ? 'opacity-50 pointer-events-none' : '' }}">
+                    <x-input label="SMTP Host" wire:model="mail_host" placeholder="smtp.gmail.com" icon="o-server" :disabled="!$unlock_email" />
+                    <x-input label="SMTP Port" wire:model="mail_port" type="number" placeholder="587" icon="o-hashtag" :disabled="!$unlock_email" />
+                    <x-input label="Email / Username" wire:model="mail_username" placeholder="instansi@gmail.com" icon="o-user" :disabled="!$unlock_email" />
+                    <x-input label="App Password" wire:model="mail_password" type="password" placeholder="Token app password" icon="o-key" :disabled="!$unlock_email" />
                     
                     <div class="md:col-span-2">
                         <x-select 
@@ -222,14 +233,31 @@
                                 ['id' => 'ssl', 'name' => 'SSL (Port 465)'],
                                 ['id' => 'none', 'name' => 'Tanpa Enkripsi']
                             ]"
-                            icon="o-lock-closed" />
+                            icon="o-lock-closed"
+                            :disabled="!$unlock_email" />
                     </div>
                 </div>
+
+                @if($unlock_email)
+                <div class="mt-6 p-4 bg-error/5 border border-error/20 rounded-xl">
+                    <p class="text-xs text-error font-medium flex items-center gap-2">
+                        <x-icon name="o-exclamation-triangle" class="w-4 h-4" />
+                        Hati-hati: Perubahan pada bagian ini dapat menyebabkan pengiriman email (verifikasi & laporan) berhenti berfungsi jika data tidak valid.
+                    </p>
+                </div>
+                @endif
             </div>
 
             <x-slot:actions>
+                @if($activeTab !== 'email' || $unlock_email)
                 <x-button label="Simpan Pengaturan" type="submit" icon="o-check-circle" class="btn-primary text-white"
                     spinner="saveSettings" />
+                @else
+                <div class="flex items-center gap-2 text-base-content/40 italic text-sm">
+                    <x-icon name="o-lock-closed" class="w-4 h-4" />
+                    Buka kunci untuk menyimpan perubahan email
+                </div>
+                @endif
             </x-slot:actions>
         </x-form>
     </div>
