@@ -7,6 +7,7 @@ use Livewire\Volt\Component;
 new #[Layout('layouts.auth')] class extends Component
 {
     public string $email = '';
+    public int $countdown = 0;
 
     /**
      * Send a password reset link to the provided email address.
@@ -19,6 +20,16 @@ new #[Layout('layouts.auth')] class extends Component
             'email.required' => 'Email wajib diisi.',
             'email.email' => 'Format email tidak valid.',
         ]);
+
+        $key = 'forgot-password-limit-' . str($this->email) . request()->ip();
+
+        if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($key, 1)) {
+            $this->countdown = \Illuminate\Support\Facades\RateLimiter::availableIn($key);
+            return;
+        }
+
+        \Illuminate\Support\Facades\RateLimiter::hit($key, 300); // 5 Menit
+        $this->countdown = 0;
 
         $status = Password::sendResetLink(
             $this->only('email')
@@ -52,10 +63,10 @@ new #[Layout('layouts.auth')] class extends Component
     <div class="flex flex-col w-full p-8 md:w-7/12 sm:p-10 bg-base-100">
         
         <div class="flex items-center justify-center gap-4 mb-8">
-            <img src="{{ asset('storage/assets/logobanyumas.png') }}" alt="Logo Banyumas" class="w-10 h-10 object-contain" />
-            <div class="w-10 h-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
-                <x-icon name="o-key" class="w-6 h-6" />
-            </div>
+            <img src="{{ asset('storage/' . \App\Models\Setting::get('app_logo', 'assets/logobanyumas.png')) }}" 
+                alt="Logo Utama" class="block object-contain w-10 h-10" />
+            <img src="{{ asset('storage/' . \App\Models\Setting::get('app_logo_sekunder', 'assets/logokominfo.png')) }}" 
+                alt="Logo Sekunder" class="block object-contain w-10 h-10" />
         </div>
 
         <div class="mb-8 text-center">
@@ -68,6 +79,13 @@ new #[Layout('layouts.auth')] class extends Component
         @if (session('status'))
             <div class="mb-8 p-4 bg-success/10 border border-success/20 rounded-xl text-success text-sm font-medium text-center italic">
                 {{ session('status') }}
+            </div>
+        @endif
+
+        @if($countdown > 0)
+            <div class="mb-5 p-3 bg-warning/10 border border-warning/20 rounded-xl text-warning text-[11px] font-bold text-center flex items-center justify-center gap-2 uppercase italic transition-all animate-pulse">
+                <x-icon name="o-clock" class="w-4 h-4" />
+                Tunggu {{ $countdown }} detik lagi sebelum mengirim tautan baru.
             </div>
         @endif
 

@@ -67,11 +67,10 @@ new #[Layout('layouts.auth')] class extends Component
     <div class="flex flex-col justify-center w-full p-8 md:w-1/2 sm:p-12 bg-base-100">
 
         <div class="flex items-center justify-center gap-4 mb-6">
-            <img src="{{ asset('storage/assets/logobanyumas.png') }}" alt="Logo Banyumas"
-                class="block object-contain w-12 h-12" />
-            <div class="flex items-center justify-center w-12 h-12 p-1 rounded-xl bg-primary/10 text-primary">
-                <x-icon name="o-megaphone" class="w-10 h-10" />
-            </div>
+            <img src="{{ asset('storage/' . \App\Models\Setting::get('app_logo', 'assets/logobanyumas.png')) }}" 
+                alt="Logo Utama" class="block object-contain w-12 h-12" />
+            <img src="{{ asset('storage/' . \App\Models\Setting::get('app_logo_sekunder', 'assets/logokominfo.png')) }}" 
+                alt="Logo Sekunder" class="block object-contain w-12 h-12" />
         </div>
 
         <div class="mb-8 text-center">

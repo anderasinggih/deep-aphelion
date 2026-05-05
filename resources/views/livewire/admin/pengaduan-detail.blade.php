@@ -24,6 +24,12 @@
                     wire:click="openUpdateStatusModal('ditolak')" />
             @endif
 
+            @if($this->pengaduan->status !== 'selesai' && $this->pengaduan->status !== 'ditolak')
+                <div class="my-1 opacity-50 divider mt-0"></div>
+                <x-menu-item title="Rujuk Laporan (Duplikat)" icon="o-document-duplicate" class="font-bold text-primary"
+                    wire:click="$set('linkModal', true)" />
+            @endif
+
             @if($this->pengaduan->status === 'diproses')
                 <x-menu-item title="Selesaikan" icon="o-check-circle" class="font-bold text-success"
                     wire:click="openUpdateStatusModal('selesai')" />
@@ -109,38 +115,40 @@
                             {{ $this->pengaduan->judul }}
                         </h1>
 
-                        <div
-                            class="flex flex-wrap items-center gap-x-4 gap-y-2 text-[10px] sm:text-xs font-semibold text-base-content/60">
-                            
-                            <div class="w-full sm:w-auto mb-1 sm:mb-0">
-                                <span class="bg-base-200 px-2 py-0.5 rounded font-mono text-base-content/50">{{ $this->pengaduan->kode_tracking }}</span>
-                            </div>
-
-                            <div class="flex items-center gap-1 sm:gap-1.5">
+                        <div class="flex flex-wrap items-center gap-2 sm:gap-3 mt-4">
+                            {{-- Pelapor --}}
+                            <div class="flex items-center gap-2 px-2.5 py-1 sm:px-3 sm:py-1.5 bg-base-200/50 border border-base-200 rounded-lg">
                                 @if($this->pengaduan->is_anonymous)
                                     <div class="avatar placeholder">
-                                        <div class="bg-base-300 text-base-content/50 rounded-full w-5 h-5 sm:w-6 sm:h-6 shadow-sm flex items-center justify-center">
-                                            <span class="text-[8px] font-black tracking-tighter">AN</span>
+                                        <div class="bg-base-300 text-base-content/50 rounded-full w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center">
+                                            <span class="text-[8px] font-black">AN</span>
                                         </div>
                                     </div>
-                                    <span>Anonim (Oleh: {{ $this->pengaduan->user->name }})</span>
+                                    <span class="text-[11px] sm:text-xs font-bold text-base-content/70">Anonim ({{ $this->pengaduan->user->name }})</span>
                                 @else
                                     <x-user-avatar :user="$this->pengaduan->user" size="w-5 h-5 sm:w-6 sm:h-6" />
-                                    <span>{{ $this->pengaduan->user->name }}</span>
+                                    <span class="text-[11px] sm:text-xs font-bold text-base-content/70">{{ $this->pengaduan->user->name }}</span>
                                 @endif
                             </div>
-                            <span>&bull;</span>
-                            <div class="flex items-center gap-1 sm:gap-1.5"
-                                title="Tanggal Kejadian">
-                                <x-icon name="o-exclamation-circle" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
-                                <span>Terjadi: {{ $this->pengaduan->tanggal_kejadian ? $this->pengaduan->tanggal_kejadian->format('d F Y') : '-' }}</span>
+
+                            {{-- Waktu Lapor --}}
+                            <div class="flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 bg-base-200/50 border border-base-200 rounded-lg text-base-content/60" title="Dilaporkan: {{ $this->pengaduan->created_at->format('d M Y, H:i') }}">
+                                <x-icon name="o-clock" class="w-3.5 h-3.5 sm:w-4 sm:h-4 opacity-70" />
+                                <span class="text-[11px] sm:text-xs font-semibold">{{ $this->pengaduan->created_at->diffForHumans() }}</span>
                             </div>
-                            <span>&bull;</span>
-                            <div class="flex items-center gap-1 sm:gap-1.5"
-                                title="Waktu Lapor: {{ $this->pengaduan->created_at->format('d M Y, H:i') }}">
-                                <x-icon name="o-calendar" class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                                <span>Dilaporkan: {{ $this->pengaduan->created_at->diffForHumans() }}</span>
+
+                            {{-- Kode Tracking --}}
+                            <div class="flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 bg-base-200/50 border border-base-200 rounded-lg text-base-content/60">
+                                <x-icon name="o-qr-code" class="w-3.5 h-3.5 sm:w-4 sm:h-4 opacity-70" />
+                                <span class="text-[11px] sm:text-xs font-mono font-bold tracking-wide">{{ $this->pengaduan->kode_tracking }}</span>
                             </div>
+
+                            @if($this->pengaduan->linked_id)
+                            <a href="{{ route('admin.pengaduan.detail', $this->pengaduan->linkedReport->kode_tracking) }}" target="_blank" class="flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 bg-primary/10 border border-primary/20 rounded-lg text-primary hover:bg-primary hover:text-white transition-colors">
+                                <x-icon name="o-link" class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                <span class="text-[11px] sm:text-xs font-bold tracking-wide">Dirujuk: {{ $this->pengaduan->linkedReport->kode_tracking }}</span>
+                            </a>
+                            @endif
                         </div>
                     </div>
 
@@ -212,33 +220,57 @@
                     </div>
                     @endif
 
-                    {{-- Lokasi Kejadian --}}
-                    @if($this->pengaduan->lokasi_kejadian)
-                    <div class="bg-base-200/50 p-3 sm:p-4 rounded-lg sm:rounded-xl border border-base-200 flex items-start gap-2.5 sm:gap-3">
-                        <div class="p-1.5 sm:p-2 bg-error/10 rounded-md sm:rounded-lg text-error shrink-0">
-                            <x-icon name="o-map-pin" class="w-4 h-4 sm:w-5 sm:h-5 mt-0.5" />
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <span class="text-[9px] sm:text-[10px] font-black text-base-content/40 mb-0.5">Lokasi Terkait</span>
-                            <p class="text-[13px] sm:text-sm font-bold text-base-content leading-tight line-clamp-2">
-                                {{ $this->pengaduan->lokasi_kejadian }}
-                            </p>
-                            @if($this->pengaduan->latitude)
-                            <a href="https://maps.google.com/?q={{ $this->pengaduan->latitude }},{{ $this->pengaduan->longitude }}"
-                                target="_blank" class="text-primary hover:underline text-[11px] sm:text-xs mt-1 inline-block font-semibold">
-                                Buka di Peta
-                            </a>
+                    {{-- Konteks Laporan: Lokasi & Waktu Kejadian --}}
+                    @if($this->pengaduan->lokasi_kejadian || $this->pengaduan->tanggal_kejadian)
+                        <div class="bg-base-200/30 p-3.5 sm:p-5 rounded-xl sm:rounded-2xl border border-base-200 flex flex-col sm:flex-row gap-4 sm:gap-6 mt-4">
+                            @if($this->pengaduan->lokasi_kejadian)
+                            <div class="flex-1 flex items-start gap-3">
+                                <div class="p-2 bg-error/10 rounded-lg text-error shrink-0">
+                                    <x-icon name="o-map-pin" class="w-4 h-4 sm:w-5 sm:h-5" />
+                                </div>
+                                <div class="min-w-0">
+                                    <span class="text-[10px] font-black uppercase text-base-content/40 block mb-0.5">Lokasi Terkait</span>
+                                    <p class="text-xs sm:text-[13px] font-bold text-base-content leading-snug">
+                                        {{ $this->pengaduan->lokasi_kejadian }}
+                                    </p>
+                                    @if($this->pengaduan->latitude)
+                                        <a href="https://maps.google.com/?q={{ $this->pengaduan->latitude }},{{ $this->pengaduan->longitude }}"
+                                            target="_blank"
+                                            class="text-primary hover:underline text-[10px] sm:text-xs mt-1.5 inline-flex items-center gap-1 font-bold">
+                                            Buka di Peta <x-icon name="o-arrow-top-right-on-square" class="w-3 h-3" />
+                                        </a>
+                                    @endif
+                                </div>
+                            </div>
+                            @endif
+
+                            @if($this->pengaduan->tanggal_kejadian)
+                            {{-- Divider on desktop --}}
+                            @if($this->pengaduan->lokasi_kejadian)
+                                <div class="hidden sm:block w-px bg-base-200"></div>
+                            @endif
+                            <div class="flex-1 flex items-start gap-3">
+                                <div class="p-2 bg-warning/10 rounded-lg text-warning shrink-0">
+                                    <x-icon name="o-calendar-days" class="w-4 h-4 sm:w-5 sm:h-5" />
+                                </div>
+                                <div>
+                                    <span class="text-[10px] font-black uppercase text-base-content/40 block mb-0.5">Waktu Kejadian</span>
+                                    <p class="text-xs sm:text-[13px] font-bold text-base-content">
+                                        {{ $this->pengaduan->tanggal_kejadian->format('d F Y') }}
+                                    </p>
+                                </div>
+                            </div>
                             @endif
                         </div>
-                    </div>
                     @endif
 
-                    <div class="text-[13px] sm:text-base leading-relaxed text-base-content/90 font-medium whitespace-pre-line break-words overflow-hidden">
+                    <div
+                        class="text-[14px] sm:text-[15px] leading-loose text-base-content/80 font-medium whitespace-pre-line break-words overflow-hidden py-2 sm:py-4">
                         {{ $this->pengaduan->deskripsi }}
                     </div>
 
                     @if($this->pengaduan->harapan_pelapor)
-                    <div class="p-4 bg-primary/5 border-l-4 border-primary rounded-r-xl mt-4 break-words overflow-hidden">
+                    <div class="p-4 bg-primary/5 border-l-4 border-primary rounded-r-xl mt-4 break-all overflow-hidden">
                         <p class="text-[10px] font-black text-primary mb-1">Harapan Pelapor:</p>
                         <p class="text-sm font-bold text-base-content/80 italic">"{{ $this->pengaduan->harapan_pelapor }}"</p>
                     </div>
@@ -443,5 +475,37 @@
                 <x-button label="Simpan Pembaruan" type="submit" icon="o-check-circle" class="btn-primary text-white" spinner="saveStatusUpdate" />
             </x-slot:actions>
         </x-form>
+    </x-modal>
+
+    <!-- Modal Rujuk Laporan Selesai (Duplicate Handling) -->
+    <x-modal wire:model="linkModal" title="Rujuk ke Laporan Selesai" subtitle="Gunakan fitur ini jika masalah ini merupakan duplikat dan sudah diselesaikan pada laporan lain.">
+        <div class="space-y-4">
+            <x-input wire:model.live.debounce.300ms="searchLinkedQuery" placeholder="Cari Kode Tracking atau Judul..." icon="o-magnifying-glass" hint="Ketik minimal 3 karakter untuk mencari laporan yang sudah berstatus 'Selesai'." />
+            
+            <div class="mt-4">
+                @if(strlen($searchLinkedQuery) >= 3)
+                    @if(count($linkedReports) > 0)
+                        <div class="space-y-2">
+                            @foreach($linkedReports as $lr)
+                            <div class="flex items-center justify-between p-3 border border-base-300 rounded-xl bg-base-200/50 hover:border-primary transition-colors">
+                                <div class="overflow-hidden">
+                                    <div class="font-mono text-[10px] text-base-content/50">{{ $lr['kode_tracking'] }}</div>
+                                    <div class="font-bold text-xs truncate">{{ $lr['judul'] }}</div>
+                                </div>
+                                <x-button label="Pilih & Selesaikan" wire:click="linkToReport({{ $lr['id'] }})" wire:confirm="Yakin ingin merujuk laporan ini? Status otomatis menjadi Selesai." class="btn-sm btn-primary text-white" />
+                            </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="p-4 text-center text-xs text-base-content/50 border border-dashed rounded-xl">
+                            Tidak ditemukan laporan selesai yang cocok.
+                        </div>
+                    @endif
+                @endif
+            </div>
+        </div>
+        <x-slot:actions>
+            <x-button label="Batal" @click="$wire.linkModal = false" class="btn-ghost" />
+        </x-slot:actions>
     </x-modal>
 </div>

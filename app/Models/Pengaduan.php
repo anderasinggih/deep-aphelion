@@ -33,6 +33,7 @@ class Pengaduan extends Model
         'foto_penyelesaian',
         'pesan_penutup',
         'catatan_internal',
+        'linked_id',
     ];
 
     protected $casts = [
@@ -65,5 +66,15 @@ class Pengaduan extends Model
     public function komentars()
     {
         return $this->hasMany(PengaduanKomentar::class);
+    }
+
+    public function linkedReport()
+    {
+        return $this->belongsTo(Pengaduan::class, 'linked_id');
+    }
+
+    public function childReports()
+    {
+        return $this->hasMany(Pengaduan::class, 'linked_id');
     }
 }

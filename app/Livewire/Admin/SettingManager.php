@@ -149,6 +149,17 @@ class SettingManager extends Component
         $this->updateSetting('mail_password', $this->mail_password);
         $this->updateSetting('mail_encryption', $this->mail_encryption);
 
+        // Update .env file for mail settings
+        $this->updateEnv([
+            'MAIL_HOST' => $this->mail_host,
+            'MAIL_PORT' => $this->mail_port,
+            'MAIL_USERNAME' => $this->mail_username,
+            'MAIL_PASSWORD' => $this->mail_password,
+            'MAIL_ENCRYPTION' => $this->mail_encryption,
+            'MAIL_FROM_ADDRESS' => $this->mail_username, // Usually same as username
+            'MAIL_FROM_NAME' => $this->instansi_nama,
+        ]);
+
         if ($this->ttd_file) {
             $path = $this->ttd_file->store('assets', 'public');
             $this->updateSetting('ttd_file', $path);
@@ -191,6 +202,36 @@ class SettingManager extends Component
             ['key' => $key],
             ['value' => $value]
         );
+    }
+
+    private function updateEnv($data = [])
+    {
+        $path = base_path('.env');
+
+        if (file_exists($path)) {
+            $env = file_get_contents($path);
+
+            foreach ($data as $key => $value) {
+                $value = trim($value);
+                // If value contains spaces, wrap it in quotes
+                if (preg_match('/\s/', $value)) {
+                    $value = '"' . $value . '"';
+                }
+
+                $keyPattern = "/^{$key}=.*/m";
+
+                if (preg_match($keyPattern, $env)) {
+                    $env = preg_replace($keyPattern, "{$key}={$value}", $env);
+                } else {
+                    $env .= "\n{$key}={$value}";
+                }
+            }
+
+            file_put_contents($path, $env);
+            
+            // Reload the environment variables for the current request
+            \Illuminate\Support\Facades\Artisan::call('config:clear');
+        }
     }
 
     public function render()

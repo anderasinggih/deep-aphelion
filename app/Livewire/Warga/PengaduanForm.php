@@ -36,6 +36,38 @@ class PengaduanForm extends Component
     public $isEdit = false;
     public $old_foto_bukti = [];
 
+    // Similar Reports
+    public $similarPengaduans = [];
+
+    public function updatedJudul()
+    {
+        $this->searchSimilar();
+    }
+
+    public function updatedKategoriId()
+    {
+        $this->searchSimilar();
+    }
+
+    private function searchSimilar()
+    {
+        if (strlen($this->judul) < 5) {
+            $this->similarPengaduans = [];
+            return;
+        }
+
+        $this->similarPengaduans = Pengaduan::query()
+            ->where('status', '!=', 'selesai')
+            ->where('status', '!=', 'ditolak')
+            ->where('judul', 'like', '%' . $this->judul . '%')
+            ->when($this->kategori_id, function($q) {
+                $q->where('kategori_id', $this->kategori_id);
+            })
+            ->limit(3)
+            ->get()
+            ->toArray();
+    }
+
     // Success Modal Props
     public $showSuccessModal = false;
     public $lastSavedId = null;
@@ -165,6 +197,15 @@ class PengaduanForm extends Component
                 ->count();
             $pengaduan->kode_tracking = 'PKM-KBR/' . str_pad($nomorUrut, 3, '0', STR_PAD_LEFT) . '/' . $bulan . '/' . $tahun;
             $pengaduan->save();
+
+            // Kirim Email Konfirmasi Laporan Diterima
+            if ($user->email) {
+                try {
+                    \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\Pengaduan\StatusUpdate($pengaduan));
+                } catch (\Exception $e) {
+                    \Log::error('Gagal mengirim email pengaduan: ' . $e->getMessage());
+                }
+            }
 
             PengaduanHistory::create([
                 'pengaduan_id' => $pengaduan->id,

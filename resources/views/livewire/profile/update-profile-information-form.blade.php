@@ -17,6 +17,7 @@ new class extends Component
     public bool $isEmailEditable = false;
     public bool $otpSent = false;
     public string $otpInput = '';
+    public int $countdown = 0;
 
     /**
      * Mount the component.
@@ -40,12 +41,13 @@ new class extends Component
 
         // Rate Limiting (60 detik)
         if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($key, 1)) {
-            $seconds = \Illuminate\Support\Facades\RateLimiter::availableIn($key);
-            $this->dispatch('notify', message: "Tunggu {$seconds} detik sebelum meminta kode baru.", type: 'warning');
+            $this->countdown = \Illuminate\Support\Facades\RateLimiter::availableIn($key);
+            $this->dispatch('notify', message: "Tunggu {$this->countdown} detik sebelum meminta kode baru.", type: 'warning');
             return;
         }
 
         \Illuminate\Support\Facades\RateLimiter::hit($key, 60);
+        $this->countdown = 0;
 
         $otp = (string) rand(100000, 999999);
         
@@ -137,6 +139,16 @@ new class extends Component
     public function sendVerification(): void
     {
         $user = Auth::user();
+        $key = 'verification-limit-' . $user->id;
+
+        if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($key, 1)) {
+            $this->countdown = \Illuminate\Support\Facades\RateLimiter::availableIn($key);
+            $this->dispatch('notify', message: "Tunggu {$this->countdown} detik sebelum mengirim ulang email verifikasi.", type: 'warning');
+            return;
+        }
+
+        \Illuminate\Support\Facades\RateLimiter::hit($key, 60);
+        $this->countdown = 0;
 
         if ($user->hasVerifiedEmail()) {
             $this->redirectIntended(default: route('dashboard', absolute: false));
@@ -147,6 +159,7 @@ new class extends Component
         $user->sendEmailVerificationNotification();
 
         Session::flash('status', 'verification-link-sent');
+        $this->dispatch('notify', message: 'Tautan verifikasi telah dikirim ke email Anda.', type: 'info');
     }
 }; ?>
 
@@ -193,10 +206,18 @@ new class extends Component
                 @if(!$isEmailEditable && !$otpSent)
                 <x-slot:append>
                     <x-button label="Ubah Email" wire:click="requestEmailChange" 
-                        class="btn-primary rounded-l-none text-white btn-sm" icon="o-pencil-square" />
+                        class="btn-primary rounded-l-none text-white btn-sm" icon="o-pencil-square"
+                        spinner="requestEmailChange" />
                 </x-slot:append>
                 @endif
             </x-input>
+            
+            @if($countdown > 0)
+            <div class="mt-1 flex items-center gap-2 text-[10px] text-warning font-bold uppercase italic">
+                <x-icon name="o-clock" class="w-3 h-3" />
+                Silakan tunggu {{ $countdown }} detik sebelum meminta kode baru.
+            </div>
+            @endif
 
             @if($otpSent)
             <div class="p-4 bg-info/5 border border-info/20 rounded-xl space-y-3">
@@ -209,7 +230,7 @@ new class extends Component
                 </div>
                 <div class="flex gap-2">
                     <x-input wire:model="otpInput" placeholder="6 Digit OTP" class="input-sm flex-1" maxlength="6" />
-                    <x-button label="Verifikasi" wire:click="verifyEmailChangeOtp" class="btn-sm btn-primary text-white" />
+                    <x-button label="Verifikasi" wire:click="verifyEmailChangeOtp" class="btn-sm btn-primary text-white" spinner="verifyEmailChangeOtp" />
                 </div>
                 @error('otpInput') <span class="text-xs text-error font-medium italic">{{ $message }}</span> @enderror
             </div>
@@ -229,10 +250,11 @@ new class extends Component
             <div>
                 <p class="text-sm mt-2 text-base-content/80">
                     {{ __('Alamat email Anda belum diverifikasi.') }}
-
+ 
                     <button wire:click.prevent="sendVerification"
                         class="underline text-sm text-base-content/60 hover:text-base-content rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
                         {{ __('Klik di sini untuk mengirim ulang email verifikasi.') }}
+                        <span wire:loading wire:target="sendVerification">...</span>
                     </button>
                 </p>
 

@@ -17,6 +17,7 @@ class PengaduanFeedDetail extends Component
         $this->pengaduan = Pengaduan::with([
             'user',
             'kategori',
+            'linkedReport',
             'histories' => function ($query) {
                 $query->latest();
             },
@@ -38,7 +39,7 @@ class PengaduanFeedDetail extends Component
 
         $this->validate([
             'rating' => 'required|integer|min:1|max:5',
-            'rating_komentar' => 'nullable|string|max:500',
+            'rating_komentar' => 'nullable|string|max:200',
         ]);
 
         $this->pengaduan->update([

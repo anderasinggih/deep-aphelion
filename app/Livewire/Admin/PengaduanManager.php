@@ -35,6 +35,74 @@ class PengaduanManager extends Component
         return $this->redirect(route('admin.pengaduan.detail', $kode_tracking), navigate: true);
     }
 
+    // Referral / Link Properties
+    public $linkModal = false;
+    public $searchLinkedQuery = '';
+    public $linkedReports = [];
+    public $pengaduanToLink = null;
+
+    public function openLinkModal($id)
+    {
+        $this->pengaduanToLink = Pengaduan::findOrFail($id);
+        $this->searchLinkedQuery = '';
+        $this->linkedReports = [];
+        $this->linkModal = true;
+    }
+
+    public function updatedSearchLinkedQuery()
+    {
+        if (strlen($this->searchLinkedQuery) < 3 || !$this->pengaduanToLink) {
+            $this->linkedReports = [];
+            return;
+        }
+
+        $this->linkedReports = Pengaduan::where('status', 'selesai')
+            ->where('id', '!=', $this->pengaduanToLink->id)
+            ->where(function($q) {
+                $q->where('judul', 'like', '%' . $this->searchLinkedQuery . '%')
+                  ->orWhere('kode_tracking', 'like', '%' . $this->searchLinkedQuery . '%');
+            })
+            ->limit(5)
+            ->get()
+            ->toArray();
+    }
+
+    public function linkToReport($targetId)
+    {
+        $targetReport = Pengaduan::findOrFail($targetId);
+        $pengaduan = $this->pengaduanToLink;
+
+        $oldStatus = $pengaduan->status;
+        
+        $pengaduan->linked_id = $targetReport->id;
+        $pengaduan->status = 'selesai';
+        $pengaduan->foto_penyelesaian = $targetReport->foto_penyelesaian;
+        $pengaduan->pesan_penutup = "Masalah pada laporan ini telah diselesaikan sebelumnya dengan merujuk pada laporan: " . $targetReport->kode_tracking . ". Seluruh keterangan penyelesaian ini adalah hasil tindak lanjut dari laporan referensi tersebut. \n\n" . $targetReport->pesan_penutup;
+        $pengaduan->save();
+
+        PengaduanHistory::create([
+            'pengaduan_id' => $pengaduan->id,
+            'user_id' => auth()->id(),
+            'status_sebelumnya' => $oldStatus,
+            'status_baru' => 'selesai',
+            'keterangan_admin' => 'Laporan dirujuk ke laporan selesai (' . $targetReport->kode_tracking . ')',
+            'foto_bukti' => $targetReport->foto_penyelesaian,
+        ]);
+
+        // Kirim Email Update Status ke Pelapor
+        if ($pengaduan->user && $pengaduan->user->email) {
+            try {
+                \Illuminate\Support\Facades\Mail::to($pengaduan->user->email)->send(new \App\Mail\Pengaduan\StatusUpdate($pengaduan));
+            } catch (\Exception $e) {
+                \Log::error('Gagal mengirim email update status (Manager): ' . $e->getMessage());
+            }
+        }
+
+        $this->linkModal = false;
+        $this->pengaduanToLink = null;
+        session()->flash('success', 'Laporan berhasil dirujuk dan diselesaikan.');
+    }
+
     public function openUpdateStatusModal($id, $newStatus)
     {
         $this->selectedPengaduanId = $id;
@@ -79,7 +147,22 @@ class PengaduanManager extends Component
 
         $oldStatus = $pengaduan->status;
         $pengaduan->status = $this->update_status;
+        
+        // Simpan pesan penutup jika status selesai/ditolak
+        if ($this->update_status === 'selesai' || $this->update_status === 'ditolak') {
+            $pengaduan->pesan_penutup = $this->update_keterangan;
+        }
+
         $pengaduan->save();
+
+        // Kirim Email Update Status ke Pelapor
+        if ($pengaduan->user && $pengaduan->user->email) {
+            try {
+                \Illuminate\Support\Facades\Mail::to($pengaduan->user->email)->send(new \App\Mail\Pengaduan\StatusUpdate($pengaduan));
+            } catch (\Exception $e) {
+                \Log::error('Gagal mengirim email update status: ' . $e->getMessage());
+            }
+        }
 
         PengaduanHistory::create([
             'pengaduan_id' => $pengaduan->id,

@@ -32,14 +32,38 @@
                 
                 {{-- Kolom Kiri: Inti Laporan --}}
                 <div class="space-y-6">
-                    <x-input label="Judul Laporan" wire:model.live.debounce.250ms="judul"
+                    <x-input label="Judul Laporan" wire:model.live.debounce.500ms="judul"
                         placeholder="Contoh: Jalan berlubang parah di Jl. Merdeka" required icon="o-pencil" maxlength="100"
                         wire:key="input-judul"
                         hint="Maksimal 100 karakter. Tersisa: {{ 100 - strlen($judul) }}" />
                     
+                    @if(count($similarPengaduans) > 0 && !$isEdit)
+                    <div class="p-4 -mt-4 bg-primary/5 border border-primary/10 rounded-xl animate-in fade-in slide-in-from-top-2 duration-300">
+                        <div class="flex items-center gap-2 mb-3 text-xs font-bold text-primary">
+                            <x-icon name="o-light-bulb" class="w-4 h-4" />
+                            LAPORAN SERUPA DITEMUKAN
+                        </div>
+                        <p class="text-[11px] text-base-content/60 mb-3 leading-relaxed">
+                            Mungkin masalah ini sudah dilaporkan oleh warga lain. Anda bisa mendukung (upvote) laporan yang sudah ada agar lebih cepat ditindaklanjuti.
+                        </p>
+                        <div class="space-y-2">
+                            @foreach($similarPengaduans as $similar)
+                            <a href="{{ route('pengaduan.feed-detail', $similar['kode_tracking']) }}" target="_blank" 
+                                class="flex items-center justify-between p-2.5 bg-base-100 border border-base-200 rounded-lg hover:border-primary transition-colors group">
+                                <div class="flex flex-col min-w-0">
+                                    <span class="text-xs font-bold truncate text-base-content group-hover:text-primary">{{ $similar['judul'] }}</span>
+                                    <span class="text-[10px] text-base-content/40">{{ $similar['kode_tracking'] }} • {{ ucfirst($similar['status']) }}</span>
+                                </div>
+                                <x-icon name="o-arrow-top-right-on-square" class="w-4 h-4 text-base-content/30 group-hover:text-primary" />
+                            </a>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
+                    
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <x-select
-                            label="Kategori" wire:model="kategori_id" :options="$kategoris" option-value="id"
+                            label="Kategori" wire:model.live="kategori_id" :options="$kategoris" option-value="id"
                             option-label="nama" placeholder="Pilih Kategori" required icon="o-tag" />
                         
                         <x-datetime label="Tanggal Kejadian" wire:model="tanggal_kejadian" icon="o-calendar" required />

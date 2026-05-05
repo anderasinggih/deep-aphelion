@@ -16,12 +16,20 @@ new #[Layout('layouts.auth')] class extends Component
     public string $email = '';
     public string $password = '';
     public string $password_confirmation = '';
+    public int $countdown = 0;
 
     /**
      * Handle an incoming registration request.
      */
     public function register(): void
     {
+        $key = 'register-limit-' . request()->ip();
+
+        if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($key, 1)) {
+            $this->countdown = \Illuminate\Support\Facades\RateLimiter::availableIn($key);
+            return;
+        }
+
         $validated = $this->validate([
             'name' => ['required', 'string', 'min:5', 'max:255'],
             'nik' => ['required', 'numeric', 'digits:16', 'unique:'.User::class],
@@ -48,6 +56,9 @@ new #[Layout('layouts.auth')] class extends Component
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
             'password.regex' => 'Password wajib mengandung kombinasi huruf dan angka.',
         ]);
+
+        \Illuminate\Support\Facades\RateLimiter::hit($key, 120); // Batasi 2 menit per pendaftaran
+        $this->countdown = 0;
 
         $validated['name'] = strtoupper($validated['name']);
         $validated['password'] = Hash::make($validated['password']);
@@ -85,17 +96,23 @@ new #[Layout('layouts.auth')] class extends Component
         style="scrollbar-width: none;">
 
         <div class="flex items-center justify-center gap-4 mb-6">
-            <img src="{{ asset('storage/assets/logobanyumas.png') }}" alt="Logo Banyumas"
-                class="block object-contain w-10 h-10" />
-            <div class="flex items-center justify-center w-10 h-10 p-1 rounded-xl bg-primary/10 text-primary">
-                <x-icon name="o-megaphone" class="w-10 h-10" />
-            </div>
+            <img src="{{ asset('storage/' . \App\Models\Setting::get('app_logo', 'assets/logobanyumas.png')) }}" 
+                alt="Logo Utama" class="block object-contain w-10 h-10" />
+            <img src="{{ asset('storage/' . \App\Models\Setting::get('app_logo_sekunder', 'assets/logokominfo.png')) }}" 
+                alt="Logo Sekunder" class="block object-contain w-10 h-10" />
         </div>
 
         <div class="mb-6 text-center">
             <h1 class="mb-1 text-2xl font-bold text-base-content">Daftar Akun Baru</h1>
             <p class="text-sm text-base-content/60">Silakan lengkapi data diri Anda di bawah ini.</p>
         </div>
+
+        @if($countdown > 0)
+            <div class="mb-5 p-3 bg-warning/10 border border-warning/20 rounded-xl text-warning text-[11px] font-bold text-center flex items-center justify-center gap-2 uppercase italic transition-all animate-pulse">
+                <x-icon name="o-clock" class="w-4 h-4" />
+                IP Anda terdeteksi melakukan banyak permintaan. Tunggu {{ $countdown }} detik lagi.
+            </div>
+        @endif
 
         <form wire:submit="register" class="space-y-4">
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -127,14 +144,13 @@ new #[Layout('layouts.auth')] class extends Component
 
             <div class="grid grid-cols-1 gap-4 pt-3 mt-2 border-t md:grid-cols-2 border-base-200">
                 <div>
-                    <label for="password" class="block mb-1 text-sm font-medium text-base-content/80">Password</label>
                     <div x-data="{ show: false }" class="relative">
-                        <x-input x-bind:type="show ? 'text' : 'password'" wire:model="password" id="password"
+                        <x-input label="Password" x-bind:type="show ? 'text' : 'password'" wire:model="password" id="password"
                             placeholder="Buat password baru" required autocomplete="new-password"
                             icon="o-lock-closed" />
 
                         <button type="button" @click="show = !show"
-                            class="absolute top-0 right-0 h-[48px] flex items-center pr-3 transition-colors cursor-pointer text-base-content/40 hover:text-primary z-10">
+                            class="absolute bottom-0 right-0 h-12 flex items-center pr-3 transition-colors cursor-pointer text-base-content/40 hover:text-primary z-10">
                             <x-icon name="o-eye" x-show="!show" class="w-5 h-5" />
                             <x-icon name="o-eye-slash" x-show="show" class="w-5 h-5" style="display: none;" />
                         </button>
@@ -142,15 +158,13 @@ new #[Layout('layouts.auth')] class extends Component
                 </div>
 
                 <div>
-                    <label for="password_confirmation"
-                        class="block mb-1 text-sm font-medium text-base-content/80">Konfirmasi Password</label>
                     <div x-data="{ show: false }" class="relative">
-                        <x-input x-bind:type="show ? 'text' : 'password'" wire:model="password_confirmation"
+                        <x-input label="Konfirmasi Password" x-bind:type="show ? 'text' : 'password'" wire:model="password_confirmation"
                             id="password_confirmation" placeholder="Ketik ulang password" required
                             autocomplete="new-password" icon="o-lock-closed" />
 
                         <button type="button" @click="show = !show"
-                            class="absolute inset-y-0 right-0 flex items-center pr-3 transition-colors cursor-pointer text-base-content/40 hover:text-primary">
+                            class="absolute bottom-0 right-0 flex items-center h-12 pr-3 transition-colors cursor-pointer text-base-content/40 hover:text-primary">
                             <x-icon name="o-eye" x-show="!show" class="w-5 h-5" />
                             <x-icon name="o-eye-slash" x-show="show" class="w-5 h-5" style="display: none;" />
                         </button>
@@ -163,8 +177,12 @@ new #[Layout('layouts.auth')] class extends Component
 
             <div class="pt-2">
                 <button type="submit"
-                    class="w-full text-white border-none shadow-sm btn btn-primary bg-primary hover:bg-primary/90 rounded-xl">
-                    Daftar Sekarang
+                    class="w-full text-white border-none shadow-sm btn btn-primary bg-primary hover:bg-primary/90 rounded-xl"
+                    wire:loading.attr="disabled">
+                    <span wire:loading.remove wire:target="register">Daftar Sekarang</span>
+                    <span wire:loading wire:target="register" class="flex items-center gap-2">
+                        <span class="loading loading-spinner loading-sm"></span> Memproses...
+                    </span>
                 </button>
             </div>
         </form>

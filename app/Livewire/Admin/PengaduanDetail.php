@@ -23,10 +23,68 @@ class PengaduanDetail extends Component
     public $update_keterangan = '';
     public $catatan_internal = '';
 
+    // Referral / Link Properties
+    public $linkModal = false;
+    public $searchLinkedQuery = '';
+    public $linkedReports = [];
+
     public function mount($kode_tracking)
     {
-        $this->pengaduan = Pengaduan::with(['user', 'kategori', 'histories.user'])->where('kode_tracking', $kode_tracking)->firstOrFail();
+        $this->pengaduan = Pengaduan::with(['user', 'kategori', 'histories.user', 'linkedReport'])->where('kode_tracking', $kode_tracking)->firstOrFail();
         $this->catatan_internal = $this->pengaduan->catatan_internal;
+    }
+
+    public function updatedSearchLinkedQuery()
+    {
+        if (strlen($this->searchLinkedQuery) < 3) {
+            $this->linkedReports = [];
+            return;
+        }
+
+        $this->linkedReports = Pengaduan::where('status', 'selesai')
+            ->where('id', '!=', $this->pengaduan->id)
+            ->where(function($q) {
+                $q->where('judul', 'like', '%' . $this->searchLinkedQuery . '%')
+                  ->orWhere('kode_tracking', 'like', '%' . $this->searchLinkedQuery . '%');
+            })
+            ->limit(5)
+            ->get()
+            ->toArray();
+    }
+
+    public function linkToReport($targetId)
+    {
+        $targetReport = Pengaduan::findOrFail($targetId);
+
+        $oldStatus = $this->pengaduan->status;
+        
+        $this->pengaduan->linked_id = $targetReport->id;
+        $this->pengaduan->status = 'selesai';
+        $this->pengaduan->foto_penyelesaian = $targetReport->foto_penyelesaian;
+        $this->pengaduan->pesan_penutup = "Masalah pada laporan ini telah diselesaikan sebelumnya dengan merujuk pada laporan: " . $targetReport->kode_tracking . ". Seluruh keterangan penyelesaian ini adalah hasil tindak lanjut dari laporan referensi tersebut. \n\n" . $targetReport->pesan_penutup;
+        $this->pengaduan->save();
+
+        PengaduanHistory::create([
+            'pengaduan_id' => $this->pengaduan->id,
+            'user_id' => auth()->id(),
+            'status_sebelumnya' => $oldStatus,
+            'status_baru' => 'selesai',
+            'keterangan_admin' => 'Laporan dirujuk ke laporan selesai (' . $targetReport->kode_tracking . ')',
+            'foto_bukti' => $targetReport->foto_penyelesaian,
+        ]);
+
+        // Kirim Email Update Status ke Pelapor
+        if ($this->pengaduan->user && $this->pengaduan->user->email) {
+            try {
+                \Illuminate\Support\Facades\Mail::to($this->pengaduan->user->email)->send(new \App\Mail\Pengaduan\StatusUpdate($this->pengaduan));
+            } catch (\Exception $e) {
+                \Log::error('Gagal mengirim email update status (Detail): ' . $e->getMessage());
+            }
+        }
+
+        $this->linkModal = false;
+        session()->flash('success', 'Laporan berhasil dirujuk dan diselesaikan.');
+        $this->pengaduan->refresh();
     }
 
     public function saveCatatanInternal()
@@ -82,12 +140,23 @@ class PengaduanDetail extends Component
         $oldStatus = $this->pengaduan->getOriginal('status') ?? $this->pengaduan->status;
         $this->pengaduan->status = $this->update_status;
         
-        if ($this->update_status === 'selesai') {
-            $this->pengaduan->foto_penyelesaian = $path;
+        if ($this->update_status === 'selesai' || $this->update_status === 'ditolak') {
             $this->pengaduan->pesan_penutup = $this->update_keterangan;
+            if ($this->update_status === 'selesai') {
+                $this->pengaduan->foto_penyelesaian = $path;
+            }
         }
         
         $this->pengaduan->save();
+
+        // Kirim Email Update Status ke Pelapor
+        if ($this->pengaduan->user && $this->pengaduan->user->email) {
+            try {
+                \Illuminate\Support\Facades\Mail::to($this->pengaduan->user->email)->send(new \App\Mail\Pengaduan\StatusUpdate($this->pengaduan));
+            } catch (\Exception $e) {
+                \Log::error('Gagal mengirim email update status (Detail): ' . $e->getMessage());
+            }
+        }
 
         PengaduanHistory::create([
             'pengaduan_id' => $this->pengaduan->id,

@@ -156,7 +156,14 @@
                                                         wire:click="openUpdateStatusModal({{ $pengaduan->id }}, 'ditolak')" />
                                                 @endif
 
+                                                @if($pengaduan->status !== 'selesai' && $pengaduan->status !== 'ditolak')
+                                                    <div class="my-1 opacity-50 divider mt-0"></div>
+                                                    <x-menu-item title="Rujuk Laporan (Duplikat)" icon="o-document-duplicate" class="font-bold text-primary"
+                                                        wire:click="openLinkModal({{ $pengaduan->id }})" />
+                                                @endif
+
                                                 @if($pengaduan->status === 'diproses')
+                                                    <div class="my-1 opacity-50 divider mt-0"></div>
                                                     <x-menu-item title="Selesaikan" icon="o-check-circle" class="font-bold text-success"
                                                         wire:click="openUpdateStatusModal({{ $pengaduan->id }}, 'selesai')" />
                                                     <x-menu-item title="Batalkan (Ke Menunggu)" icon="o-clock"
@@ -227,5 +234,37 @@
                     spinner="saveStatusUpdate" />
             </x-slot:actions>
         </x-form>
+    </x-modal>
+
+    <!-- Modal Rujuk Laporan Selesai (Duplicate Handling) -->
+    <x-modal wire:model="linkModal" title="Rujuk ke Laporan Selesai" subtitle="Gunakan fitur ini jika masalah ini merupakan duplikat dan sudah diselesaikan pada laporan lain.">
+        <div class="space-y-4">
+            <x-input wire:model.live.debounce.300ms="searchLinkedQuery" placeholder="Cari Kode Tracking atau Judul..." icon="o-magnifying-glass" hint="Ketik minimal 3 karakter untuk mencari laporan yang sudah berstatus 'Selesai'." />
+            
+            <div class="mt-4">
+                @if(strlen($searchLinkedQuery) >= 3)
+                    @if(count($linkedReports) > 0)
+                        <div class="space-y-2">
+                            @foreach($linkedReports as $lr)
+                            <div class="flex items-center justify-between p-3 border border-base-300 rounded-xl bg-base-200/50 hover:border-primary transition-colors">
+                                <div class="overflow-hidden">
+                                    <div class="font-mono text-[10px] text-base-content/50">{{ $lr['kode_tracking'] }}</div>
+                                    <div class="font-bold text-xs truncate">{{ $lr['judul'] }}</div>
+                                </div>
+                                <x-button label="Pilih & Selesaikan" wire:click="linkToReport({{ $lr['id'] }})" wire:confirm="Yakin ingin merujuk laporan ini? Status otomatis menjadi Selesai." class="btn-sm btn-primary text-white" />
+                            </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="p-4 text-center text-xs text-base-content/50 border border-dashed rounded-xl">
+                            Tidak ditemukan laporan selesai yang cocok.
+                        </div>
+                    @endif
+                @endif
+            </div>
+        </div>
+        <x-slot:actions>
+            <x-button label="Batal" @click="$wire.linkModal = false" class="btn-ghost" />
+        </x-slot:actions>
     </x-modal>
 </div>
