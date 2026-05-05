@@ -28,10 +28,6 @@
     <div class="wrapper">
         <div class="content">
             <div class="header">
-                @php
-                    $appLogo = \App\Models\Setting::where('key', 'app_logo')->first()?->value;
-                @endphp
-                <img src="{{ $appLogo ? asset('storage/' . $appLogo) : 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Lambang_Kabupaten_Banyumas.png/400px-Lambang_Kabupaten_Banyumas.png' }}" alt="Logo">
                 <h1>{{ config('app.name') }}</h1>
             </div>
 

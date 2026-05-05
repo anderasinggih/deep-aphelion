@@ -14,7 +14,7 @@ use App\Livewire\PengaduanFeedDetail;
 Route::get('/', Beranda::class)->name('beranda');
 Route::get('/tentang-kami', TentangKami::class)->name('tentang-kami');
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     // Warga
     Route::get('/pengaduan/create', PengaduanForm::class)->name('pengaduan.create');
     Route::get('/pengaduan/{kode_tracking}/edit', PengaduanForm::class)->name('pengaduan.edit')->where('kode_tracking', '.*');
