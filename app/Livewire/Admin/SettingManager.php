@@ -164,16 +164,18 @@ class SettingManager extends Component
         $this->updateSetting('mail_password', $this->mail_password);
         $this->updateSetting('mail_encryption', $this->mail_encryption);
 
-        // Update .env file for mail settings
-        $this->updateEnv([
-            'MAIL_HOST' => $this->mail_host,
-            'MAIL_PORT' => $this->mail_port,
-            'MAIL_USERNAME' => $this->mail_username,
-            'MAIL_PASSWORD' => $this->mail_password,
-            'MAIL_ENCRYPTION' => $this->mail_encryption,
-            'MAIL_FROM_ADDRESS' => $this->mail_username, // Usually same as username
-            'MAIL_FROM_NAME' => $this->instansi_nama,
-        ]);
+        // Update .env file for mail settings ONLY if email tab was unlocked
+        if ($this->unlock_email) {
+            $this->updateEnv([
+                'MAIL_HOST' => $this->mail_host,
+                'MAIL_PORT' => $this->mail_port,
+                'MAIL_USERNAME' => $this->mail_username,
+                'MAIL_PASSWORD' => $this->mail_password,
+                'MAIL_ENCRYPTION' => $this->mail_encryption,
+                'MAIL_FROM_ADDRESS' => $this->mail_username, // Usually same as username
+                'MAIL_FROM_NAME' => $this->instansi_nama,
+            ]);
+        }
 
         if ($this->ttd_file) {
             $path = $this->ttd_file->store('assets', 'public');
