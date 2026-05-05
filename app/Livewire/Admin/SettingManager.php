@@ -31,8 +31,10 @@ class SettingManager extends Component
 
     // Aset Visual (Logo & Banner)
     public $app_logo;
+    public $app_logo_sekunder;
     public $app_banner;
     public $existing_app_logo;
+    public $existing_app_logo_sekunder;
     public $existing_app_banner;
 
     // Content Settings
@@ -75,6 +77,7 @@ class SettingManager extends Component
         $this->instansi_jam_sabtu = $settings['instansi_jam_sabtu'] ?? 'Libur';
 
         $this->existing_app_logo = $settings['app_logo'] ?? null;
+        $this->existing_app_logo_sekunder = $settings['app_logo_sekunder'] ?? null;
         $this->existing_app_banner = $settings['app_banner'] ?? null;
     }
 
@@ -100,6 +103,7 @@ class SettingManager extends Component
             'instansi_jam_jumat' => 'required|string|max:100',
             'instansi_jam_sabtu' => 'required|string|max:100',
             'app_logo' => 'nullable|image|max:2048',
+            'app_logo_sekunder' => 'nullable|image|max:2048',
             'app_banner' => 'nullable|image|max:5120',
         ]);
 
@@ -133,6 +137,13 @@ class SettingManager extends Component
             $this->updateSetting('app_logo', $path);
             $this->existing_app_logo = $path;
             $this->app_logo = null;
+        }
+
+        if ($this->app_logo_sekunder) {
+            $path = $this->app_logo_sekunder->store('assets', 'public');
+            $this->updateSetting('app_logo_sekunder', $path);
+            $this->existing_app_logo_sekunder = $path;
+            $this->app_logo_sekunder = null;
         }
 
         if ($this->app_banner) {

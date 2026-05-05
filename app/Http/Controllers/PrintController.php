@@ -56,13 +56,9 @@ class PrintController extends Controller
             'start_date' => $request->start_date,
             'end_date'   => $request->end_date,
         ];
-        $settings = \App\Models\Setting::whereIn('key', ['ttd_jabatan', 'ttd_nama', 'ttd_file'])->pluck('value', 'key');
-        $ttd = [
-            'jabatan' => $settings['ttd_jabatan'] ?? 'Camat Kembaran',
-            'nama' => $settings['ttd_nama'] ?? '',
-            'file' => $settings['ttd_file'] ?? null,
-        ];
+        
+        $settings = \App\Models\Setting::all()->pluck('value', 'key');
 
-        return view('print.laporan', compact('pengaduans', 'filterInfo', 'ttd'));
+        return view('print.rekap-laporan', compact('pengaduans', 'filterInfo', 'settings'));
     }
 }

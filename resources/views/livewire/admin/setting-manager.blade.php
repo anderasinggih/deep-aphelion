@@ -139,11 +139,11 @@
                     <x-icon name="o-photo" class="w-5 h-5 text-primary" /> Logo & Banner Website
                 </h2>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <div class="space-y-4">
-                        <x-file label="Logo Instansi / App" wire:model="app_logo" accept="image/*" hint="Disarankan format PNG transparan (Square/1:1)." />
+                        <x-file label="Logo Utama (Instansi)" wire:model="app_logo" accept="image/*" hint="Disarankan format PNG transparan." />
                         <div class="p-4 bg-base-200/30 rounded-xl border border-base-200">
-                            <p class="text-[10px] font-bold text-base-content/40 uppercase mb-3">Preview Logo Saat Ini</p>
+                            <p class="text-[10px] font-bold text-base-content/40 uppercase mb-3">Preview Logo Utama</p>
                             <div class="flex items-center justify-center bg-white rounded-lg p-4 h-32 border border-base-200">
                                 @if($app_logo)
                                     <img src="{{ $app_logo->temporaryUrl() }}" class="max-h-full object-contain">
@@ -157,9 +157,25 @@
                     </div>
 
                     <div class="space-y-4">
-                        <x-file label="Hero Banner (Beranda)" wire:model="app_banner" accept="image/*" hint="Disarankan resolusi tinggi (1920x1080)." />
+                        <x-file label="Logo Sekunder (Pendamping)" wire:model="app_logo_sekunder" accept="image/*" hint="Contoh: Logo Kominfo." />
                         <div class="p-4 bg-base-200/30 rounded-xl border border-base-200">
-                            <p class="text-[10px] font-bold text-base-content/40 uppercase mb-3">Preview Banner Saat Ini</p>
+                            <p class="text-[10px] font-bold text-base-content/40 uppercase mb-3">Preview Logo Sekunder</p>
+                            <div class="flex items-center justify-center bg-white rounded-lg p-4 h-32 border border-base-200">
+                                @if($app_logo_sekunder)
+                                    <img src="{{ $app_logo_sekunder->temporaryUrl() }}" class="max-h-full object-contain">
+                                @elseif($existing_app_logo_sekunder)
+                                    <img src="{{ asset('storage/' . $existing_app_logo_sekunder) }}" class="max-h-full object-contain">
+                                @else
+                                    <div class="text-xs italic opacity-30">Belum ada logo sekunder</div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 md:col-span-2 lg:col-span-1">
+                        <x-file label="Hero Banner (Beranda)" wire:model="app_banner" accept="image/*" hint="Resolusi tinggi (1920x1080)." />
+                        <div class="p-4 bg-base-200/30 rounded-xl border border-base-200">
+                            <p class="text-[10px] font-bold text-base-content/40 uppercase mb-3">Preview Banner</p>
                             <div class="flex items-center justify-center bg-black/5 rounded-lg overflow-hidden h-32 border border-base-200">
                                 @if($app_banner)
                                     <img src="{{ $app_banner->temporaryUrl() }}" class="w-full h-full object-cover">

@@ -14,7 +14,7 @@ class TentangKami extends Component
     {
         $settings = Setting::whereIn('key', [
             'instansi_nama', 'instansi_alamat', 'instansi_telepon', 'instansi_email',
-            'instansi_jam_senkam', 'instansi_jam_jumat', 'instansi_jam_sabtu', 'app_logo'
+            'instansi_jam_senkam', 'instansi_jam_jumat', 'instansi_jam_sabtu', 'app_logo', 'app_logo_sekunder'
         ])->pluck('value', 'key');
 
         $this->instansi_nama = $settings['instansi_nama'] ?? 'Kecamatan Kembaran';
@@ -26,6 +26,7 @@ class TentangKami extends Component
         $this->jam_jumat = $settings['instansi_jam_jumat'] ?? '07.30 – 11.00 WIB';
         $this->jam_sabtu_minggu = $settings['instansi_jam_sabtu'] ?? 'Libur';
         $this->app_logo = $settings['app_logo'] ?? null;
+        $this->app_logo_sekunder = $settings['app_logo_sekunder'] ?? null;
 
         // Fetch Public Stats
         $this->stats = [
@@ -46,7 +47,8 @@ class TentangKami extends Component
             'instansi_jam_jumat' => $this->jam_jumat,
             'instansi_jam_sabtu' => $this->jam_sabtu_minggu,
             'stats' => $this->stats,
-            'app_logo' => $this->app_logo
+            'app_logo' => $this->app_logo,
+            'app_logo_sekunder' => $this->app_logo_sekunder
         ])->layout('layouts.app');
     }
 }

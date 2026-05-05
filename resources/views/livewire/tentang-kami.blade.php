@@ -7,7 +7,7 @@
                 onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Lambang_Kabupaten_Banyumas.png/400px-Lambang_Kabupaten_Banyumas.png'">
             <div class="w-px h-10 bg-base-300"></div>
             <div class="bg-white rounded-xl p-1.5 w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center shadow-sm border border-base-200">
-                <img src="{{ asset('storage/assets/logokominfo.png') }}" alt="Kominfo" class="w-full h-full object-contain">
+                <img src="{{ $app_logo_sekunder ? asset('storage/' . $app_logo_sekunder) : asset('storage/assets/logokominfo.png') }}" alt="Logo Sekunder" class="w-full h-full object-contain">
             </div>
         </div>
         <h1 class="text-2xl sm:text-4xl font-black text-primary leading-tight px-4">Tentang Kembaran Ngadu</h1>

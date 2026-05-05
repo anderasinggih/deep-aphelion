@@ -137,7 +137,7 @@
         <tr>
             <td class="label">Tanggal Lapor</td>
             <td class="titik-dua">:</td>
-            <td>{{ $pengaduan->created_at->format('d F Y, H:i') }} WIB</td>
+            <td>{{ $pengaduan->created_at->isoFormat('D MMMM YYYY, HH:mm') }} WIB</td>
         </tr>
         <tr>
             <td class="label">Kategori</td>

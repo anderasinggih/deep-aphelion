@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Rekapitulasi Pengaduan - Kecamatan Kembaran</title>
+    <title>Rekapitulasi Laporan - {{ $settings['instansi_nama'] ?? 'Kecamatan Kembaran' }}</title>
     @vite(['resources/css/app.css'])
     <style>
         body { font-family: 'Times New Roman', Times, serif; font-size: 11pt; color: #000; background: white; }
@@ -28,11 +28,11 @@
         @media print {
             body { background: white !important; }
             .no-print { display: none !important; }
-            @page { size: A4 landscape; margin: 1.5cm; }
+            @page { size: A4 landscape; margin: 1.2cm; }
         }
         @media screen {
             body { background: #e5e7eb; padding: 20px; }
-            .print-container { background: white; max-width: 1000px; margin: 0 auto; padding: 40px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+            .print-container { background: white; max-width: 1200px; margin: 0 auto; padding: 40px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
             .no-print { display: flex; }
         }
     </style>
@@ -45,16 +45,22 @@
     <table class="kop-table">
         <tr>
             <td class="kop-logo">
-                <img src="{{ asset('storage/assets/logobanyumas.png') }}" alt="Logo Banyumas" style="width:72px; height:72px; object-fit:contain;"
+                <img src="{{ isset($settings['app_logo']) ? asset('storage/' . $settings['app_logo']) : asset('storage/assets/logobanyumas.png') }}" alt="Logo" style="width:72px; height:72px; object-fit:contain;"
                     onerror="this.onerror=null;this.src='https://upload.wikimedia.org/wikipedia/commons/4/4e/Lambang_Kabupaten_Banyumas.png'">
             </td>
             <td class="kop-text">
                 <h1>Pemerintah Kabupaten Banyumas</h1>
-                <h2>Kecamatan Kembaran</h2>
-                <p>Jl. Kyai Kembar No. 17, Kembaran, Kabupaten Banyumas, Jawa Tengah 53182</p>
-                <p>Telepon: (0281) 6840XXX &nbsp;|&nbsp; Email: kecamatan.kembaran@banyumaskab.go.id</p>
+                <h2>{{ $settings['instansi_nama'] ?? 'Kecamatan Kembaran' }}</h2>
+                <p>{{ $settings['instansi_alamat'] ?? 'Jl. Kyai Kembar No. 17, Kembaran, Kabupaten Banyumas' }}</p>
+                <p>Telepon: {{ $settings['instansi_telepon'] ?? '-' }} &nbsp;|&nbsp; Email: {{ $settings['instansi_email'] ?? '-' }}</p>
             </td>
-            <td style="width:72px;"></td>
+            <td class="kop-logo" style="text-align: right;">
+                @if(isset($settings['app_logo_sekunder']))
+                    <img src="{{ asset('storage/' . $settings['app_logo_sekunder']) }}" alt="Logo Sekunder" style="width:72px; height:72px; object-fit:contain;">
+                @else
+                     <img src="{{ asset('storage/assets/logokominfo.png') }}" alt="Kominfo" style="width:72px; height:72px; object-fit:contain;">
+                @endif
+            </td>
         </tr>
     </table>
 
@@ -92,7 +98,7 @@
                 <th style="width:90px;">Kategori</th>
                 <th>Judul &amp; Lokasi Kejadian</th>
                 <th style="width:70px; text-align:center;">Status</th>
-                <th style="width:120px;">Keterangan</th>
+                <th style="width:120px;">Keterangan / Hasil</th>
             </tr>
         </thead>
         <tbody>
@@ -115,13 +121,24 @@
                     <div style="font-weight:bold; margin-bottom:2px;">{{ $pengaduan->judul }}</div>
                     <div style="font-size:8pt; color:#555;">{{ $pengaduan->lokasi_kejadian }}</div>
                 </td>
-                <td style="text-align:center;" class="badge-status">{{ strtoupper($pengaduan->status) }}</td>
+                <td style="text-align:center;" class="badge-status">
+                    @php
+                        $color = '#555';
+                        if($pengaduan->status == 'selesai') $color = '#15803d';
+                        if($pengaduan->status == 'diproses') $color = '#1d4ed8';
+                        if($pengaduan->status == 'menunggu') $color = '#a16207';
+                        if($pengaduan->status == 'ditolak') $color = '#b91c1c';
+                    @endphp
+                    <span style="color: {{ $color }}">{{ strtoupper($pengaduan->status) }}</span>
+                </td>
                 <td style="font-size:8pt;">
                     @if($pengaduan->status === 'selesai' && $pengaduan->pesan_penutup)
                         {{ Str::limit($pengaduan->pesan_penutup, 80) }}
                     @elseif($pengaduan->status === 'ditolak')
                         @php $lastHistory = $pengaduan->histories->where('status_baru','ditolak')->last(); @endphp
                         {{ $lastHistory ? Str::limit($lastHistory->keterangan_admin, 80) : '-' }}
+                    @elseif($pengaduan->status === 'diproses')
+                        Tengah ditindaklanjuti.
                     @else
                         -
                     @endif
@@ -141,15 +158,15 @@
     <div class="ttd-area">
         <div class="ttd-box">
             <p>Kembaran, {{ now()->isoFormat('D MMMM YYYY') }}</p>
-            <p style="font-weight:bold; margin-top:4px;">{{ $ttd['jabatan'] }}</p>
+            <p style="font-weight:bold; margin-top:4px;">{{ $settings['ttd_jabatan'] ?? 'Camat Kembaran' }}</p>
             
-            @if(!empty($ttd['file']))
-                <img src="{{ asset('storage/' . $ttd['file']) }}" alt="Tanda Tangan" style="height: 70px; margin: 10px auto; display: block;">
+            @if(isset($settings['ttd_file']))
+                <img src="{{ asset('storage/' . $settings['ttd_file']) }}" alt="Tanda Tangan" style="height: 70px; margin: 10px auto; display: block;">
             @else
                 <div class="ttd-line"></div>
             @endif
 
-            <p style="font-weight:bold; text-decoration: underline;">{{ !empty($ttd['nama']) ? $ttd['nama'] : '(............................................)' }}</p>
+            <p style="font-weight:bold; text-decoration: underline;">{{ $settings['ttd_nama'] ?? '(............................................)' }}</p>
         </div>
     </div>
 
@@ -157,12 +174,8 @@
 
 {{-- Tombol Layar (tidak dicetak) --}}
 <div class="no-print" style="justify-content:center; gap:12px; padding:20px; max-width:1000px; margin:0 auto;">
-    <button onclick="window.close()" style="padding:8px 20px; background:#e5e7eb; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">
-        Tutup
-    </button>
-    <button onclick="window.print()" style="padding:8px 24px; background:#4f46e5; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">
-        🖨 Cetak Dokumen
-    </button>
+    <x-button label="Tutup" onclick="window.close()" class="btn-ghost" />
+    <x-button label="🖨 Cetak Dokumen" onclick="window.print()" class="btn-primary text-white" />
 </div>
 
 </body>
