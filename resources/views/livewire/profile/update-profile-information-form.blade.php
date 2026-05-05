@@ -52,9 +52,11 @@ new class extends Component
 
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;
+            $user->save();
+            \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\Security\EmailChanged($user));
+        } else {
+            $user->save();
         }
-
-        $user->save();
 
         $this->dispatch('profile-updated', name: $user->name);
     }
