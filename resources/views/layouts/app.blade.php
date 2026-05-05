@@ -25,7 +25,7 @@
 <body class="min-h-screen font-sans antialiased bg-base-200">
 
     {{-- Wrapper untuk ngatur posisi melayang (ada jarak dari atas dan samping) --}}
-    <div class="sticky top-4 z-[100] w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-all">
+    <div class="sticky top-4 z-[1000] w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-all">
 
         {{-- Navbar utamanya dibikin melengkung, blur tinggi, dan ada border kaca --}}
         <div
