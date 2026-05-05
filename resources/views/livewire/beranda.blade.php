@@ -61,25 +61,26 @@
         </div>
     </div>
 
-    {{-- Pengumuman Section --}}
-    @if($settings['pengumuman_aktif'] ?? false)
-    <div class="w-full max-w-7xl mx-auto px-2 lg:px-4 mb-4 relative z-20">
-        <div class="alert alert-{{ $settings['pengumuman_tipe'] ?? 'info' }} shadow-lg border-none rounded-2xl p-4 sm:p-5 flex items-start gap-4">
-            <div class="p-2 bg-white/20 rounded-xl shrink-0">
-                <x-icon name="o-megaphone" class="w-6 h-6 text-white" />
-            </div>
-            <div class="flex-1 text-white">
-                <h3 class="font-black text-[11px] sm:text-xs uppercase tracking-tight mb-0.5">Pengumuman Penting</h3>
-                <div class="text-sm font-medium leading-relaxed opacity-95">
-                    {!! $settings['pengumuman_isi'] !!}
+    {{-- Section Pengumuman, Cek Status & SOP --}}
+    <div class="w-full max-w-7xl mx-auto px-2 lg:px-4 mt-[-2rem] md:mt-[-3rem] relative z-20 mb-8">
+        
+        {{-- Pengumuman Section --}}
+        @if($settings['pengumuman_aktif'] ?? false)
+        <div class="mb-4">
+            <div class="alert alert-{{ $settings['pengumuman_tipe'] ?? 'info' }} shadow-xl border-none rounded-2xl p-4 sm:p-5 flex items-start gap-4">
+                <div class="p-2 bg-white/20 rounded-xl shrink-0">
+                    <x-icon name="o-megaphone" class="w-6 h-6 text-white" />
+                </div>
+                <div class="flex-1 text-white">
+                    <h3 class="font-black text-[11px] sm:text-xs uppercase tracking-tight mb-0.5">Pengumuman Penting</h3>
+                    <div class="text-sm font-medium leading-relaxed opacity-95">
+                        {!! $settings['pengumuman_isi'] !!}
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    @endif
+        @endif
 
-    {{-- Section Cek Status & SOP --}}
-    <div class="w-full max-w-7xl mx-auto px-2 lg:px-4 mt-[-2rem] md:mt-[-3rem] relative z-20 mb-8">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
             
             {{-- Lacak Laporan Card --}}
