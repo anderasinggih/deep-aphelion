@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@kembaran.go.id',
             'password' => bcrypt('password'),
             'role' => 'admin',
+            'email_verified_at' => now(),
         ]);
 
         User::create([
@@ -29,6 +30,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'trantib@kembaran.go.id',
             'password' => bcrypt('password'),
             'role' => 'petugas',
+            'email_verified_at' => now(),
         ]);
 
         User::create([
@@ -38,6 +40,7 @@ class DatabaseSeeder extends Seeder
             'no_wa' => '081234567890',
             'password' => bcrypt('password'),
             'role' => 'warga',
+            'email_verified_at' => now(),
         ]);
 
         $this->call([
