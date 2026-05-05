@@ -17,7 +17,6 @@ new class extends Component
     public bool $isEmailEditable = false;
     public bool $otpSent = false;
     public string $otpInput = '';
-    public string $generatedOtp = '';
 
     /**
      * Mount the component.
@@ -29,9 +28,6 @@ new class extends Component
         $this->nik = $user->nik ?? '';
         $this->no_wa = $user->no_wa ?? '';
         $this->email = $user->email ?? '';
-        
-        // Admin bisa langsung edit email tanpa OTP (opsional, tapi user minta "ganti email tuh harus verif")
-        // Kita terapkan ke semua saja demi keamanan
     }
 
     /**
@@ -40,10 +36,24 @@ new class extends Component
     public function requestEmailChange(): void
     {
         $user = Auth::user();
-        $this->generatedOtp = (string) rand(100000, 999999);
+        $key = 'otp-limit-' . $user->id;
+
+        // Rate Limiting (60 detik)
+        if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($key, 1)) {
+            $seconds = \Illuminate\Support\Facades\RateLimiter::availableIn($key);
+            $this->dispatch('notify', message: "Tunggu {$seconds} detik sebelum meminta kode baru.", type: 'warning');
+            return;
+        }
+
+        \Illuminate\Support\Facades\RateLimiter::hit($key, 60);
+
+        $otp = (string) rand(100000, 999999);
+        
+        // Simpan OTP di Cache selama 10 menit
+        \Illuminate\Support\Facades\Cache::put('email-otp-' . $user->id, $otp, now()->addMinutes(10));
         
         \Illuminate\Support\Facades\Mail::to($user->email)->send(
-            new \App\Mail\Security\EmailChangeOTP($user, $this->generatedOtp)
+            new \App\Mail\Security\EmailChangeOTP($user, $otp)
         );
 
         $this->otpSent = true;
@@ -55,10 +65,14 @@ new class extends Component
      */
     public function verifyEmailChangeOtp(): void
     {
-        if ($this->otpInput === $this->generatedOtp) {
+        $user = Auth::user();
+        $cachedOtp = \Illuminate\Support\Facades\Cache::get('email-otp-' . $user->id);
+
+        if ($this->otpInput && $this->otpInput === $cachedOtp) {
             $this->isEmailEditable = true;
             $this->otpSent = false;
             $this->otpInput = '';
+            \Illuminate\Support\Facades\Cache::forget('email-otp-' . $user->id);
             $this->dispatch('notify', message: 'Verifikasi berhasil! Silakan masukkan email baru Anda.', type: 'success');
         } else {
             $this->addError('otpInput', 'Kode OTP salah atau sudah kedaluwarsa.');
@@ -173,17 +187,16 @@ new class extends Component
             <x-input label="Nomor WhatsApp" wire:model="no_wa" id="no_wa" type="text" required autocomplete="tel"
                 icon="o-phone" maxlength="15" placeholder="Contoh: 081234567890" oninput="this.value = this.value.replace(/[^0-9]/g, '');" />
 
-            <div class="relative group">
-                <x-input label="Email" wire:model="email" id="email" type="email" autocomplete="username"
-                    icon="o-envelope" placeholder="Contoh: nama@email.com" :disabled="!$isEmailEditable" />
+            <x-input label="Email" wire:model="email" id="email" type="email" autocomplete="username"
+                icon="o-envelope" placeholder="Contoh: nama@email.com" :disabled="!$isEmailEditable">
                 
                 @if(!$isEmailEditable && !$otpSent)
-                <div class="absolute right-2 top-[34px]">
+                <x-slot:append>
                     <x-button label="Ubah Email" wire:click="requestEmailChange" 
-                        class="btn-xs btn-outline btn-primary rounded-lg" icon="o-pencil-square" />
-                </div>
+                        class="btn-primary rounded-l-none text-white btn-sm" icon="o-pencil-square" />
+                </x-slot:append>
                 @endif
-            </div>
+            </x-input>
 
             @if($otpSent)
             <div class="p-4 bg-info/5 border border-info/20 rounded-xl space-y-3">

@@ -70,7 +70,7 @@ new class extends Component
                 <x-input label="Kata Sandi Saat Ini" wire:model="current_password" id="update_password_current_password"
                     x-bind:type="show ? 'text' : 'password'" autocomplete="current-password" icon="o-key" required />
                 <button type="button" @click="show = !show"
-                    class="absolute inset-y-0 right-0 flex items-center pr-3 pt-6 transition-colors cursor-pointer text-base-content/40 hover:text-primary">
+                    class="absolute bottom-0 right-0 flex items-center h-12 pr-3 transition-colors cursor-pointer text-base-content/40 hover:text-primary">
                     <x-icon name="o-eye" x-show="!show" class="w-5 h-5" />
                     <x-icon name="o-eye-slash" x-show="show" class="w-5 h-5" style="display: none;" />
                 </button>
@@ -82,7 +82,7 @@ new class extends Component
                     x-bind:type="show ? 'text' : 'password'" autocomplete="new-password" icon="o-lock-closed"
                     required />
                 <button type="button" @click="show = !show"
-                    class="absolute inset-y-0 right-0 flex items-center pr-3 pt-6 transition-colors cursor-pointer text-base-content/40 hover:text-primary">
+                    class="absolute bottom-0 right-0 flex items-center h-12 pr-3 transition-colors cursor-pointer text-base-content/40 hover:text-primary">
                     <x-icon name="o-eye" x-show="!show" class="w-5 h-5" />
                     <x-icon name="o-eye-slash" x-show="show" class="w-5 h-5" style="display: none;" />
                 </button>
@@ -94,7 +94,7 @@ new class extends Component
                     id="update_password_password_confirmation" x-bind:type="show ? 'text' : 'password'"
                     autocomplete="new-password" icon="o-check-circle" required />
                 <button type="button" @click="show = !show"
-                    class="absolute inset-y-0 right-0 flex items-center pr-3 pt-6 transition-colors cursor-pointer text-base-content/40 hover:text-primary">
+                    class="absolute bottom-0 right-0 flex items-center h-12 pr-3 transition-colors cursor-pointer text-base-content/40 hover:text-primary">
                     <x-icon name="o-eye" x-show="!show" class="w-5 h-5" />
                     <x-icon name="o-eye-slash" x-show="show" class="w-5 h-5" style="display: none;" />
                 </button>
