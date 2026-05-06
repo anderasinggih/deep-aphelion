@@ -137,7 +137,7 @@ class PengaduanForm extends Component
             if ($antiSpamAktif) {
                 $rateLimitKey = 'pengaduan_' . $user->id;
                 if (RateLimiter::tooManyAttempts($rateLimitKey, $antiSpamLimit)) {
-                    $this->error("Anti-Spam Aktif: Batas maksimal {$antiSpamLimit} laporan per hari tercapai.", position: 'toast-top toast-center');
+                    $this->error("Anti-Spam Aktif: Batas maksimal {$antiSpamLimit} laporan per hari tercapai.", position: 'toast-top toast-end');
                     $this->dispatch('scroll-to-top');
                     return;
                 }

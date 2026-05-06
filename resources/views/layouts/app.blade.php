@@ -22,7 +22,7 @@
     @stack('styles')
     <style>
         .toast {
-            z-index: 9999 !important;
+            z-index: 2000 !important;
         }
     </style>
 </head>
@@ -224,7 +224,6 @@
         }
     </script>
     @stack('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/@lottiefiles/lottie-player@2.0.4/dist/lottie-player.js" defer></script>
 </body>
 
 </html>
