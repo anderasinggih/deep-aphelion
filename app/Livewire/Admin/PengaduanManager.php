@@ -268,7 +268,9 @@ class PengaduanManager extends Component
     {
         $query = Pengaduan::with(['user', 'kategori']);
 
-        // Sorting Logic
+        // Sorting Logic: Selalu taruh 'Ditolak' di paling bawah
+        $query->orderByRaw("CASE WHEN status = 'ditolak' THEN 1 ELSE 0 END ASC");
+
         if ($this->orderBy === 'latest') {
             $query->latest();
         } elseif ($this->orderBy === 'oldest') {

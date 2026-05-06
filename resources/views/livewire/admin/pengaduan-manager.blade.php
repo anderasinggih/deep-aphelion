@@ -29,47 +29,45 @@
     @endif
 
     {{-- Header Filter --}}
-    <div class="flex flex-col sm:flex-row items-center gap-2 p-2 mb-5 border-b border-base-200 bg-base-100/50">
-        {{-- Search --}}
-        <div class="flex-1 w-full min-w-0">
-            <x-input wire:model.live.debounce="search" icon="o-magnifying-glass" placeholder="Cari Judul / Kode Tracking..."
-                class="w-full input-sm sm:input-md" />
-        </div>
+    <div class="p-4 mb-6 border shadow-sm bg-base-100 sm:rounded-2xl rounded-xl border-base-200">
+        <div class="grid grid-cols-1 md:flex md:flex-row items-center gap-3">
+            {{-- Search --}}
+            <div class="flex-1 w-full min-w-0">
+                <x-input wire:model.live.debounce="search" icon="o-magnifying-glass" placeholder="Cari Judul / Kode Tracking..."
+                    class="w-full input-sm sm:input-md" />
+            </div>
 
-        {{-- Date Filters --}}
-        <div class="flex gap-2 w-full sm:w-auto">
-            <x-input type="date" wire:model.live="startDate" class="w-full sm:w-36 input-sm sm:input-md" />
-            <span class="self-center text-sm font-bold">-</span>
-            <x-input type="date" wire:model.live="endDate" class="w-full sm:w-36 input-sm sm:input-md" />
-        </div>
+            <div class="grid grid-cols-2 sm:flex sm:flex-row gap-2 w-full md:w-auto">
+                {{-- Date Filters --}}
+                <div class="flex items-center gap-1 col-span-2 sm:col-span-1">
+                    <x-input type="date" wire:model.live="startDate" class="w-full sm:w-32 input-sm" />
+                    <span class="text-xs opacity-50">-</span>
+                    <x-input type="date" wire:model.live="endDate" class="w-full sm:w-32 input-sm" />
+                </div>
 
-        {{-- Sort --}}
-        <div class="w-full sm:w-44 shrink-0">
-            <x-select wire:model.live="orderBy" :options="[
-                ['id' => 'latest', 'name' => '📅 Terbaru'],
-                ['id' => 'oldest', 'name' => '⏳ Terlama'],
-                ['id' => 'priority', 'name' => '🚩 Prioritas'],
-                ['id' => 'upvotes', 'name' => '🔥 Dukungan'],
-            ]" option-value="id" option-label="name"
-                class="w-full select-sm sm:select-md" />
-        </div>
+                {{-- Sort --}}
+                <x-select wire:model.live="orderBy" :options="[
+                    ['id' => 'latest', 'name' => '📅 Terbaru'],
+                    ['id' => 'oldest', 'name' => '⏳ Terlama'],
+                    ['id' => 'priority', 'name' => '🚩 Prioritas'],
+                    ['id' => 'upvotes', 'name' => '🔥 Dukungan'],
+                ]" option-value="id" option-label="name"
+                    class="select-sm w-full" />
 
-        {{-- Dropdown Kategori --}}
-        <div class="w-full sm:w-40 shrink-0">
-            <x-select wire:model.live="kategoriFilter" :options="$kategoris" option-value="id" option-label="nama"
-                placeholder="Semua Kategori" class="w-full select-sm sm:select-md" />
-        </div>
+                {{-- Dropdown Kategori --}}
+                <x-select wire:model.live="kategoriFilter" :options="$kategoris" option-value="id" option-label="nama"
+                    placeholder="Kategori" class="select-sm w-full" />
 
-        {{-- Dropdown Status --}}
-        <div class="w-full sm:w-40 shrink-0">
-            <x-select wire:model.live="statusFilter" :options="[
-        ['id' => '', 'name' => 'Semua Status'],
-        ['id' => 'menunggu', 'name' => 'Menunggu'],
-        ['id' => 'diproses', 'name' => 'Diproses'],
-        ['id' => 'selesai', 'name' => 'Selesai'],
-        ['id' => 'ditolak', 'name' => 'Ditolak'],
-    ]" option-value="id" option-label="name"
-                class="w-full select-sm sm:select-md" />
+                {{-- Dropdown Status --}}
+                <x-select wire:model.live="statusFilter" :options="[
+                    ['id' => '', 'name' => 'Status'],
+                    ['id' => 'menunggu', 'name' => 'Menunggu'],
+                    ['id' => 'diproses', 'name' => 'Diproses'],
+                    ['id' => 'selesai', 'name' => 'Selesai'],
+                    ['id' => 'ditolak', 'name' => 'Ditolak'],
+                ]" option-value="id" option-label="name"
+                    class="select-sm w-full" />
+            </div>
         </div>
     </div>
 
