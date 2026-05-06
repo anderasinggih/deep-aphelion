@@ -8,13 +8,11 @@
 </head>
 <body class="min-h-screen bg-base-200 flex items-center justify-center p-4">
     <div class="max-w-md w-full text-center space-y-8">
-        <div class="relative">
-            <h1 class="text-[120px] font-black text-primary/10 leading-none select-none">404</h1>
-            <div class="absolute inset-0 flex items-center justify-center">
-                <div class="p-5 bg-base-100 shadow-2xl rounded-[2.5rem] border border-base-300">
-                    <x-icon name="o-magnifying-glass" class="w-16 h-16 text-primary animate-pulse" />
-                </div>
+        <div class="flex flex-col items-center justify-center gap-2 mb-4">
+            <div class="p-6 bg-base-100 shadow-xl rounded-[2.5rem] border border-base-300 mb-2">
+                <x-icon name="o-magnifying-glass" class="w-16 h-16 text-primary" />
             </div>
+            <h1 class="text-6xl font-black text-primary/20 leading-none select-none">404</h1>
         </div>
 
         <div class="space-y-3">
