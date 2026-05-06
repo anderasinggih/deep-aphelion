@@ -12,6 +12,10 @@
             background: rgba(var(--p), 0.2);
             border-radius: 10px;
         }
+        /* Fix pagination spacing */
+        nav[role="navigation"] > div:last-child {
+            gap: 1rem;
+        }
     </style>
 
     <div class="flex flex-col gap-4 mb-8 sm:flex-row sm:items-center sm:justify-between">

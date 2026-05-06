@@ -167,5 +167,10 @@
         input[type=number] {
             -moz-appearance: textfield;
         }
+
+        /* Fix pagination spacing */
+        nav[role="navigation"] > div:last-child {
+            gap: 1rem;
+        }
     </style>
 </div>
