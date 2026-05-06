@@ -107,8 +107,10 @@
             </table>
         </div>
 
-        <div class="p-4 border-t border-base-200">
-            {{ $users->links() }}
+        <div class="p-4 border-t border-base-200 flex justify-center sm:justify-end">
+            <div class="w-full sm:w-auto">
+                {{ $users->links() }}
+            </div>
         </div>
     </div>
 

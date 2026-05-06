@@ -226,8 +226,10 @@
             </table>
         </div>
 
-        <div class="p-4 border-t border-base-200 bg-base-100/50">
-            {{ $pengaduans->links() }}
+        <div class="p-4 border-t border-base-200 bg-base-100/50 flex justify-center sm:justify-end">
+            <div class="w-full sm:w-auto">
+                {{ $pengaduans->links() }}
+            </div>
         </div>
     </div>
 
