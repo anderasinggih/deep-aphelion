@@ -43,6 +43,17 @@
             <x-input type="date" wire:model.live="endDate" class="w-full sm:w-36 input-sm sm:input-md" />
         </div>
 
+        {{-- Sort --}}
+        <div class="w-full sm:w-44 shrink-0">
+            <x-select wire:model.live="orderBy" :options="[
+                ['id' => 'latest', 'name' => '📅 Terbaru'],
+                ['id' => 'oldest', 'name' => '⏳ Terlama'],
+                ['id' => 'priority', 'name' => '🚩 Prioritas'],
+                ['id' => 'upvotes', 'name' => '🔥 Dukungan'],
+            ]" option-value="id" option-label="name"
+                class="w-full select-sm sm:select-md" />
+        </div>
+
         {{-- Dropdown Kategori --}}
         <div class="w-full sm:w-40 shrink-0">
             <x-select wire:model.live="kategoriFilter" :options="$kategoris" option-value="id" option-label="nama"

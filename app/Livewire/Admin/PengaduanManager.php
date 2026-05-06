@@ -27,6 +27,7 @@ class PengaduanManager extends Component
     public $kategoriFilter = '';
     public $startDate = '';
     public $endDate = '';
+    public $orderBy = 'latest';
 
     public $selectedPengaduanId = null;
 
@@ -265,8 +266,25 @@ class PengaduanManager extends Component
 
     public function render()
     {
-        $query = Pengaduan::with(['user', 'kategori'])
-            ->latest();
+        $query = Pengaduan::with(['user', 'kategori']);
+
+        // Sorting Logic
+        if ($this->orderBy === 'latest') {
+            $query->latest();
+        } elseif ($this->orderBy === 'oldest') {
+            $query->oldest();
+        } elseif ($this->orderBy === 'priority') {
+            $query->orderByRaw("CASE 
+                WHEN prioritas = 'tinggi' THEN 1 
+                WHEN prioritas = 'sedang' THEN 2 
+                WHEN prioritas = 'rendah' THEN 3 
+                ELSE 4 END ASC")
+                ->latest();
+        } elseif ($this->orderBy === 'upvotes') {
+            $query->withCount('dukungans')->orderBy('dukungans_count', 'desc');
+        } else {
+            $query->latest();
+        }
 
         if ($this->search) {
             $query->where(function($q) {
