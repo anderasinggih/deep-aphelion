@@ -113,11 +113,11 @@
                                                 </span>
                                                 <div class="flex flex-col gap-0.5 mt-1 sm:hidden">
                                                     <span class="text-[11px] font-medium text-base-content/80 flex items-center gap-1">
-                                                        <x-icon name="o-user" class="w-3 h-3" /> {{ $pengaduan->user->name }}
+                                                        <x-icon name="o-user" class="w-3 h-3" /> {{ $pengaduan->user?->name ?? 'User Terhapus' }}
                                                     </span>
                                                     <span class="text-[10px] text-base-content/50 italic flex items-center gap-1">
                                                         <x-icon name="o-clock" class="w-3 h-3" /> {{
-                        $pengaduan->created_at->format('d/m/y') }} • {{ $pengaduan->kategori->nama }}
+                                                        $pengaduan->created_at->format('d/m/y') }} • {{ $pengaduan->kategori?->nama ?? 'Kategori Terhapus' }}
                                                     </span>
                                                 </div>
                                                 <div
@@ -129,13 +129,13 @@
 
                                         {{-- Pelapor --}}
                                         <td class="hidden sm:table-cell py-2">
-                                            <div class="text-[12px] font-bold">{{ $pengaduan->user->name }}</div>
-                                            <div class="text-[11px] text-base-content/50">{{ $pengaduan->user->nik }}</div>
+                                            <div class="text-[12px] font-bold">{{ $pengaduan->user?->name ?? 'User Terhapus' }}</div>
+                                            <div class="text-[11px] text-base-content/50">{{ $pengaduan->user?->nik ?? '-' }}</div>
                                         </td>
 
                                         {{-- Kategori --}}
                                         <td class="hidden lg:table-cell text-[12px] text-base-content/70 py-2">
-                                            {{ $pengaduan->kategori->nama }}
+                                            {{ $pengaduan->kategori?->nama ?? 'N/A' }}
                                         </td>
 
                                         {{-- Tanggal --}}

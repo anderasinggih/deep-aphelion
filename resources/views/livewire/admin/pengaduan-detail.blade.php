@@ -86,7 +86,7 @@
                             <div class="flex flex-wrap items-center gap-2">
                                 <span
                                     class="px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg bg-base-200 text-primary font-bold text-[10px] sm:text-xs">
-                                    {{ $this->pengaduan->kategori->nama }}
+                                    {{ $this->pengaduan->kategori?->nama ?? 'Kategori Terhapus' }}
                                 </span>
 
                                 @if($this->pengaduan->status == 'menunggu')
@@ -124,10 +124,10 @@
                                             <span class="text-[8px] font-black">AN</span>
                                         </div>
                                     </div>
-                                    <span class="text-[11px] sm:text-xs font-bold text-base-content/70">Anonim ({{ $this->pengaduan->user->name }})</span>
+                                    <span class="text-[11px] sm:text-xs font-bold text-base-content/70">Anonim ({{ $this->pengaduan->user?->name ?? 'User Terhapus' }})</span>
                                 @else
                                     <x-user-avatar :user="$this->pengaduan->user" size="w-5 h-5 sm:w-6 sm:h-6" />
-                                    <span class="text-[11px] sm:text-xs font-bold text-base-content/70">{{ $this->pengaduan->user->name }}</span>
+                                    <span class="text-[11px] sm:text-xs font-bold text-base-content/70">{{ $this->pengaduan->user?->name ?? 'User Terhapus' }}</span>
                                 @endif
                             </div>
 
@@ -385,19 +385,19 @@
                     <div class="flex items-center gap-3">
                         <x-user-avatar :user="$this->pengaduan->user" size="w-10 h-10" />
                         <div class="overflow-hidden">
-                            <p class="font-bold text-base-content text-sm truncate">{{ $this->pengaduan->user->name }}</p>
-                            <p class="text-[11px] text-base-content/60 truncate">{{ $this->pengaduan->user->email }}</p>
+                            <p class="font-bold text-base-content text-sm truncate">{{ $this->pengaduan->user?->name ?? 'User Terhapus' }}</p>
+                            <p class="text-[11px] text-base-content/60 truncate">{{ $this->pengaduan->user?->email ?? '-' }}</p>
                         </div>
                     </div>
                     <div class="bg-base-200/50 rounded-xl p-3 border border-base-200 space-y-2">
                         <div class="flex justify-between items-center text-[11px]">
                             <span class="font-bold text-base-content/50">NIK</span>
-                            <span class="font-mono font-black text-base-content/80">{{ $this->pengaduan->user->nik ?? '-' }}</span>
+                            <span class="font-mono font-black text-base-content/80">{{ $this->pengaduan->user?->nik ?? '-' }}</span>
                         </div>
                         <div class="divider my-0 opacity-10"></div>
                         <div class="flex justify-between items-center text-[11px]">
                             <span class="font-bold text-base-content/50">No. WA</span>
-                            <span class="font-mono font-black text-base-content/80">{{ $this->pengaduan->user->no_wa ?? '-' }}</span>
+                            <span class="font-mono font-black text-base-content/80">{{ $this->pengaduan->user?->no_wa ?? '-' }}</span>
                         </div>
                     </div>
                 </div>
@@ -436,7 +436,7 @@
                                     <span class="font-extrabold text-[12px] {{ $timelineColor }} uppercase">{{ $history->status_baru }}</span>
                                     <span class="text-[10px] font-semibold text-base-content/40">{{ $history->created_at->diffForHumans() }}</span>
                                 </div>
-                                <div class="text-[11px] font-medium text-base-content/70">Oleh: {{ $history->user->name }} ({{ ucfirst($history->user->role) }})</div>
+                                <div class="text-[11px] font-medium text-base-content/70">Oleh: {{ $history->user?->name ?? 'User Terhapus' }} ({{ $history->user ? ucfirst($history->user->role) : 'N/A' }})</div>
                                 @if($history->keterangan_admin)
                                 <p class="text-[11px] leading-relaxed italic text-base-content/60 bg-base-200/50 p-2 rounded-lg mt-1 break-words overflow-hidden">"{{ $history->keterangan_admin }}"</p>
                                 @endif
