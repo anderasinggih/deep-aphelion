@@ -69,20 +69,24 @@
                         </td>
                         <td class="text-right whitespace-nowrap">
                             <div class="flex items-center justify-end gap-1 md:gap-2">
-                                @if($user->trashed())
-                                    <x-button icon="o-arrow-path"
-                                        class="rounded-lg btn-xs md:btn-sm btn-outline btn-success"
-                                        tooltip="Pulihkan Akun" wire:click="restore({{ $user->id }})"
-                                        wire:confirm="Pulihkan akun ini? Pengguna akan bisa masuk kembali." />
-                                @else
-                                    <x-button icon="o-pencil-square"
-                                        class="rounded-lg btn-xs md:btn-sm btn-ghost text-warning hover:bg-warning/10"
-                                        tooltip="Edit Pengguna" wire:click="edit({{ $user->id }})" />
+                                @if($user->id !== auth()->id())
+                                    @if($user->trashed())
+                                        <x-button icon="o-arrow-path"
+                                            class="rounded-lg btn-xs md:btn-sm btn-outline btn-success"
+                                            tooltip="Pulihkan Akun" wire:click="restore({{ $user->id }})"
+                                            wire:confirm="Pulihkan akun ini? Pengguna akan bisa masuk kembali." />
+                                    @else
+                                        <x-button icon="o-pencil-square"
+                                            class="rounded-lg btn-xs md:btn-sm btn-ghost text-warning hover:bg-warning/10"
+                                            tooltip="Edit Pengguna" wire:click="edit({{ $user->id }})" />
 
-                                    <x-button icon="o-trash"
-                                        class="rounded-lg btn-xs md:btn-sm btn-ghost text-error hover:bg-error/10"
-                                        tooltip="Hapus Pengguna" wire:click="delete({{ $user->id }})"
-                                        wire:confirm="Yakin ingin menghapus pengguna ini? Semua data terkait (termasuk laporan jika ada) tetap aman tersimpan namun akun tidak bisa masuk." />
+                                        <x-button icon="o-trash"
+                                            class="rounded-lg btn-xs md:btn-sm btn-ghost text-error hover:bg-error/10"
+                                            tooltip="Hapus Pengguna" wire:click="delete({{ $user->id }})"
+                                            wire:confirm="Yakin ingin menghapus pengguna ini? Semua data terkait (termasuk laporan jika ada) tetap aman tersimpan namun akun tidak bisa masuk." />
+                                    @endif
+                                @else
+                                    <span class="text-[10px] font-bold text-primary px-2 opacity-50 italic">Akun Anda</span>
                                 @endif
                             </div>
                         </td>
