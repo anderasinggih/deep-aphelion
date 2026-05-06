@@ -1,4 +1,18 @@
 <div class="px-2 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8 text-base-content">
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 4px;
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(var(--p), 0.2);
+            border-radius: 10px;
+        }
+    </style>
 
     <div class="flex flex-col gap-4 mb-8 sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -74,7 +88,7 @@
     <div class="pb-4 border shadow-sm bg-base-100 rounded-2xl border-base-200">
 
         {{-- Wrapper Tabel --}}
-        <div class="overflow-visible min-h-[350px]">
+        <div class="overflow-x-auto min-h-[350px] custom-scrollbar">
             <table class="table w-full table-xs sm:table-sm md:table-md">
                 <thead class="bg-base-200/50 text-base-content/60">
                     <tr>
