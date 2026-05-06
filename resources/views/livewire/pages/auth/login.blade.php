@@ -43,7 +43,7 @@ new #[Layout('layouts.auth')] class extends Component
         if ($user->role === 'admin') {
             $defaultUrl = '/admin/dashboard';
         } elseif ($user->role === 'petugas') {
-            $defaultUrl = '/petugas/disposisi';
+            $defaultUrl = '/admin/pengaduan';
         }
 
         $this->redirectIntended(default: $defaultUrl, navigate: true);
