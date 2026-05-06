@@ -49,20 +49,45 @@ class PengaduanForm extends Component
         $this->searchSimilar();
     }
 
+    public function updatedDeskripsi()
+    {
+        $this->searchSimilar();
+    }
+
     private function searchSimilar()
     {
-        if (strlen($this->judul) < 5) {
+        $searchText = trim(($this->judul ?? '') . ' ' . ($this->deskripsi ?? ''));
+        
+        if (strlen($searchText) < 5) {
+            $this->similarPengaduans = [];
+            return;
+        }
+
+        // Pecah kata-kata (Tokenizing), ambil kata yang panjangnya > 3 karakter
+        $words = collect(explode(' ', $searchText))
+            ->filter(fn($w) => strlen($w) > 3)
+            ->unique()
+            ->take(5); // Ambil 5 kata kunci utama saja biar performa aman
+
+        if ($words->isEmpty()) {
             $this->similarPengaduans = [];
             return;
         }
 
         $this->similarPengaduans = Pengaduan::query()
-            ->where('status', '!=', 'selesai')
-            ->where('status', '!=', 'ditolak')
-            ->where('judul', 'like', '%' . $this->judul . '%')
-            ->when($this->kategori_id, function($q) {
-                $q->where('kategori_id', $this->kategori_id);
+            ->with('kategori')
+            ->whereIn('status', ['menunggu', 'diproses']) // Cari yang masih aktif
+            ->where(function($q) use ($words) {
+                foreach ($words as $word) {
+                    $q->orWhere('judul', 'like', '%' . $word . '%')
+                      ->orWhere('deskripsi', 'like', '%' . $word . '%')
+                      ->orWhereHas('kategori', function($kq) use ($word) {
+                          $kq->where('nama', 'like', '%' . $word . '%');
+                      });
+                }
             })
+            ->where('id', '!=', $this->pengaduanId) // Jangan cari dirinya sendiri kalau lagi edit
+            ->latest()
             ->limit(3)
             ->get()
             ->toArray();
