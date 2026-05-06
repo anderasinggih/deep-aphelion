@@ -334,8 +334,8 @@
     {{-- Modal Sukses Lapor --}}
     <x-modal wire:model="showSuccessModal" persistent class="backdrop-blur-md">
         <div class="text-center p-2">
-            <div class="w-20 h-20 bg-success/10 text-success rounded-full flex items-center justify-center mx-auto mb-4">
-                <x-icon name="o-check-badge" class="w-12 h-12" />
+            <div class="flex items-center justify-center mx-auto mb-2 drop-shadow-xl">
+                <lottie-player src="https://lottie.host/82544a47-c037-4d7c-87d4-8d48d689c62f/N7ZcWlH0Vw.json" background="transparent" speed="1" style="width: 150px; height: 150px;" autoplay></lottie-player>
             </div>
             
             <h3 class="text-2xl font-black text-base-content mb-2">Laporan Terkirim!</h3>

@@ -67,9 +67,14 @@
         {{-- Pengumuman Section --}}
         @if($settings['pengumuman_aktif'] ?? false)
         <div class="mb-4">
-            <div class="alert alert-{{ $settings['pengumuman_tipe'] ?? 'info' }} shadow-xl border-none rounded-2xl p-6 sm:p-8 flex flex-col items-center text-center gap-4">
-                <div class="p-3 bg-white/20 rounded-2xl shrink-0">
-                    <x-icon name="o-megaphone" class="w-8 h-8 text-white" />
+            <div class="alert alert-{{ $settings['pengumuman_tipe'] ?? 'info' }} shadow-xl border-none rounded-2xl p-6 sm:p-8 flex flex-col items-center text-center gap-4 relative overflow-hidden">
+                {{-- Lottie Background Decor --}}
+                <div class="absolute -right-10 -top-10 opacity-10 grayscale brightness-200">
+                    <lottie-player src="https://lottie.host/7e05697d-6663-45c1-90a6-51e60742f8c0/YpWbN6e9xP.json" background="transparent" speed="1" style="width: 200px; height: 200px;" loop autoplay></lottie-player>
+                </div>
+
+                <div class="p-3 bg-white/20 rounded-2xl shrink-0 z-10 shadow-inner">
+                    <lottie-player src="https://lottie.host/7e05697d-6663-45c1-90a6-51e60742f8c0/YpWbN6e9xP.json" background="transparent" speed="1" style="width: 50px; height: 50px;" loop autoplay></lottie-player>
                 </div>
                 <div class="flex-1 text-white">
                     <h3 class="font-black text-xs sm:text-sm uppercase tracking-widest mb-2 opacity-80">Pengumuman Penting</h3>
