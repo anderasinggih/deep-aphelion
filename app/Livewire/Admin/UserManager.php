@@ -15,6 +15,7 @@ class UserManager extends Component
     public $userId, $name, $nik, $no_wa, $email, $role, $password, $password_confirmation;
     public $isEdit = false;
     public $search = '';
+    public $showDeleted = false;
     public $showModal = false;
 
     public function mount()
@@ -24,11 +25,19 @@ class UserManager extends Component
 
     public function render()
     {
-        $users = User::where('name', 'like', '%' . $this->search . '%')
-            ->orWhere('nik', 'like', '%' . $this->search . '%')
-            ->orWhere('email', 'like', '%' . $this->search . '%')
-            ->orderBy('id', 'desc')
-            ->paginate(10);
+        $query = User::query();
+
+        if ($this->showDeleted) {
+            $query->onlyTrashed();
+        }
+
+        $query->where(function($q) {
+            $q->where('name', 'like', '%' . $this->search . '%')
+              ->orWhere('nik', 'like', '%' . $this->search . '%')
+              ->orWhere('email', 'like', '%' . $this->search . '%');
+        });
+
+        $users = $query->orderBy('id', 'desc')->paginate(10);
 
         return view('livewire.admin.user-manager', [
             'users' => $users
@@ -127,6 +136,13 @@ class UserManager extends Component
         $user = User::findOrFail($id);
         $user->delete();
         session()->flash('success', 'Pengguna berhasil dihapus.');
+    }
+
+    public function restore($id)
+    {
+        $user = User::withTrashed()->findOrFail($id);
+        $user->restore();
+        session()->flash('success', 'Akun pengguna berhasil dipulihkan.');
     }
 
     public function closeModal()

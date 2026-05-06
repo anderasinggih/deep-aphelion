@@ -22,9 +22,11 @@
     </x-alert>
     @endif
 
-    <div class="mb-6">
+    <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
         <x-input placeholder="Cari nama, NIK, atau email..." wire:model.live.debounce.500ms="search"
             icon="o-magnifying-glass" class="w-full max-w-md bg-base-100" />
+        
+        <x-checkbox label="Lihat Akun Terhapus" wire:model.live="showDeleted" class="checkbox-sm" />
     </div>
 
     <div class="border shadow-sm bg-base-100 rounded-2xl border-base-200">
@@ -40,9 +42,14 @@
                 </thead>
                 <tbody class="divide-y divide-base-200">
                     @forelse($users as $user)
-                    <tr class="transition-colors hover:bg-base-200/30">
+                    <tr class="transition-colors hover:bg-base-200/30 {{ $user->trashed() ? 'bg-error/5 opacity-80' : '' }}">
                         <td class="text-xs md:text-sm text-base-content whitespace-nowrap">
-                            <div class="font-bold">{{ $user->name }}</div>
+                            <div class="font-bold flex items-center gap-2">
+                                {{ $user->name }}
+                                @if($user->trashed())
+                                    <span class="badge badge-error badge-xs font-bold">Terhapus</span>
+                                @endif
+                            </div>
                             <div class="text-xs opacity-70">NIK: {{ $user->nik }}</div>
                         </td>
                         <td class="text-xs md:text-sm text-base-content/80 whitespace-nowrap">
@@ -62,14 +69,21 @@
                         </td>
                         <td class="text-right whitespace-nowrap">
                             <div class="flex items-center justify-end gap-1 md:gap-2">
-                                <x-button icon="o-pencil-square"
-                                    class="rounded-lg btn-xs md:btn-sm btn-ghost text-warning hover:bg-warning/10"
-                                    tooltip="Edit Pengguna" wire:click="edit({{ $user->id }})" />
+                                @if($user->trashed())
+                                    <x-button icon="o-arrow-path"
+                                        class="rounded-lg btn-xs md:btn-sm btn-outline btn-success"
+                                        tooltip="Pulihkan Akun" wire:click="restore({{ $user->id }})"
+                                        wire:confirm="Pulihkan akun ini? Pengguna akan bisa masuk kembali." />
+                                @else
+                                    <x-button icon="o-pencil-square"
+                                        class="rounded-lg btn-xs md:btn-sm btn-ghost text-warning hover:bg-warning/10"
+                                        tooltip="Edit Pengguna" wire:click="edit({{ $user->id }})" />
 
-                                <x-button icon="o-trash"
-                                    class="rounded-lg btn-xs md:btn-sm btn-ghost text-error hover:bg-error/10"
-                                    tooltip="Hapus Pengguna" wire:click="delete({{ $user->id }})"
-                                    wire:confirm="Yakin ingin menghapus pengguna ini? Semua data terkait (termasuk laporan jika ada) bisa terpengaruh." />
+                                    <x-button icon="o-trash"
+                                        class="rounded-lg btn-xs md:btn-sm btn-ghost text-error hover:bg-error/10"
+                                        tooltip="Hapus Pengguna" wire:click="delete({{ $user->id }})"
+                                        wire:confirm="Yakin ingin menghapus pengguna ini? Semua data terkait (termasuk laporan jika ada) tetap aman tersimpan namun akun tidak bisa masuk." />
+                                @endif
                             </div>
                         </td>
                     </tr>
