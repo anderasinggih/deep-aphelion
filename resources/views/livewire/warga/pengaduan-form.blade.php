@@ -9,6 +9,21 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+        
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(var(--p), 0.2);
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(var(--p), 0.5);
+        }
     </style>
 
     <div class="flex flex-col gap-4 mb-6 sm:mb-8 sm:flex-row sm:items-center sm:justify-between px-4 sm:px-0 pt-6 sm:pt-0">
@@ -46,7 +61,7 @@
                         <p class="text-[11px] text-base-content/60 mb-3 leading-relaxed">
                             Mungkin masalah ini sudah dilaporkan oleh warga lain. Anda bisa mendukung (upvote) laporan yang sudah ada agar lebih cepat ditindaklanjuti.
                         </p>
-                        <div class="space-y-2">
+                        <div class="space-y-2 max-h-[250px] overflow-y-auto pr-2 custom-scrollbar">
                             @foreach($similarPengaduans as $similar)
                             <a href="{{ route('pengaduan.feed-detail', $similar['kode_tracking']) }}" target="_blank" 
                                 class="flex items-center justify-between p-2.5 bg-base-100 border border-base-200 rounded-lg hover:border-primary transition-colors group">

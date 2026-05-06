@@ -88,7 +88,7 @@ class PengaduanForm extends Component
             })
             ->where('id', '!=', $this->pengaduanId) // Jangan cari dirinya sendiri kalau lagi edit
             ->latest()
-            ->limit(3)
+            ->limit(10)
             ->get()
             ->toArray();
     }
