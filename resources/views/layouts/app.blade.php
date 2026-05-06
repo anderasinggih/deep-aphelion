@@ -19,7 +19,6 @@
     <meta name="apple-mobile-web-app-title" content="Kembaran Ngadu">
     <link rel="apple-touch-icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Lambang_Kabupaten_Banyumas.png/192px-Lambang_Kabupaten_Banyumas.png">
 
-    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
     @stack('styles')
 </head>
 
@@ -220,6 +219,7 @@
         }
     </script>
     @stack('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/@lottiefiles/lottie-player@2.0.4/dist/lottie-player.js" defer></script>
 </body>
 
 </html>

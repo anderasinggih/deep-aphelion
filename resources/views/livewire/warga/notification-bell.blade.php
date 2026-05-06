@@ -1,7 +1,12 @@
 <div class="dropdown dropdown-end" wire:poll.60s>
     <div tabindex="0" role="button" class="btn btn-ghost btn-circle btn-sm relative hover:bg-base-200/50 transition-colors flex items-center justify-center">
         @if($this->unreadCount > 0)
-            <lottie-player src="https://lottie.host/88029d59-673e-46f3-a447-06109968411c/n2lVwXkZ1G.json" background="transparent" speed="1.5" style="width: 32px; height: 32px;" loop autoplay></lottie-player>
+            <div class="relative flex items-center justify-center">
+                {{-- Fallback --}}
+                <x-icon name="o-bell" class="w-5 h-5 opacity-20 absolute" />
+                {{-- Animation --}}
+                <lottie-player src="https://lottie.host/88029d59-673e-46f3-a447-06109968411c/n2lVwXkZ1G.json" background="transparent" speed="1.5" style="width: 32px; height: 32px; position: relative; z-index: 10;" loop autoplay></lottie-player>
+            </div>
             <span class="absolute top-1 right-1 flex h-2 w-2">
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-error opacity-75"></span>
                 <span class="relative inline-flex rounded-full h-2 w-2 bg-error"></span>
