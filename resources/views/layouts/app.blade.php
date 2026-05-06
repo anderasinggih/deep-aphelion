@@ -20,6 +20,11 @@
     <link rel="apple-touch-icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Lambang_Kabupaten_Banyumas.png/192px-Lambang_Kabupaten_Banyumas.png">
 
     @stack('styles')
+    <style>
+        .toast {
+            z-index: 9999 !important;
+        }
+    </style>
 </head>
 
 <body class="min-h-screen font-sans antialiased bg-base-200">
