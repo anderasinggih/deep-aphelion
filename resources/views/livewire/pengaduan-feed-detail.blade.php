@@ -166,7 +166,8 @@
                                             class="carousel-item relative w-full snap-start flex justify-center items-center bg-black/5"
                                             style="aspect-ratio: 3/4;">
                                             <img src="{{ Storage::url($foto) }}"
-                                                class="absolute inset-0 w-full h-full object-cover transition duration-500">
+                                                class="absolute inset-0 w-full h-full object-cover transition duration-500 cursor-zoom-in"
+                                                wire:click="openPreview('{{ Storage::url($foto) }}')">
 
                                             {{-- Navigation Overlay --}}
                                             <div
@@ -270,7 +271,7 @@
                             <img src="{{ Storage::url($this->pengaduan->foto_penyelesaian) }}" 
                                  class="w-full rounded-lg object-cover shadow-sm border border-success/20 cursor-zoom-in hover:shadow-md transition"
                                  style="max-height: 200px;"
-                                 onclick="window.open(this.src, '_blank')">
+                                 wire:click="openPreview('{{ Storage::url($this->pengaduan->foto_penyelesaian) }}')">
                         </div>
                         @endif
 
@@ -439,7 +440,7 @@
 
                                     @if($history->foto_bukti)
                                         <div class="mt-2 cursor-zoom-in"
-                                            onclick="window.open('{{ Storage::url($history->foto_bukti) }}', '_blank')">
+                                            wire:click="openPreview('{{ Storage::url($history->foto_bukti) }}')">
                                             <img src="{{ Storage::url($history->foto_bukti) }}" alt="Foto Bukti"
                                                 class="w-full h-28 object-cover rounded-lg border border-base-200 shadow-sm hover:brightness-105 transition">
                                             <p class="text-[9px] text-base-content/40 mt-1 text-center">Ketuk untuk perbesar</p>
@@ -480,4 +481,14 @@
     <div class="relative w-[100vw] left-1/2 -ml-[50vw] mt-16">
         <x-footer />
     </div>
+    <!-- Modal Preview Foto -->
+    <x-modal wire:model="previewModal" class="backdrop-blur">
+        <div class="p-1">
+            <img src="{{ $previewImageUrl }}" class="w-full h-auto rounded-xl shadow-2xl">
+        </div>
+        <x-slot:actions>
+            <x-button label="Tutup" @click="$wire.previewModal = false" class="btn-ghost" />
+            <a href="{{ $previewImageUrl }}" download class="btn btn-primary text-white">Unduh Foto</a>
+        </x-slot:actions>
+    </x-modal>
 </div>

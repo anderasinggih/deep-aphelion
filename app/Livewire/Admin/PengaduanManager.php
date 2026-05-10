@@ -159,6 +159,8 @@ class PengaduanManager extends Component
         }
 
         $oldStatus = $pengaduan->status;
+        $isUpdateOnly = ($oldStatus === $this->update_status);
+        
         $pengaduan->status = $this->update_status;
         
         // Simpan pesan penutup jika status selesai/ditolak
@@ -187,9 +189,10 @@ class PengaduanManager extends Component
             'user_id' => auth()->id(),
             'status_sebelumnya' => $oldStatus,
             'status_baru' => $this->update_status,
-            'keterangan_admin' => $this->update_keterangan,
+            'keterangan_admin' => $isUpdateOnly ? '[Update Progress] ' . $this->update_keterangan : $this->update_keterangan,
             'foto_bukti' => $path,
         ]);
+
 
         $this->reset('updateModal', 'update_status', 'update_foto', 'update_keterangan', 'selectedPengaduanId');
         session()->flash('success', 'Status laporan berhasil diperbarui.');

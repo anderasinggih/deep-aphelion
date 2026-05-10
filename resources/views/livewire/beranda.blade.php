@@ -276,14 +276,14 @@
                         {{-- Action Buttons (Gak ikutan link detail biar upvote tetep jalan) --}}
                         <div class="flex items-center gap-2">
                             <div class="relative">
-                                @if(session()->has('success') && session('id') == $pengaduan->id)
-                                <span
-                                    class="absolute right-0 bottom-full mb-1 whitespace-nowrap text-[10px] font-bold animate-bounce text-success">Berhasil!</span>
-                                @endif
+                                @php
+                                    $hasLiked = $pengaduan->dukungans->contains('user_id', auth()->id());
+                                @endphp
+
                                 <button wire:click="upvote({{ $pengaduan->id }})"
-                                    class="flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all duration-300 group/vote
-                                    {{ session()->has('success') && session('id') == $pengaduan->id ? 'bg-primary text-white shadow-md scale-105' : 'bg-primary/10 text-primary ' }}">
-                                    <x-icon name="o-hand-thumb-up" class="w-6 h-6" />
+                                    class="flex items-center gap-1.5 transition-all duration-300 group/vote
+                                    {{ $hasLiked ? 'text-primary scale-110' : 'text-base-content/40 hover:text-primary ' }}">
+                                    <x-icon name="{{ $hasLiked ? 's-hand-thumb-up' : 'o-hand-thumb-up' }}" class="w-6 h-6" />
                                     <span class="text-sm font-black">{{ $pengaduan->dukungans_count }}</span>
                                 </button>
                             </div>

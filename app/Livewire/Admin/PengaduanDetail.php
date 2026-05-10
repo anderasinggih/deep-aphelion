@@ -150,6 +150,7 @@ class PengaduanDetail extends Component
         }
 
         $oldStatus = $this->pengaduan->getOriginal('status') ?? $this->pengaduan->status;
+        $isUpdateOnly = ($oldStatus === $this->update_status);
         $this->pengaduan->status = $this->update_status;
         
         if ($this->update_status === 'selesai' || $this->update_status === 'ditolak') {
@@ -180,26 +181,32 @@ class PengaduanDetail extends Component
             'user_id' => auth()->id(),
             'status_sebelumnya' => $oldStatus,
             'status_baru' => $this->update_status,
-            'keterangan_admin' => $this->update_keterangan,
+            'keterangan_admin' => $isUpdateOnly ? '[Update Progress] ' . $this->update_keterangan : $this->update_keterangan,
             'foto_bukti' => $path,
         ]);
 
         // Generate WA notification link
         $labelMap = ['menunggu' => 'Menunggu', 'diproses' => 'Sedang Diproses', 'selesai' => 'Selesai', 'ditolak' => 'Ditolak'];
         $statusLabel = $labelMap[$this->update_status] ?? $this->update_status;
+        
         $noWa = preg_replace('/[^0-9]/', '', $this->pengaduan->user->no_wa ?? '');
         if ($noWa && str_starts_with($noWa, '0')) {
             $noWa = '62' . substr($noWa, 1);
         }
 
         if ($noWa) {
-            $pesan = "Yth. {$this->pengaduan->user->name},\n\nLaporan Anda dengan kode *{$this->pengaduan->kode_tracking}* mengenai \"_{$this->pengaduan->judul}_\" telah diperbarui.\n\nStatus saat ini: *{$statusLabel}*";
-            if ($this->update_keterangan) {
-                $pesan .= "\nKeterangan: _{$this->update_keterangan}_";
+            if ($isUpdateOnly) {
+                $pesan = "Yth. {$this->pengaduan->user->name},\n\nAda update terbaru mengenai laporan Anda dengan kode *{$this->pengaduan->kode_tracking}* (\"_{$this->pengaduan->judul}_\").\n\n*Update Progres:* _{$this->update_keterangan}_";
+            } else {
+                $pesan = "Yth. {$this->pengaduan->user->name},\n\nLaporan Anda dengan kode *{$this->pengaduan->kode_tracking}* mengenai \"_{$this->pengaduan->judul}_\" telah diperbarui.\n\nStatus saat ini: *{$statusLabel}*";
+                if ($this->update_keterangan) {
+                    $pesan .= "\nKeterangan: _{$this->update_keterangan}_";
+                }
             }
             $pesan .= "\n\nKecamatan Kembaran — Kembaran Ngadu";
             $this->waLink = 'https://wa.me/' . $noWa . '?text=' . rawurlencode($pesan);
         }
+
 
         $this->reset('updateModal', 'update_status', 'update_foto', 'update_keterangan');
         session()->flash('success', 'Status laporan berhasil diperbarui.');
@@ -207,8 +214,17 @@ class PengaduanDetail extends Component
     }
 
     public $waLink = null;
+    public $previewModal = false;
+    public $previewImageUrl = '';
+
+    public function openPreview($url)
+    {
+        $this->previewImageUrl = $url;
+        $this->previewModal = true;
+    }
 
     public function clearWaLink()
+
     {
         $this->waLink = null;
     }

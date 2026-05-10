@@ -26,12 +26,15 @@
         <div class="flex flex-wrap items-center gap-3 mt-2 sm:mt-0">
             <x-button label="Tambah Pengaduan" icon="o-plus-circle" class="shadow-sm btn-primary rounded-xl"
                 link="/pengaduan/create" />
-            <a href="{{ route('print.laporan', array_filter(['status' => $statusFilter, 'kategori_id' => $kategoriFilter, 'start_date' => $startDate, 'end_date' => $endDate])) }}" target="_blank" class="btn btn-outline btn-success shadow-sm rounded-xl">
-                <x-icon name="o-printer" class="w-4 h-4" /> Cetak PDF
-            </a>
-            <x-button label="Export CSV" icon="o-document-arrow-down"
-                class="shadow-sm btn-outline btn-primary rounded-xl" wire:click="exportCsv" spinner="exportCsv" />
+            <div class="hidden sm:flex items-center gap-3">
+                <a href="{{ route('print.laporan', array_filter(['status' => $statusFilter, 'kategori_id' => $kategoriFilter, 'start_date' => $startDate, 'end_date' => $endDate])) }}" target="_blank" class="btn btn-outline btn-success shadow-sm rounded-xl">
+                    <x-icon name="o-printer" class="w-4 h-4" /> Cetak PDF
+                </a>
+                <x-button label="Export CSV" icon="o-document-arrow-down"
+                    class="shadow-sm btn-outline btn-primary rounded-xl" wire:click="exportCsv" spinner="exportCsv" />
+            </div>
         </div>
+
     </div>
 
     @if (session()->has('success'))
@@ -57,24 +60,15 @@
 
             <div class="grid grid-cols-2 sm:flex sm:flex-row gap-2 w-full md:w-auto">
                 {{-- Date Filters --}}
-                <div class="flex items-center gap-1 col-span-2 sm:col-span-1">
-                    <x-input type="date" wire:model.live="startDate" class="w-full sm:w-32 input-sm" />
-                    <span class="text-xs opacity-50">-</span>
-                    <x-input type="date" wire:model.live="endDate" class="w-full sm:w-32 input-sm" />
+                <div class="grid grid-cols-2 gap-2 col-span-2 sm:flex sm:items-center sm:gap-1 sm:col-span-1">
+                    <x-input type="date" wire:model.live="startDate" placeholder="Mulai" class="w-full sm:w-32 input-sm" />
+                    <x-input type="date" wire:model.live="endDate" placeholder="Sampai" class="w-full sm:w-32 input-sm" />
                 </div>
 
-                {{-- Sort --}}
-                <x-select wire:model.live="orderBy" :options="[
-                    ['id' => 'latest', 'name' => '📅 Terbaru'],
-                    ['id' => 'oldest', 'name' => '⏳ Terlama'],
-                    ['id' => 'priority', 'name' => '🚩 Prioritas'],
-                    ['id' => 'upvotes', 'name' => '🔥 Dukungan'],
-                ]" option-value="id" option-label="name"
-                    class="select-sm w-full" />
 
                 {{-- Dropdown Kategori --}}
                 <x-select wire:model.live="kategoriFilter" :options="$kategoris" option-value="id" option-label="nama"
-                    placeholder="Kategori" class="select-sm w-full" />
+                    placeholder="Kategori" class="select-sm w-full col-span-1" />
 
                 {{-- Dropdown Status --}}
                 <x-select wire:model.live="statusFilter" :options="[
@@ -84,8 +78,18 @@
                     ['id' => 'selesai', 'name' => 'Selesai'],
                     ['id' => 'ditolak', 'name' => 'Ditolak'],
                 ]" option-value="id" option-label="name"
-                    class="select-sm w-full" />
+                    class="select-sm w-full col-span-1" />
+
+                {{-- Sort --}}
+                <x-select wire:model.live="orderBy" :options="[
+                    ['id' => 'latest', 'name' => '📅 Terbaru'],
+                    ['id' => 'oldest', 'name' => '⏳ Terlama'],
+                    ['id' => 'priority', 'name' => '🚩 Prioritas'],
+                    ['id' => 'upvotes', 'name' => '🔥 Dukungan'],
+                ]" option-value="id" option-label="name"
+                    class="select-sm w-full col-span-2 sm:col-span-1" />
             </div>
+
         </div>
     </div>
 
@@ -191,6 +195,8 @@
 
                                                 @if($pengaduan->status === 'diproses')
                                                     <div class="my-1 opacity-50 divider mt-0"></div>
+                                                    <x-menu-item title="Tambah Progress" icon="o-pencil" class="font-bold text-info"
+                                                        wire:click="openUpdateStatusModal({{ $pengaduan->id }}, 'diproses')" />
                                                     <x-menu-item title="Selesaikan" icon="o-check-circle" class="font-bold text-success"
                                                         wire:click="openUpdateStatusModal({{ $pengaduan->id }}, 'selesai')" />
                                                     <x-menu-item title="Batalkan (Ke Menunggu)" icon="o-clock"
@@ -238,7 +244,7 @@
     </div>
 
     <!-- Modal Update Status -->
-    <x-modal wire:model="updateModal" title="Perbarui Status Laporan"
+    <x-modal wire:model="updateModal" :title="$update_status === 'diproses' && ($selectedPengaduanId ? \App\Models\Pengaduan::find($selectedPengaduanId)->status : '') === 'diproses' ? 'Tambah Update Progres' : 'Perbarui Status Laporan'"
         subtitle="Tambahkan catatan dan foto dokumentasi (opsional) untuk update ini.">
         <x-form wire:submit="saveStatusUpdate">
 

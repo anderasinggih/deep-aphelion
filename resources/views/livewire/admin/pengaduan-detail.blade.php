@@ -31,6 +31,8 @@
             @endif
 
             @if($this->pengaduan->status === 'diproses')
+                <x-menu-item title="Tambah Progress" icon="o-pencil" class="font-bold text-info"
+                    wire:click="openUpdateStatusModal('diproses')" />
                 <x-menu-item title="Selesaikan" icon="o-check-circle" class="font-bold text-success"
                     wire:click="openUpdateStatusModal('selesai')" />
                 <x-menu-item title="Batalkan (Ke Menunggu)" icon="o-clock"
@@ -200,7 +202,7 @@
                                 <div id="admin-slide{{ $index }}" class="carousel-item relative w-full snap-start flex justify-center items-center bg-black/5" style="aspect-ratio: 3/4;">
                                     <img src="{{ Storage::url($foto) }}" 
                                          class="absolute inset-0 w-full h-full object-cover transition duration-500 cursor-zoom-in"
-                                         onclick="window.open(this.src, '_blank')">
+                                         wire:click="openPreview('{{ Storage::url($foto) }}')">
                                     <div class="absolute bottom-4 right-4 bg-black/60 text-white text-[10px] px-2.5 py-1 rounded-full font-bold backdrop-blur-md border border-white/10">
                                         {{ $index + 1 }} / {{ count($this->pengaduan->foto_bukti) }}
                                     </div>
@@ -442,7 +444,8 @@
                                 @endif
                                 @if($history->foto_bukti)
                                 <div class="mt-2">
-                                    <img src="{{ Storage::url($history->foto_bukti) }}" class="h-20 w-auto rounded-lg border border-base-200" onclick="window.open(this.src, '_blank')">
+                                    <img src="{{ Storage::url($history->foto_bukti) }}" class="h-20 w-auto rounded-lg border border-base-200 cursor-zoom-in hover:brightness-90 transition-all" 
+                                        wire:click="openPreview('{{ Storage::url($history->foto_bukti) }}')">
                                 </div>
                                 @endif
                             </div>
@@ -461,7 +464,7 @@
     </div>
 
     <!-- Modal Update Status -->
-    <x-modal wire:model="updateModal" title="Perbarui Status Laporan" subtitle="Tambahkan catatan dan foto dokumentasi (opsional) untuk update ini.">
+    <x-modal wire:model="updateModal" :title="$update_status === 'diproses' && $this->pengaduan->status === 'diproses' ? 'Tambah Update Progres' : 'Perbarui Status Laporan'" subtitle="Tambahkan catatan dan foto dokumentasi (opsional) untuk update ini.">
         <x-form wire:submit="saveStatusUpdate">
             <x-file label="Foto Dokumentasi (Opsional)" wire:model="update_foto" accept="image/*" :required="$update_status === 'selesai'" :hint="$update_status === 'selesai' ? 'Wajib menyertakan foto hasil pekerjaan untuk status Selesai.' : 'Lampirkan foto pendukung bila ada.'" />
             @if ($update_foto)
@@ -506,6 +509,16 @@
         </div>
         <x-slot:actions>
             <x-button label="Batal" @click="$wire.linkModal = false" class="btn-ghost" />
+        </x-slot:actions>
+    </x-modal>
+    <!-- Modal Preview Foto -->
+    <x-modal wire:model="previewModal" class="backdrop-blur">
+        <div class="p-1">
+            <img src="{{ $previewImageUrl }}" class="w-full h-auto rounded-xl shadow-2xl">
+        </div>
+        <x-slot:actions>
+            <x-button label="Tutup" @click="$wire.previewModal = false" class="btn-ghost" />
+            <a href="{{ $previewImageUrl }}" download class="btn btn-primary text-white">Unduh Foto</a>
         </x-slot:actions>
     </x-modal>
 </div>

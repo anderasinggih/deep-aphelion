@@ -145,7 +145,15 @@ class UserManager extends Component
         session()->flash('success', 'Akun pengguna berhasil dipulihkan.');
     }
 
+    public function verifyEmail($id)
+    {
+        $user = User::findOrFail($id);
+        $user->markEmailAsVerified();
+        session()->flash('success', 'Email pengguna berhasil diverifikasi manual.');
+    }
+
     public function closeModal()
+
     {
         $this->showModal = false;
         $this->resetInputFields();

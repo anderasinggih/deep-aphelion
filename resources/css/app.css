@@ -20,8 +20,11 @@
 /* Force override DaisyUI internal variables for Night theme */
 :root, [data-theme="night"] {
     --p: #0085ff !important;
+    --pf: #006acc !important; /* Primary focus/hover */
+    --pc: #ffffff !important; /* Primary content */
     --s: #3b82f6 !important;
     --a: #60a5fa !important;
+    --n: #1e293b !important;
     
     /* Base colors override to ensure dark mode is really dark */
     --b1: #0f172a !important; /* Night background */
@@ -30,13 +33,36 @@
     --bc: #f8fafc !important; /* Base content (text) */
 }
 
-/* Fix for MaryUI components that might use hardcoded primary colors or old variables */
+/* Force primary colors for buttons and hovers */
+.btn-primary:hover {
+    background-color: #006acc !important;
+    border-color: #006acc !important;
+}
+
+/* Fix for all primary hover utilities in Tailwind */
+[class*="hover:text-primary"]:hover,
+[class*="hover\:text-primary"]:hover {
+    color: #0085ff !important;
+}
+
+[class*="hover:bg-primary"]:hover,
+[class*="hover\:bg-primary"]:hover {
+    background-color: #006acc !important;
+}
+
+/* Specific fix for the card titles and links */
+a:hover {
+    color: #0085ff !important;
+}
+
 .text-primary {
     color: #0085ff !important;
 }
+
 .bg-primary {
     background-color: #0085ff !important;
 }
+
 .btn-primary {
     background-color: #0085ff !important;
     border-color: #0085ff !important;

@@ -33,7 +33,17 @@ class PengaduanFeedDetail extends Component
         }
     }
 
+    public $previewModal = false;
+    public $previewImageUrl = '';
+
+    public function openPreview($url)
+    {
+        $this->previewImageUrl = $url;
+        $this->previewModal = true;
+    }
+
     public function submitFeedback()
+
     {
         if (auth()->id() !== $this->pengaduan->user_id) return;
 
