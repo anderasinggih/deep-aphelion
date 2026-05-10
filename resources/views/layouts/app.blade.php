@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ isset($title) ? $title.' - Kembaran Ngadu' : 'Kembaran Ngadu' }}</title>
 
@@ -11,7 +11,9 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     
+    
     {{-- PWA Meta Tags --}}
+
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#4f46e5">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -21,10 +23,14 @@
 
     @stack('styles')
     <style>
+        body {
+            touch-action: manipulation;
+        }
         .toast {
             z-index: 2000 !important;
         }
     </style>
+
 </head>
 
 <body class="min-h-screen font-sans antialiased bg-base-200">
@@ -37,11 +43,11 @@
             class="navbar bg-base-100/40 backdrop-blur-sm border border-white/30 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-[2rem] px-4 sm:px-6 min-h-[3.2rem] py-0">
 
             <div class="navbar-start ">
-                <div class="dropdown ">
-                    <div tabindex="0" role="button" class="btn btn-ghost lg:hidden rounded-full ">
+                <details class="dropdown">
+                    <summary class="btn btn-ghost lg:hidden rounded-full list-none [&::-webkit-details-marker]:hidden">
                         <x-icon name="o-bars-3" class="w-5 h-5" />
-                    </div>
-                    <ul tabindex="0"
+                    </summary>
+                    <ul onclick="this.closest('details').removeAttribute('open')"
                         class="menu menu-sm dropdown-content mt-5 z-[50] p-2 shadow-2xl bg-base-100 rounded-2xl w-64 border border-base-300">
                         <li><a href="/" class="{{ request()->is('/') ? 'active' : '' }}"><x-icon name="o-home"
                                      class="w-4 h-4" /> Beranda</a></li>
@@ -88,16 +94,17 @@
 
                         @endauth
                     </ul>
-                </div>
+                </details>
                 <a href="/"
                     class="text-xl font-bold text-brand flex items-center gap-2 lg:ml-2 whitespace-nowrap hover:scale-105 transition-transform">
                     @php
-                        $appLogo = \App\Models\Setting::where('key', 'app_logo')->first()?->value;
+                        $appLogo = \App\Models\Setting::get('app_logo');
                     @endphp
                     <img src="{{ $appLogo ? asset('storage/' . $appLogo) : asset('storage/assets/logobanyumas.png') }}" alt="Logo App"
                         class="w-7 h-7 object-contain drop-shadow-sm" />
                     <span class="hidden lg:block text-base-content/90">Kembaran Ngadu</span>
                 </a>
+
             </div>
 
             <div class="navbar-center hidden lg:flex">
@@ -160,13 +167,13 @@
                 $nameParts = explode(' ', auth()->user()->name);
                 $initials = collect($nameParts)->map(fn($part) => substr($part, 0, 1))->take(2)->join('');
                 @endphp
-                <div class="dropdown dropdown-end">
-                    <div tabindex="0" role="button" class="avatar placeholder flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity ml-2">
+                <details class="dropdown dropdown-end">
+                    <summary class="avatar placeholder flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity ml-2 list-none [&::-webkit-details-marker]:hidden">
                         <div class="bg-primary text-primary-content rounded-full w-8 h-8 shadow-md flex items-center justify-center">
                             <span class="text-[10px] font-black tracking-tighter">{{ $initials }}</span>
                         </div>
-                    </div>
-                    <ul tabindex="0"
+                    </summary>
+                    <ul onclick="this.closest('details').removeAttribute('open')"
                         class="menu menu-sm dropdown-content mt-3 z-[100] p-2 shadow-2xl bg-base-100 rounded-2xl w-56 border border-base-200">
                         <li class="px-4 py-3 border-b border-base-200/50 mb-1 pointer-events-none">
                             <div class="flex flex-col w-full min-w-0 overflow-hidden items-start gap-0.5 !bg-transparent !p-0">
@@ -189,8 +196,9 @@
                                 class="py-2.5 text-error hover:bg-error/10 hover:text-error rounded-xl font-bold"><x-icon
                                     name="o-arrow-right-start-on-rectangle" class="w-4 h-4" /> Log Out</a></li>
                     </ul>
-                </div>
+                </details>
                 @else
+
                 <div class="flex items-center gap-2">
                     <a href="/login"
                         class="btn btn-ghost btn-sm rounded-full font-bold px-4 hover:bg-base-200/50 border border-transparent hover:border-white/20">Masuk</a>
@@ -222,7 +230,60 @@
                 });
             }); 
         }
+        // Global Share Function
+        function nativeShare(title, text, url) {
+            if (navigator.share) {
+                navigator.share({
+                    title: title,
+                    text: text,
+                    url: url || window.location.href
+                }).catch(err => {
+                    if (err.name !== 'AbortError') {
+                        console.error('Error sharing:', err);
+                    }
+                });
+            } else {
+                // Fallback to WhatsApp
+                const shareText = encodeURIComponent(text + ' ' + (url || window.location.href));
+                window.open(`https://wa.me/?text=${shareText}`, '_blank');
+            }
+        }
+
+        // Scroll Restoration for Livewire Navigate
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+
+        document.addEventListener('livewire:navigating', () => {
+            sessionStorage.setItem('scroll_' + window.location.href, window.scrollY);
+            sessionStorage.setItem('spa_navigating', 'true');
+        });
+
+        document.addEventListener('livewire:navigated', () => {
+            const isSpaNav = sessionStorage.getItem('spa_navigating');
+            const savedScroll = sessionStorage.getItem('scroll_' + window.location.href);
+
+            if (isSpaNav && savedScroll) {
+                // Restore scroll if we have a saved position and we are in SPA mode
+                setTimeout(() => {
+                    window.scrollTo({
+                        top: parseInt(savedScroll),
+                        behavior: 'instant'
+                    });
+                }, 20);
+            } else if (!isSpaNav) {
+                // Always scroll to top on full page refresh
+                window.scrollTo(0, 0);
+            }
+            
+            sessionStorage.removeItem('spa_navigating');
+        });
     </script>
+
+
+
+
+
     @stack('scripts')
 </body>
 

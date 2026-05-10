@@ -84,7 +84,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
             
             {{-- Lacak Laporan Card --}}
-            <div class="bg-base-100 rounded-2xl shadow-xl border border-base-200 p-5 lg:p-6 flex flex-col justify-center">
+            <div wire:ignore.self class="bg-base-100 rounded-2xl shadow-xl border border-base-200 p-5 lg:p-6 flex flex-col justify-center">
                 <h2 class="text-xl font-black text-primary mb-2 flex items-center gap-2">
                     <x-icon name="o-magnifying-glass" class="w-6 h-6" /> Lacak Laporan
                 </h2>
@@ -105,7 +105,7 @@
             </div>
 
             {{-- SOP Card --}}
-            <div class="bg-base-100 rounded-2xl shadow-lg border border-base-200 p-5 lg:p-6 lg:col-span-2 flex flex-col justify-center">
+            <div wire:ignore.self class="bg-base-100 rounded-2xl shadow-lg border border-base-200 p-5 lg:p-6 lg:col-span-2 flex flex-col justify-center">
                 <h2 class="text-xl font-black text-base-content mb-4 flex items-center gap-2">
                     <x-icon name="o-information-circle" class="w-6 h-6 text-info" /> Standar Pelayanan Publik (SOP)
                 </h2>
@@ -165,7 +165,7 @@
         @endphp
 
         {{-- Search & Filter - Seamless Design --}}
-        <form wire:submit.prevent class="mb-8 px-1 sm:px-0">
+        <form wire:submit.prevent class="mb-8 px-1 sm:px-0" wire:ignore.self>
             <div class="flex flex-row items-center w-full gap-1.5 lg:gap-4">
                 <div class="flex-1">
                     <x-input placeholder="Cari..." wire:model.live.debounce.500ms="search" icon="o-magnifying-glass"
@@ -185,7 +185,7 @@
         {{-- Grid Cards --}}
         <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-3">
             @forelse($pengaduans as $pengaduan)
-            <div
+            <div wire:key="pengaduan-{{ $pengaduan->id }}" wire:ignore.self
                 class="flex flex-col overflow-hidden transition-all duration-300 transform border shadow-sm bg-base-100 rounded-2xl border-base-200 hover:shadow-lg hover:border-primary/50 hover:-translate-y-1 group">
 
                 {{-- Klik Gambar ke Detail --}}
@@ -289,18 +289,10 @@
                             </div>
 
                             <button 
-                                onclick="if (navigator.share) { 
-                                    navigator.share({ 
-                                        title: '{{ addslashes($pengaduan->judul) }}', 
-                                        text: 'Bantu dukung laporan ini di Kembaran Ngadu: {{ addslashes($pengaduan->judul) }}', 
-                                        url: '{{ route('pengaduan.feed-detail', $pengaduan->kode_tracking) }}' 
-                                    }).catch(console.error); 
-                                } else { 
-                                    window.open('https://wa.me/?text=' + encodeURIComponent('Bantu dukung laporan ini di Kembaran Ngadu: *{{ addslashes($pengaduan->judul) }}*. Cek di sini: {{ route('pengaduan.feed-detail', $pengaduan->kode_tracking) }}'), '_blank');
-                                }"
-                                class="flex items-center justify-center w-9 h-9 transition-all duration-200 rounded-xl text-base-content/70 hover:bg-primary hover:text-white">
-                                <x-icon name="o-share" class="w-5 h-5" />
-                            </button>
+                            onclick="nativeShare('{{ addslashes($pengaduan->judul) }}', 'Bantu dukung laporan ini di Kembaran Ngadu: {{ addslashes($pengaduan->judul) }}', '{{ route('pengaduan.feed-detail', $pengaduan->kode_tracking) }}')"
+                            class="p-2 transition-colors rounded-full hover:bg-base-200 text-base-content/40 hover:text-primary">
+                            <x-icon name="o-share" class="w-5 h-5" />
+                        </button>
                         </div>
                     </div>
                 </div>

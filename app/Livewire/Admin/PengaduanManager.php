@@ -28,7 +28,6 @@ class PengaduanManager extends Component
     public $startDate = '';
     public $endDate = '';
     public $orderBy = 'latest';
-    public $showDeleted = false;
 
     public $selectedPengaduanId = null;
 
@@ -198,13 +197,7 @@ class PengaduanManager extends Component
 
     public function exportCsv()
     {
-        $query = Pengaduan::with(['user', 'kategori']);
-
-        if ($this->showDeleted) {
-            $query->onlyTrashed();
-        }
-
-        $query->latest();
+        $query = Pengaduan::with(['user', 'kategori'])->latest();
 
         if ($this->search) {
             $query->where(function($q) {
@@ -271,27 +264,9 @@ class PengaduanManager extends Component
         return response()->stream($callback, 200, $headers);
     }
 
-    public function delete($id)
-    {
-        $pengaduan = Pengaduan::findOrFail($id);
-        $pengaduan->delete();
-        session()->flash('success', 'Laporan berhasil dihapus.');
-    }
-
-    public function restore($id)
-    {
-        $pengaduan = Pengaduan::withTrashed()->findOrFail($id);
-        $pengaduan->restore();
-        session()->flash('success', 'Laporan berhasil dipulihkan.');
-    }
-
     public function render()
     {
         $query = Pengaduan::with(['user', 'kategori']);
-
-        if ($this->showDeleted) {
-            $query->onlyTrashed();
-        }
 
         // Sorting Logic: Selalu taruh 'Ditolak' di paling bawah
         $query->orderByRaw("CASE WHEN status = 'ditolak' THEN 1 ELSE 0 END ASC");

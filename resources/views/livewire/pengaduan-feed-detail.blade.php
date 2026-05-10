@@ -68,15 +68,8 @@
                                     class="{{ $this->pengaduan->prioritas == 'tinggi' ? 'badge-error' : ($this->pengaduan->prioritas == 'sedang' ? 'badge-info' : 'badge-success') }} font-black sm:shadow-sm text-[10px] sm:text-xs px-2 py-1 h-auto min-h-0" />
                             </div>
 
-                            <button onclick="if (navigator.share) { 
-                                    navigator.share({ 
-                                        title: '{{ addslashes($this->pengaduan->judul) }}', 
-                                        text: 'Cek laporan ini di Kembaran Ngadu: {{ addslashes($this->pengaduan->judul) }}', 
-                                        url: window.location.href 
-                                    }).catch(console.error); 
-                                } else { 
-                                    window.open('https://wa.me/?text=' + encodeURIComponent('Cek laporan ini di Kembaran Ngadu: *{{ addslashes($this->pengaduan->judul) }}*. Cek di sini: ' + window.location.href), '_blank');
-                                }" class="btn btn-ghost btn-circle btn-sm text-base-content/60 hover:text-primary">
+                            <button onclick="nativeShare('{{ addslashes($this->pengaduan->judul) }}', 'Cek laporan ini di Kembaran Ngadu: {{ addslashes($this->pengaduan->judul) }}', window.location.href)" 
+                                    class="btn btn-ghost btn-circle btn-sm text-base-content/60 hover:text-primary">
                                 <x-icon name="o-share" class="w-5 h-5" />
                             </button>
                         </div>

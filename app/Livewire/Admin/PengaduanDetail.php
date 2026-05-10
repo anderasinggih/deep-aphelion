@@ -22,7 +22,7 @@ class PengaduanDetail extends Component
     {
         abort_unless(in_array(auth()->user()->role, ['admin', 'petugas']), 403);
 
-        $this->pengaduan = Pengaduan::withTrashed()->with(['user', 'kategori', 'histories.user', 'linkedReport'])
+        $this->pengaduan = Pengaduan::with(['user', 'kategori', 'histories.user', 'linkedReport'])
             ->where('kode_tracking', $kode_tracking)
             ->firstOrFail();
 
@@ -211,20 +211,6 @@ class PengaduanDetail extends Component
     public function clearWaLink()
     {
         $this->waLink = null;
-    }
-
-    public function delete()
-    {
-        $this->pengaduan->delete();
-        session()->flash('success', 'Laporan berhasil dihapus.');
-        return $this->redirect(route('admin.pengaduan'), navigate: true);
-    }
-
-    public function restore()
-    {
-        $this->pengaduan->restore();
-        session()->flash('success', 'Laporan berhasil dipulihkan.');
-        $this->pengaduan->refresh();
     }
 
     public function render()

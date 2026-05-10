@@ -15,61 +15,39 @@
                     class="btn-primary btn-outline shadow-sm rounded-xl shrink-0 btn-sm sm:btn-md" label="Update Status" />
             </x-slot:trigger>
 
-            @if(!$this->pengaduan->trashed())
-                <div class="my-1 opacity-50 divider mt-0"><span class="text-[10px] font-bold">Update Progres</span></div>
+            <div class="my-1 opacity-50 divider mt-0"><span class="text-[10px] font-bold">Update Progres</span></div>
 
-                @if($this->pengaduan->status === 'menunggu')
-                    <x-menu-item title="Mulai Proses" icon="o-arrow-path" class="font-bold text-info"
-                        wire:click="openUpdateStatusModal('diproses')" />
-                    <x-menu-item title="Tolak Laporan" icon="o-x-circle" class="text-error"
-                        wire:click="openUpdateStatusModal('ditolak')" />
-                @endif
-
-                @if($this->pengaduan->status !== 'selesai' && $this->pengaduan->status !== 'ditolak')
-                    <div class="my-1 opacity-50 divider mt-0"></div>
-                    <x-menu-item title="Rujuk Laporan (Duplikat)" icon="o-document-duplicate" class="font-bold text-primary"
-                        wire:click="$set('linkModal', true)" />
-                @endif
-
-                @if($this->pengaduan->status === 'diproses')
-                    <x-menu-item title="Selesaikan" icon="o-check-circle" class="font-bold text-success"
-                        wire:click="openUpdateStatusModal('selesai')" />
-                    <x-menu-item title="Batalkan (Ke Menunggu)" icon="o-clock"
-                        wire:click="openUpdateStatusModal('menunggu')" />
-                @endif
-
-                @if($this->pengaduan->status === 'selesai')
-                    <x-menu-item title="Buka Kembali (Ke Proses)" icon="o-arrow-path"
-                        wire:click="openUpdateStatusModal('diproses')" />
-                @endif
-
-                @if($this->pengaduan->status === 'ditolak')
-                    <x-menu-item title="Pulihkan (Ke Menunggu)" icon="o-clock"
-                        wire:click="openUpdateStatusModal('menunggu')" />
-                @endif
+            @if($this->pengaduan->status === 'menunggu')
+                <x-menu-item title="Mulai Proses" icon="o-arrow-path" class="font-bold text-info"
+                    wire:click="openUpdateStatusModal('diproses')" />
+                <x-menu-item title="Tolak Laporan" icon="o-x-circle" class="text-error"
+                    wire:click="openUpdateStatusModal('ditolak')" />
             @endif
 
-            <div class="my-1 opacity-50 divider"></div>
-            @if($this->pengaduan->trashed())
-                <x-menu-item title="Pulihkan Data" icon="o-arrow-path" class="text-success font-bold"
-                    wire:click="restore" wire:confirm="Pulihkan laporan ini?" />
-            @else
-                <x-menu-item title="Hapus Laporan" icon="o-trash" class="text-error"
-                    wire:click="delete" wire:confirm="Yakin ingin menghapus laporan ini?" />
+            @if($this->pengaduan->status !== 'selesai' && $this->pengaduan->status !== 'ditolak')
+                <div class="my-1 opacity-50 divider mt-0"></div>
+                <x-menu-item title="Rujuk Laporan (Duplikat)" icon="o-document-duplicate" class="font-bold text-primary"
+                    wire:click="$set('linkModal', true)" />
+            @endif
+
+            @if($this->pengaduan->status === 'diproses')
+                <x-menu-item title="Selesaikan" icon="o-check-circle" class="font-bold text-success"
+                    wire:click="openUpdateStatusModal('selesai')" />
+                <x-menu-item title="Batalkan (Ke Menunggu)" icon="o-clock"
+                    wire:click="openUpdateStatusModal('menunggu')" />
+            @endif
+
+            @if($this->pengaduan->status === 'selesai')
+                <x-menu-item title="Buka Kembali (Ke Proses)" icon="o-arrow-path"
+                    wire:click="openUpdateStatusModal('diproses')" />
+            @endif
+
+            @if($this->pengaduan->status === 'ditolak')
+                <x-menu-item title="Pulihkan (Ke Menunggu)" icon="o-clock"
+                    wire:click="openUpdateStatusModal('menunggu')" />
             @endif
         </x-dropdown>
     </div>
-
-    @if($this->pengaduan->trashed())
-    <div class="mx-3 sm:mx-0 mb-4">
-        <x-alert icon="o-trash" title="Laporan ini telah dihapus" class="alert-error shadow-sm rounded-2xl text-white">
-            Laporan ini saat ini berada di tempat sampah dan tidak muncul di daftar publik maupun admin utama.
-            <x-slot:actions>
-                <x-button label="Pulihkan" wire:click="restore" class="btn-sm btn-outline border-white text-white" />
-            </x-slot:actions>
-        </x-alert>
-    </div>
-    @endif
 
     {{-- WA Notifikasi Banner --}}
     @if($waLink)

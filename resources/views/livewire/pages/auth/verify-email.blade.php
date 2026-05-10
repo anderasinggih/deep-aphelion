@@ -9,6 +9,25 @@ use Livewire\Volt\Component;
 new #[Layout('layouts.auth')] class extends Component
 {
     public int $countdown = 0;
+    
+    /**
+     * Check if the user is already verified and redirect them if so.
+     */
+    public function mount(): void
+    {
+        $this->checkVerification();
+    }
+
+    /**
+     * Check if the user is already verified and redirect them if so.
+     */
+    public function checkVerification(): void
+    {
+        if (Auth::user()->hasVerifiedEmail()) {
+            $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+        }
+    }
+
 
     /**
      * Send an email verification notification to the user.
@@ -48,7 +67,7 @@ new #[Layout('layouts.auth')] class extends Component
     }
 }; ?>
 
-<div class="flex flex-col md:flex-row w-full max-w-4xl mx-4 my-8 bg-base-100 rounded-[2rem] overflow-hidden shadow-xl border border-base-200">
+<div wire:poll.5s="checkVerification" class="flex flex-col md:flex-row w-full max-w-4xl mx-4 my-8 bg-base-100 rounded-[2rem] overflow-hidden shadow-xl border border-base-200">
     
     {{-- Sisi Kiri (Gambar) --}}
     <div class="hidden relative md:block md:w-5/12">
