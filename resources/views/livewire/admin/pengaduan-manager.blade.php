@@ -179,37 +179,39 @@
                                                         onclick="document.querySelectorAll('details').forEach(d => { if(d !== this.closest('details')) d.removeAttribute('open') })" />
                                                 </x-slot:trigger>
 
-                                                <div class="my-1 opacity-50 divider mt-0"><span class="text-[10px] font-bold">Update Progres</span></div>
-                                                
-                                                @if($pengaduan->status === 'menunggu')
-                                                    <x-menu-item title="Mulai Proses" icon="o-arrow-path" class="font-bold text-info"
-                                                        wire:click="openUpdateStatusModal({{ $pengaduan->id }}, 'diproses')" />
-                                                    <x-menu-item title="Tolak Laporan" icon="o-x-circle" class="text-error"
-                                                        wire:click="openUpdateStatusModal({{ $pengaduan->id }}, 'ditolak')" />
-                                                @endif
+                                                @if(!$pengaduan->trashed())
+                                                    <div class="my-1 opacity-50 divider mt-0"><span class="text-[10px] font-bold">Update Progres</span></div>
+                                                    
+                                                    @if($pengaduan->status === 'menunggu')
+                                                        <x-menu-item title="Mulai Proses" icon="o-arrow-path" class="font-bold text-info"
+                                                            wire:click="openUpdateStatusModal({{ $pengaduan->id }}, 'diproses')" />
+                                                        <x-menu-item title="Tolak Laporan" icon="o-x-circle" class="text-error"
+                                                            wire:click="openUpdateStatusModal({{ $pengaduan->id }}, 'ditolak')" />
+                                                    @endif
 
-                                                @if($pengaduan->status !== 'selesai' && $pengaduan->status !== 'ditolak')
-                                                    <div class="my-1 opacity-50 divider mt-0"></div>
-                                                    <x-menu-item title="Rujuk Laporan (Duplikat)" icon="o-document-duplicate" class="font-bold text-primary"
-                                                        wire:click="openLinkModal({{ $pengaduan->id }})" />
-                                                @endif
+                                                    @if($pengaduan->status !== 'selesai' && $pengaduan->status !== 'ditolak')
+                                                        <div class="my-1 opacity-50 divider mt-0"></div>
+                                                        <x-menu-item title="Rujuk Laporan (Duplikat)" icon="o-document-duplicate" class="font-bold text-primary"
+                                                            wire:click="openLinkModal({{ $pengaduan->id }})" />
+                                                    @endif
 
-                                                @if($pengaduan->status === 'diproses')
-                                                    <div class="my-1 opacity-50 divider mt-0"></div>
-                                                    <x-menu-item title="Selesaikan" icon="o-check-circle" class="font-bold text-success"
-                                                        wire:click="openUpdateStatusModal({{ $pengaduan->id }}, 'selesai')" />
-                                                    <x-menu-item title="Batalkan (Ke Menunggu)" icon="o-clock"
-                                                        wire:click="openUpdateStatusModal({{ $pengaduan->id }}, 'menunggu')" />
-                                                @endif
+                                                    @if($pengaduan->status === 'diproses')
+                                                        <div class="my-1 opacity-50 divider mt-0"></div>
+                                                        <x-menu-item title="Selesaikan" icon="o-check-circle" class="font-bold text-success"
+                                                            wire:click="openUpdateStatusModal({{ $pengaduan->id }}, 'selesai')" />
+                                                        <x-menu-item title="Batalkan (Ke Menunggu)" icon="o-clock"
+                                                            wire:click="openUpdateStatusModal({{ $pengaduan->id }}, 'menunggu')" />
+                                                    @endif
 
-                                                @if($pengaduan->status === 'selesai')
-                                                    <x-menu-item title="Buka Kembali (Ke Proses)" icon="o-arrow-path"
-                                                        wire:click="openUpdateStatusModal({{ $pengaduan->id }}, 'diproses')" />
-                                                @endif
+                                                    @if($pengaduan->status === 'selesai')
+                                                        <x-menu-item title="Buka Kembali (Ke Proses)" icon="o-arrow-path"
+                                                            wire:click="openUpdateStatusModal({{ $pengaduan->id }}, 'diproses')" />
+                                                    @endif
 
-                                                @if($pengaduan->status === 'ditolak')
-                                                    <x-menu-item title="Pulihkan (Ke Menunggu)" icon="o-clock"
-                                                        wire:click="openUpdateStatusModal({{ $pengaduan->id }}, 'menunggu')" />
+                                                    @if($pengaduan->status === 'ditolak')
+                                                        <x-menu-item title="Pulihkan (Ke Menunggu)" icon="o-clock"
+                                                            wire:click="openUpdateStatusModal({{ $pengaduan->id }}, 'menunggu')" />
+                                                    @endif
                                                 @endif
 
                                                 <div class="my-1 opacity-50 divider"></div>
