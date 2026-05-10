@@ -46,8 +46,28 @@
                 <x-menu-item title="Pulihkan (Ke Menunggu)" icon="o-clock"
                     wire:click="openUpdateStatusModal('menunggu')" />
             @endif
+
+            <div class="my-1 opacity-50 divider"></div>
+            @if($this->pengaduan->trashed())
+                <x-menu-item title="Pulihkan Data" icon="o-arrow-path" class="text-success font-bold"
+                    wire:click="restore" wire:confirm="Pulihkan laporan ini?" />
+            @else
+                <x-menu-item title="Hapus Laporan" icon="o-trash" class="text-error"
+                    wire:click="delete" wire:confirm="Yakin ingin menghapus laporan ini?" />
+            @endif
         </x-dropdown>
     </div>
+
+    @if($this->pengaduan->trashed())
+    <div class="mx-3 sm:mx-0 mb-4">
+        <x-alert icon="o-trash" title="Laporan ini telah dihapus" class="alert-error shadow-sm rounded-2xl text-white">
+            Laporan ini saat ini berada di tempat sampah dan tidak muncul di daftar publik maupun admin utama.
+            <x-slot:actions>
+                <x-button label="Pulihkan" wire:click="restore" class="btn-sm btn-outline border-white text-white" />
+            </x-slot:actions>
+        </x-alert>
+    </div>
+    @endif
 
     {{-- WA Notifikasi Banner --}}
     @if($waLink)

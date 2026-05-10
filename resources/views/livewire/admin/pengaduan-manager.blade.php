@@ -85,6 +85,11 @@
                     ['id' => 'ditolak', 'name' => 'Ditolak'],
                 ]" option-value="id" option-label="name"
                     class="select-sm w-full" />
+
+                {{-- Toggle Deleted --}}
+                <div class="flex items-center gap-2 ml-1">
+                    <x-toggle wire:model.live="showDeleted" label="Terhapus" tight class="text-[10px] font-bold" />
+                </div>
             </div>
         </div>
     </div>
@@ -107,7 +112,7 @@
                 <tbody class="divide-y divide-base-200">
                     @forelse($pengaduans as $pengaduan)
                                     <tr class="transition-colors cursor-pointer hover:bg-base-200/50 group" 
-                                        wire:click="goToDetail('{{ $pengaduan->kode_tracking }}')">
+                                        wire:click="{{ $pengaduan->trashed() ? '' : "goToDetail('$pengaduan->kode_tracking')" }}">
                                         {{-- Info Utama --}}
                                         <td class="px-3 py-2">
                                             <div class="flex flex-col">
@@ -205,6 +210,15 @@
                                                 @if($pengaduan->status === 'ditolak')
                                                     <x-menu-item title="Pulihkan (Ke Menunggu)" icon="o-clock"
                                                         wire:click="openUpdateStatusModal({{ $pengaduan->id }}, 'menunggu')" />
+                                                @endif
+
+                                                <div class="my-1 opacity-50 divider"></div>
+                                                @if($pengaduan->trashed())
+                                                    <x-menu-item title="Pulihkan Data" icon="o-arrow-path" class="text-success font-bold"
+                                                        wire:click="restore({{ $pengaduan->id }})" wire:confirm="Pulihkan laporan ini?" />
+                                                @else
+                                                    <x-menu-item title="Hapus Laporan" icon="o-trash" class="text-error"
+                                                        wire:click="delete({{ $pengaduan->id }})" wire:confirm="Yakin ingin menghapus laporan ini?" />
                                                 @endif
                                             </x-dropdown>
                                         </td>
