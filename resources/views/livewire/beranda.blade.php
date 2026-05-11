@@ -78,7 +78,7 @@
     </div>
 
     {{-- Section Pengumuman, Cek Status & SOP --}}
-    <div class="w-full max-w-7xl mx-auto px-1.5 lg:px-2 mt-[-2rem] md:mt-[-3rem] relative z-20 mb-8">
+    <div class="w-full max-w-7xl mx-auto px-1.5 lg:px-2 mt-[-2rem] md:mt-[-3rem] relative z-20 mb-12">
         
         {{-- Pengumuman Section --}}
         @if($settings['pengumuman_aktif'] ?? false)
@@ -173,7 +173,7 @@
         </div>
     </div>
 
-    <div class="w-full px-1.5 py-6 mx-auto lg:px-2">
+    <div class="w-full max-w-7xl px-1.5 py-6 mx-auto lg:px-2">
         @php
         $sortOptions = [
         ['id' => 'terbaru', 'nama' => 'Terbaru'],
