@@ -312,31 +312,31 @@
             window.scrollTo(0, 0);
             
             sessionStorage.removeItem('spa_navigating');
-
-            // --- DROPDOWN SYNC LOGIC ---
-            // Ensure only one <details> dropdown is open at a time
-            const syncDropdowns = () => {
-                const allDetails = document.querySelectorAll('details.dropdown');
-                allDetails.forEach(targetDetail => {
-                    const summary = targetDetail.querySelector('summary');
-                    if (summary) {
-                        summary.addEventListener('click', (e) => {
-                            // If we are about to open this one, close others
-                            if (!targetDetail.open) {
-                                allDetails.forEach(detail => {
-                                    if (detail !== targetDetail) {
-                                        detail.removeAttribute('open');
-                                    }
-                                });
-                            }
-                        });
-                    }
-                });
-            };
-
-            syncDropdowns();
-            // ----------------------------
         });
+
+        // --- DROPDOWN SYNC LOGIC (ULTRA ROBUST) ---
+        // Ensure only one <details> dropdown is open at a time
+        // And close dropdowns when clicking outside
+        document.addEventListener('click', function (e) {
+            const allDropdowns = document.querySelectorAll('details.dropdown');
+            const clickedDetails = e.target.closest('details.dropdown');
+            const clickedSummary = e.target.closest('summary');
+
+            // 1. If clicking a summary (opening/closing a menu)
+            if (clickedSummary && clickedDetails) {
+                // If it was CLOSED (it's about to open), close all others
+                if (!clickedDetails.open) {
+                    allDropdowns.forEach(d => {
+                        if (d !== clickedDetails) d.removeAttribute('open');
+                    });
+                }
+            } 
+            // 2. If clicking OUTSIDE any dropdown, close all of them
+            else if (!clickedDetails) {
+                allDropdowns.forEach(d => d.removeAttribute('open'));
+            }
+        }, true);
+        // -------------------------------------------
     </script>
 
     {{-- Global Share Modal --}}
