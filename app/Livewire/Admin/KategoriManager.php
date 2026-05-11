@@ -18,7 +18,7 @@ class KategoriManager extends Component
 
     public function mount()
     {
-        abort_unless(auth()->user()->role === 'admin', 403);
+        abort_unless(in_array(auth()->user()->role, ['superadmin', 'admin']), 403);
     }
 
     protected $rules = [

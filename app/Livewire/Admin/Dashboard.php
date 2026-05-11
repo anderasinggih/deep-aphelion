@@ -21,7 +21,7 @@ class Dashboard extends Component
 
     public function mount()
     {
-        abort_unless(in_array(auth()->user()->role, ['admin', 'petugas']), 403);
+        abort_unless(in_array(auth()->user()->role, ['superadmin', 'admin', 'petugas']), 403);
     }
 
     public function render()

@@ -329,6 +329,12 @@
                                     <x-menu-item title="WhatsApp" icon="o-chat-bubble-left-right" class="text-green-600 font-bold !py-1 text-xs"
                                         link="{{ $pengaduan->generateWaLink() }}" external target="_blank" />
                                     @endif
+
+                                    @if(auth()->user()->role === 'superadmin')
+                                    <div class="my-0.5 opacity-30 divider mt-0"></div>
+                                    <x-menu-item title="Hapus Permanen" icon="o-trash" class="text-error font-black !py-1 text-xs"
+                                        wire:click="forceDelete({{ $pengaduan->id }})" wire:confirm="PERINGATAN: Laporan ini akan dihapus permanen beserta seluruh riwayat dan datanya. Tindakan ini tidak dapat dibatalkan. Lanjutkan?" />
+                                    @endif
                                 </x-dropdown>
                             </td>
                         </tr>

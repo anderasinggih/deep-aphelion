@@ -20,7 +20,7 @@ class UserManager extends Component
 
     public function mount()
     {
-        abort_unless(auth()->user()->role === 'admin', 403);
+        abort_unless(in_array(auth()->user()->role, ['admin', 'superadmin']), 403);
     }
 
     public function render()
@@ -58,7 +58,10 @@ class UserManager extends Component
             'nik' => 'required|numeric|digits:16|unique:users,nik',
             'no_wa' => 'required|numeric|min_digits:10|max_digits:15',
             'email' => 'nullable|string|email|max:255|unique:users,email',
-            'role' => 'required|in:admin,warga,petugas',
+            'role' => [
+                'required',
+                Rule::in(auth()->user()->role === 'superadmin' ? ['admin', 'warga', 'petugas', 'superadmin'] : ['admin', 'warga', 'petugas'])
+            ],
             'password' => 'required|string|min:8|confirmed|regex:/[a-zA-Z]/|regex:/[0-9]/',
         ]);
 
@@ -96,7 +99,10 @@ class UserManager extends Component
             'nik' => ['required', 'numeric', 'digits:16', Rule::unique('users')->ignore($this->userId)],
             'no_wa' => 'required|numeric|min_digits:10|max_digits:15',
             'email' => ['nullable', 'string', 'email', 'max:255', Rule::unique('users')->ignore($this->userId)],
-            'role' => 'required|in:admin,warga,petugas',
+            'role' => [
+                'required',
+                Rule::in(auth()->user()->role === 'superadmin' ? ['admin', 'warga', 'petugas', 'superadmin'] : ['admin', 'warga', 'petugas'])
+            ],
         ];
 
         // Only validate password if it's filled
@@ -136,6 +142,36 @@ class UserManager extends Component
         $user = User::findOrFail($id);
         $user->delete();
         session()->flash('success', 'Pengguna berhasil dihapus.');
+    }
+
+    public function forceDelete($id)
+    {
+        abort_unless(auth()->user()->role === 'superadmin', 403);
+        
+        if (auth()->id() == $id) {
+            session()->flash('error', 'Anda tidak dapat menghapus permanen akun Anda sendiri.');
+            return;
+        }
+
+        $user = User::withTrashed()->findOrFail($id);
+        $user->forceDelete();
+        
+        session()->flash('success', 'Pengguna berhasil dihapus permanen dari sistem.');
+    }
+
+    public function impersonate($id)
+    {
+        abort_unless(auth()->user()->role === 'superadmin', 403);
+
+        if (auth()->id() == $id) {
+            session()->flash('error', 'Anda sudah masuk sebagai akun ini.');
+            return;
+        }
+
+        session()->put('impersonator_id', auth()->id());
+        auth()->loginUsingId($id);
+
+        return redirect()->to('/');
     }
 
     public function restore($id)

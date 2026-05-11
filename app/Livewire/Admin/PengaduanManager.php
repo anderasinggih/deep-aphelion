@@ -27,7 +27,7 @@ class PengaduanManager extends Component
 
     public function mount()
     {
-        abort_unless(in_array(auth()->user()->role, ['admin', 'petugas']), 403);
+        abort_unless(in_array(auth()->user()->role, ['superadmin', 'admin', 'petugas']), 403);
     }
 
     #[Url]
@@ -425,6 +425,32 @@ class PengaduanManager extends Component
     public function resetFilters()
     {
         $this->reset(['search', 'statusFilter', 'kategoriFilter', 'startDate', 'endDate', 'orderBy']);
+    }
+
+    public function forceDelete($id)
+    {
+        abort_unless(auth()->user()->role === 'superadmin', 403);
+        
+        $pengaduan = Pengaduan::withTrashed()->findOrFail($id);
+        
+        // Delete related files
+        if ($pengaduan->foto_bukti) {
+            foreach ($pengaduan->foto_bukti as $foto) {
+                Storage::disk('public')->delete($foto);
+            }
+        }
+        if ($pengaduan->foto_penyelesaian) {
+            Storage::disk('public')->delete($pengaduan->foto_penyelesaian);
+        }
+
+        // Clean up relations
+        $pengaduan->histories()->delete();
+        $pengaduan->dukungans()->delete();
+        $pengaduan->komentars()->delete();
+        
+        $pengaduan->forceDelete();
+
+        session()->flash('success', 'Laporan #' . $pengaduan->kode_tracking . ' telah dihapus permanen dari sistem.');
     }
 
     public function render()

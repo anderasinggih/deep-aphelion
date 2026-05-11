@@ -66,6 +66,7 @@ class SettingManager extends Component
     
     // Notification Settings
     public $notif_email_penerima;
+    public $maintenance_mode = false;
     
     // UI State
     #[Url]
@@ -76,9 +77,13 @@ class SettingManager extends Component
     public $showSaveEmailModal = false;
     public $saveConfirmText = '';
 
+    // System Health Data
+    public $systemInfo = [];
+    public $latestLogs = '';
+
     public function mount()
     {
-        abort_unless(auth()->user()->role === 'admin', 403);
+        abort_unless(in_array(auth()->user()->role, ['superadmin', 'admin']), 403);
 
         $settings = Setting::all()->pluck('value', 'key');
         
@@ -123,6 +128,77 @@ class SettingManager extends Component
         $this->mail_from_name = $settings['mail_from_name'] ?? config('mail.from.name');
 
         $this->notif_email_penerima = $settings['notif_email_penerima'] ?? '';
+        $this->maintenance_mode = (bool)($settings['maintenance_mode'] ?? false);
+
+        if (auth()->user()->role === 'superadmin') {
+            $this->loadSystemInfo();
+        }
+    }
+    public function updatedMaintenanceMode($value)
+    {
+        abort_unless(auth()->user()->role === 'superadmin', 403);
+        
+        \App\Models\Setting::updateOrCreate(
+            ['key' => 'maintenance_mode'],
+            ['value' => $value ? '1' : '0']
+        );
+
+        $status = $value ? 'diaktifkan' : 'dinonaktifkan';
+        session()->flash('success', "Mode Perbaikan berhasil {$status}.");
+    }
+
+    public function loadSystemInfo()
+    {
+        // Disk Usage
+        try {
+            $total = disk_total_space(base_path());
+            $free = disk_free_space(base_path());
+            $used = $total - $free;
+            $percent = ($total > 0) ? ($used / $total) * 100 : 0;
+
+            $this->systemInfo = [
+                'disk_total' => $this->formatBytes($total),
+                'disk_free' => $this->formatBytes($free),
+                'disk_used' => $this->formatBytes($used),
+                'disk_percent' => round($percent, 1),
+                'php_version' => PHP_VERSION,
+                'laravel_version' => app()->version(),
+                'server_software' => $_SERVER['SERVER_SOFTWARE'] ?? 'Unknown',
+                'os' => PHP_OS,
+            ];
+        } catch (\Exception $e) {
+            $this->systemInfo = [
+                'disk_total' => 'N/A',
+                'disk_free' => 'N/A',
+                'disk_used' => 'N/A',
+                'disk_percent' => 0,
+                'php_version' => PHP_VERSION,
+                'laravel_version' => app()->version(),
+                'server_software' => $_SERVER['SERVER_SOFTWARE'] ?? 'Unknown',
+                'os' => PHP_OS,
+            ];
+        }
+
+        // Load Logs (Last 50 lines)
+        $logPath = storage_path('logs/laravel.log');
+        if (file_exists($logPath)) {
+            // Using file_get_contents and array_slice as a safer alternative to shell_exec for logs
+            $logLines = file($logPath);
+            $lastLines = array_slice($logLines, -50);
+            $this->latestLogs = implode("", $lastLines) ?: 'Log kosong atau tidak terbaca.';
+        } else {
+            $this->latestLogs = 'File log tidak ditemukan.';
+        }
+    }
+
+    private function formatBytes($bytes, $precision = 2)
+    {
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $bytes = max($bytes, 0);
+        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+        $pow = min($pow, count($units) - 1);
+        $bytes /= pow(1024, $pow);
+        return round($bytes, $precision) . ' ' . $units[$pow];
     }
 
     public function deleteBanner($index)
@@ -149,6 +225,7 @@ class SettingManager extends Component
 
     public function clearCache()
     {
+        abort_unless(auth()->user()->role === 'superadmin', 403);
         try {
             \Illuminate\Support\Facades\Artisan::call('cache:clear');
             \Illuminate\Support\Facades\Artisan::call('config:clear');
@@ -174,6 +251,13 @@ class SettingManager extends Component
 
     public function saveSettings()
     {
+        // Restricted for superadmin only
+        $restrictedTabs = ['email', 'sistem'];
+        if (in_array($this->activeTab, $restrictedTabs) && auth()->user()->role !== 'superadmin') {
+            session()->flash('error', 'Hanya Superadmin yang dapat mengubah pengaturan ini.');
+            return;
+        }
+
         // If email is unlocked, we need extra confirmation to save
         if ($this->unlock_email && strtoupper($this->saveConfirmText) !== 'SIMPAN PERUBAHAN') {
             $this->saveConfirmText = '';

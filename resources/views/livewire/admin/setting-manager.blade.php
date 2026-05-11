@@ -31,10 +31,16 @@
             class="btn btn-sm rounded-full px-5 transition-all {{ $activeTab === 'aset' ? 'btn-primary text-white shadow-md' : 'btn-ghost bg-base-200/50 hover:bg-base-200' }}">
             <x-icon name="o-photo" class="w-4 h-4" /> Aset Visual
         </button>
+        @if(auth()->user()->role === 'superadmin')
         <button wire:click="setTab('email')" 
             class="btn btn-sm rounded-full px-5 transition-all {{ $activeTab === 'email' ? 'btn-primary text-white shadow-md' : 'btn-ghost bg-base-200/50 hover:bg-base-200' }}">
-            <x-icon name="o-envelope" class="w-4 h-4" /> Pengaturan Email
+            <x-icon name="o-envelope" class="w-4 h-4" /> Email SMTP
         </button>
+        <button wire:click="setTab('sistem')" 
+            class="btn btn-sm rounded-full px-5 transition-all {{ $activeTab === 'sistem' ? 'btn-primary text-white shadow-md' : 'btn-ghost bg-base-200/50 hover:bg-base-200' }}">
+            <x-icon name="o-cpu-chip" class="w-4 h-4" /> Sistem & Logs
+        </button>
+        @endif
     </div>
 
     <div class="pb-4 border shadow-sm bg-base-100 rounded-2xl border-base-200 p-6 md:p-8">
@@ -343,8 +349,87 @@
                 @endif
             </div>
 
+            {{-- Tab Sistem & Logs (Superadmin Only) --}}
+            @if(auth()->user()->role === 'superadmin')
+            <div class="{{ $activeTab === 'sistem' ? 'block' : 'hidden' }}">
+                <h2 class="text-xl font-bold mb-4 border-b border-base-200 pb-2 flex items-center gap-2">
+                    <x-icon name="o-cpu-chip" class="w-5 h-5 text-primary" /> System Health & Logs
+                </h2>
+
+                {{-- Maintenance Mode Toggle --}}
+                <div class="mb-8 bg-warning/5 border border-warning/20 p-6 rounded-2xl">
+                    <div class="flex items-center justify-between">
+                        <div class="flex gap-4 items-start">
+                            <div class="bg-warning/20 p-3 rounded-xl">
+                                <x-icon name="o-wrench-screwdriver" class="w-6 h-6 text-warning" />
+                            </div>
+                            <div>
+                                <h3 class="font-black text-warning">Mode Perbaikan (Maintenance Mode)</h3>
+                                <p class="text-xs text-base-content/70 mt-1 max-w-xl">
+                                    Aktifkan untuk mengunci seluruh fitur website dari publik dan warga. 
+                                    <span class="text-primary font-bold">Hanya Admin dan Superadmin yang tetap bisa login dan mengakses dashboard.</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center gap-2">
+                            <x-toggle wire:model.live="maintenance_mode" class="toggle-warning toggle-lg" />
+                            <span class="text-[10px] font-black uppercase {{ $maintenance_mode ? 'text-warning' : 'text-base-content/30' }}">
+                                {{ $maintenance_mode ? 'AKTIF (Situs Terkunci)' : 'TIDAK AKTIF' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    {{-- Disk Usage --}}
+                    <div class="bg-base-200/30 p-5 rounded-2xl border border-base-200">
+                        <p class="text-xs font-black text-base-content/50 uppercase mb-3">Disk Usage (Workspace)</p>
+                        <div class="flex items-end justify-between mb-1">
+                            <span class="text-2xl font-black text-primary">{{ $systemInfo['disk_percent'] ?? 0 }}%</span>
+                            <span class="text-[10px] font-bold opacity-60">{{ $systemInfo['disk_used'] ?? 0 }} / {{ $systemInfo['disk_total'] ?? 0 }}</span>
+                        </div>
+                        <progress class="progress progress-primary w-full h-2 rounded-full" value="{{ $systemInfo['disk_percent'] ?? 0 }}" max="100"></progress>
+                    </div>
+
+                    {{-- Software Versions --}}
+                    <div class="bg-base-200/30 p-5 rounded-2xl border border-base-200 md:col-span-2">
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div>
+                                <p class="text-[10px] font-black text-base-content/50 uppercase">PHP Version</p>
+                                <p class="text-sm font-bold">{{ $systemInfo['php_version'] ?? '-' }}</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-black text-base-content/50 uppercase">Laravel</p>
+                                <p class="text-sm font-bold">v{{ $systemInfo['laravel_version'] ?? '-' }}</p>
+                            </div>
+                            <div class="hidden md:block">
+                                <p class="text-[10px] font-black text-base-content/50 uppercase">OS</p>
+                                <p class="text-sm font-bold">{{ $systemInfo['os'] ?? '-' }}</p>
+                            </div>
+                            <div class="md:col-span-1">
+                                <p class="text-[10px] font-black text-base-content/50 uppercase">Software</p>
+                                <p class="text-xs font-bold truncate">{{ $systemInfo['server_software'] ?? '-' }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-sm font-black uppercase text-base-content/70 flex items-center gap-2">
+                            <x-icon name="o-list-bullet" class="w-4 h-4" /> Latest Error Logs (Last 50 Lines)
+                        </h3>
+                        <x-button label="Refresh" icon="o-arrow-path" wire:click="loadSystemInfo" spinner="loadSystemInfo" class="btn-xs btn-ghost" />
+                    </div>
+                    <div class="bg-neutral text-neutral-content p-4 rounded-xl font-mono text-[10px] overflow-x-auto max-h-[400px] shadow-inner border border-white/10">
+                        <pre class="whitespace-pre-wrap">{{ $latestLogs }}</pre>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             <x-slot:actions>
-                @if($activeTab !== 'email')
+                @if(!in_array($activeTab, ['email', 'sistem']))
                     <x-button label="Simpan Pengaturan" type="submit" icon="o-check-circle" class="btn-primary text-white"
                         spinner="saveSettings" />
                 @endif

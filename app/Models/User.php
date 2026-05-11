@@ -114,4 +114,12 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return "https://ui-avatars.com/api/?name=" . urlencode($this->name) . "&color=FFFFFF&background=0284c7&bold=true";
     }
+
+    /**
+     * Check if the user is a superadmin.
+     */
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === 'superadmin';
+    }
 }

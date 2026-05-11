@@ -20,7 +20,7 @@ class PengaduanDetail extends Component
 
     public function mount($kode_tracking)
     {
-        abort_unless(in_array(auth()->user()->role, ['admin', 'petugas']), 403);
+        abort_unless(in_array(auth()->user()->role, ['superadmin', 'admin', 'petugas']), 403);
 
         $this->pengaduan = Pengaduan::with(['user', 'kategori', 'histories.user', 'linkedReport'])
             ->where('kode_tracking', $kode_tracking)

@@ -13,6 +13,7 @@ use App\Livewire\PengaduanFeedDetail;
 
 Route::get('/', Beranda::class)->name('beranda');
 Route::get('/tentang-kami', TentangKami::class)->name('tentang-kami');
+Route::get('/maintenance', \App\Livewire\Maintenance::class)->name('maintenance');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     // Warga
@@ -32,12 +33,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // Warga (Print Resi)
     Route::get('/pengaduan/{id}/print', [\App\Http\Controllers\PrintController::class, 'resi'])->name('print.resi');
-
 });
 
 Route::get('/pengaduan/{kode_tracking}', PengaduanFeedDetail::class)->name('pengaduan.feed-detail')->where('kode_tracking', '.*');
-
-
 
 Route::view('profile', 'profile')
     ->middleware(['auth'])

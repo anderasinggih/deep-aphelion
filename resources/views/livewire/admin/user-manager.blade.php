@@ -59,7 +59,9 @@
                                 $user->no_wa }}</div>
                         </td>
                         <td class="text-xs md:text-sm text-base-content/80 whitespace-nowrap">
-                            @if($user->role === 'admin')
+                            @if($user->role === 'superadmin')
+                            <x-badge value="Superadmin" class="badge-neutral border-base-300 badge-sm font-black" />
+                            @elseif($user->role === 'admin')
                             <x-badge value="Admin" class="badge-error badge-sm" />
                             @elseif($user->role === 'petugas')
                             <x-badge value="Petugas" class="badge-warning badge-sm" />
@@ -87,10 +89,22 @@
                                             tooltip="Edit Pengguna" wire:click="edit({{ $user->id }})" />
 
                                         @if($user->id !== auth()->id())
-                                            <x-button icon="o-trash"
-                                                class="rounded-lg btn-xs md:btn-sm btn-ghost text-error hover:bg-error/10"
-                                                tooltip="Hapus Pengguna" wire:click="delete({{ $user->id }})"
-                                                wire:confirm="Yakin ingin menghapus pengguna ini? Semua data terkait (termasuk laporan jika ada) tetap aman tersimpan namun akun tidak bisa masuk." />
+                                            <x-dropdown>
+                                                <x-slot:trigger>
+                                                    <x-button icon="o-ellipsis-vertical" class="btn-ghost btn-xs" />
+                                                </x-slot:trigger>
+                                                <x-menu-item title="Hapus Pengguna" icon="o-trash" class="text-error"
+                                                    wire:click="delete({{ $user->id }})"
+                                                    wire:confirm="Yakin ingin menghapus pengguna ini? Semua data terkait (termasuk laporan jika ada) tetap aman tersimpan namun akun tidak bisa masuk." />
+                                                @if(auth()->user()->role === 'superadmin')
+                                                    <div class="my-1 opacity-20 divider"></div>
+                                                    <x-menu-item title="Login Sebagai" icon="o-finger-print" class="text-primary font-bold py-2"
+                                                        wire:click="impersonate({{ $user->id }})" wire:confirm="Anda akan masuk ke akun ini. Anda dapat kembali ke akun Admin melalui banner di bagian atas layar. Lanjutkan?" />
+                                                    <div class="my-1 opacity-20 divider"></div>
+                                                    <x-menu-item title="Hapus Permanen" icon="o-trash" class="text-error font-black py-2"
+                                                        wire:click="forceDelete({{ $user->id }})" wire:confirm="PERINGATAN: Akun ini akan dihapus permanen dari sistem. Tindakan ini tidak dapat dibatalkan. Lanjutkan?" />
+                                                @endif
+                                            </x-dropdown>
                                         @else
                                             <span class="text-[10px] font-bold text-primary px-2 opacity-50 italic">Akun Anda</span>
                                         @endif
@@ -139,8 +153,14 @@
             </div>
 
             <div class="mb-4">
+                @php
+                    $roleOptions = [['id' => 'warga', 'name' => 'Warga'], ['id' => 'petugas', 'name' => 'Petugas'], ['id' => 'admin', 'name' => 'Admin']];
+                    if (auth()->user()->role === 'superadmin') {
+                        $roleOptions[] = ['id' => 'superadmin', 'name' => 'Superadmin'];
+                    }
+                @endphp
                 <x-select label="Peran (Role)" wire:model="role"
-                    :options="[['id' => 'warga', 'name' => 'Warga'], ['id' => 'petugas', 'name' => 'Petugas'], ['id' => 'admin', 'name' => 'Admin']]"
+                    :options="$roleOptions"
                     option-value="id" option-label="name" required icon="o-shield-check" />
             </div>
 

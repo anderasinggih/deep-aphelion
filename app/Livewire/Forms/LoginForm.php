@@ -33,6 +33,18 @@ class LoginForm extends Form
         if (! Auth::attempt($this->only(['email', 'password']), $this->remember)) {
             RateLimiter::hit($this->throttleKey());
 
+            // Cek apakah akun ini sebenarnya ada tapi sudah dihapus (soft delete)
+            // Karena kita menambahkan suffix .deleted. saat dihapus, kita cek manual
+            $isDeleted = \App\Models\User::withTrashed()
+                ->where('email', 'LIKE', $this->email . '.deleted.%')
+                ->exists();
+
+            if ($isDeleted) {
+                throw ValidationException::withMessages([
+                    'form.email' => 'Akun Anda telah dinonaktifkan oleh Administrator. Silakan hubungi instansi terkait.',
+                ]);
+            }
+
             throw ValidationException::withMessages([
                 'form.email' => trans('auth.failed'),
             ]);
