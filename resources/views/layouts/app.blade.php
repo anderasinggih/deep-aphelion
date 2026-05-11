@@ -315,19 +315,26 @@
 
             // --- DROPDOWN SYNC LOGIC ---
             // Ensure only one <details> dropdown is open at a time
-            const allDetails = document.querySelectorAll('details.dropdown');
-            
-            allDetails.forEach(targetDetail => {
-                targetDetail.addEventListener('toggle', (e) => {
-                    if (targetDetail.open) {
-                        allDetails.forEach(detail => {
-                            if (detail !== targetDetail && detail.open) {
-                                detail.removeAttribute('open');
+            const syncDropdowns = () => {
+                const allDetails = document.querySelectorAll('details.dropdown');
+                allDetails.forEach(targetDetail => {
+                    const summary = targetDetail.querySelector('summary');
+                    if (summary) {
+                        summary.addEventListener('click', (e) => {
+                            // If we are about to open this one, close others
+                            if (!targetDetail.open) {
+                                allDetails.forEach(detail => {
+                                    if (detail !== targetDetail) {
+                                        detail.removeAttribute('open');
+                                    }
+                                });
                             }
                         });
                     }
                 });
-            });
+            };
+
+            syncDropdowns();
             // ----------------------------
         });
     </script>
