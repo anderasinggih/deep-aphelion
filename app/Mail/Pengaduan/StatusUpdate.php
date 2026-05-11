@@ -34,7 +34,7 @@ class StatusUpdate extends Mailable implements ShouldQueue
                 'label' => 'DITERIMA',
                 'message' => 'Laporan Anda telah berhasil masuk ke sistem kami dan sedang menunggu verifikasi awal oleh petugas.',
             ],
-            'proses' => [
+            'diproses' => [
                 'subject' => 'Laporan Sedang Diproses - ' . $pengaduan->kode_tracking,
                 'label' => 'SEDANG DIPROSES',
                 'message' => 'Kabar baik! Laporan Anda saat ini sedang dalam tahap tindak lanjut oleh petugas/bidang terkait.',

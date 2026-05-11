@@ -99,7 +99,7 @@
         </div>
         <div class="flex items-center gap-1.5 shrink-0">
             <a href="{{ $waLink }}" target="_blank"
-                class="btn btn-xs bg-green-500 hover:bg-green-600 text-white border-0 rounded-xl font-bold">
+                class="btn btn-xs bg-green-500 hover:bg-green-600 !text-white border-0 rounded-xl font-bold">
                 Kirim
             </a>
             <button wire:click="clearWaLink" class="btn btn-xs btn-ghost rounded-xl">✕</button>
@@ -436,7 +436,7 @@
                     class="btn-sm btn-primary text-white rounded-xl font-bold shadow-sm"
                     wire:click="openLinkModal" />
                 <x-button label="Kirim WA" icon="o-chat-bubble-left-right" 
-                    class="btn-sm bg-green-500 text-white rounded-xl font-bold shadow-sm border-0 hover:bg-green-600"
+                    class="btn-sm bg-green-500 !text-white rounded-xl font-bold shadow-sm border-0 hover:bg-green-600"
                     wire:click="startWaBlast" />
                 <x-button icon="o-x-mark" class="btn-sm btn-ghost btn-circle" wire:click="$set('selectedIds', [])" />
             </div>
@@ -472,7 +472,7 @@
 
                 <div class="flex flex-col gap-3">
                     <a href="{{ $current['link'] }}" target="_blank" wire:click="nextWaBlast"
-                        class="btn btn-primary bg-green-500 hover:bg-green-600 border-0 text-white rounded-2xl font-black py-4 h-auto shadow-lg shadow-green-500/20">
+                        class="btn btn-primary bg-green-500 hover:bg-green-600 border-0 !text-white rounded-2xl font-black py-4 h-auto shadow-lg shadow-green-500/20">
                         <x-icon name="o-paper-airplane" class="w-5 h-5 mr-2" />
                         BUKA WHATSAPP & LANJUT
                     </a>

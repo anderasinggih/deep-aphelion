@@ -116,7 +116,7 @@
 }
 
 /* Specific fix for the card titles and links */
-a:hover {
+a:not(.btn):hover {
     color: #0085ff !important;
 }
 
