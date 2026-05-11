@@ -43,6 +43,13 @@
         .toast {
             z-index: 2000 !important;
         }
+        /* Hide details triangle */
+        summary::-webkit-details-marker {
+            display: none !important;
+        }
+        summary {
+            list-style: none !important;
+        }
     </style>
 
 </head>
@@ -314,29 +321,25 @@
             sessionStorage.removeItem('spa_navigating');
         });
 
-        // --- DROPDOWN SYNC LOGIC (ULTRA ROBUST) ---
-        // Ensure only one <details> dropdown is open at a time
-        // And close dropdowns when clicking outside
-        document.addEventListener('click', function (e) {
-            const allDropdowns = document.querySelectorAll('details.dropdown');
-            const clickedDetails = e.target.closest('details.dropdown');
-            const clickedSummary = e.target.closest('summary');
-
-            // 1. If clicking a summary (opening/closing a menu)
-            if (clickedSummary && clickedDetails) {
-                // If it was CLOSED (it's about to open), close all others
-                if (!clickedDetails.open) {
-                    allDropdowns.forEach(d => {
-                        if (d !== clickedDetails) d.removeAttribute('open');
+        // --- FAIL-SAFE DROPDOWN SYNC ---
+        // Ensure only one <details> is open at a time and close on outside click
+        window.addEventListener('click', function (e) {
+            const summary = e.target.closest('summary');
+            const details = e.target.closest('details');
+            
+            if (summary && details) {
+                // If we are opening a NEW one
+                if (!details.open) {
+                    document.querySelectorAll('details').forEach(d => {
+                        if (d !== details) d.removeAttribute('open');
                     });
                 }
-            } 
-            // 2. If clicking OUTSIDE any dropdown, close all of them
-            else if (!clickedDetails) {
-                allDropdowns.forEach(d => d.removeAttribute('open'));
+            } else if (!details) {
+                // Clicking outside: Close all
+                document.querySelectorAll('details').forEach(d => d.removeAttribute('open'));
             }
-        }, true);
-        // -------------------------------------------
+        }, { capture: true });
+        // ---------------------------------
     </script>
 
     {{-- Global Share Modal --}}

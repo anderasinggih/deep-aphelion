@@ -1,5 +1,5 @@
-<div class="dropdown dropdown-end" wire:poll.60s>
-    <div tabindex="0" role="button" class="btn btn-ghost btn-circle btn-sm relative hover:bg-base-200/50 transition-colors">
+<details class="dropdown dropdown-end" wire:poll.60s>
+    <summary tabindex="0" role="button" class="btn btn-ghost btn-circle btn-sm relative hover:bg-base-200/50 transition-colors list-none">
         <x-icon name="o-bell" class="w-5 h-5 opacity-70" />
         @if($this->unreadCount > 0)
             <span class="absolute top-1.5 right-1.5 flex h-2 w-2">
@@ -7,7 +7,7 @@
                 <span class="relative inline-flex rounded-full h-2 w-2 bg-error"></span>
             </span>
         @endif
-    </div>
+    </summary>
     <div tabindex="0" class="dropdown-content z-[100] menu p-0 shadow-2xl bg-base-100 rounded-2xl w-[88vw] sm:w-80 border border-base-200 mt-3 -mr-10 sm:mr-0 overflow-hidden animate-in fade-in zoom-in duration-200">
         <div class="px-4 py-3 bg-base-200/50 border-b border-base-200 flex items-center justify-between">
             <span class="text-[11px] font-black text-base-content/60">Notifikasi</span>
@@ -49,4 +49,4 @@
         </div>
         @endif
     </div>
-</div>
+</details>
