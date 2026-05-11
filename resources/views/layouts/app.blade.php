@@ -187,15 +187,15 @@
                             <span class="text-[10px] font-black tracking-tighter">{{ $initials }}</span>
                         </div>
                     </summary>
-                    <ul onclick="if(event.target.closest('a')) this.closest('details').removeAttribute('open')"
-                        class="menu menu-sm dropdown-content mt-3 z-[100] p-2 shadow-2xl bg-base-100 rounded-2xl w-56 border border-base-200">
-                        <li class="px-4 py-3 border-b border-base-200/50 mb-1 pointer-events-none">
-                            <div class="flex flex-col w-full min-w-0 overflow-hidden items-start gap-0.5 !bg-transparent !p-0">
-                                <span class="text-[10px] font-black text-primary uppercase">{{ auth()->user()->role }}</span>
-                                <span class="font-bold text-sm truncate w-full text-base-content" title="{{ auth()->user()->name }}">{{ auth()->user()->name }}</span>
-                                <span class="text-xs text-base-content/60 truncate w-full font-medium" title="{{ auth()->user()->email }}">{{ auth()->user()->email }}</span>
-                            </div>
-                        </li>
+                <ul onclick="if(event.target.closest('a')) this.closest('details').removeAttribute('open')"
+                    class="menu menu-sm dropdown-content mt-3 z-[100] p-2 shadow-2xl bg-base-100 rounded-2xl w-64 border border-base-200">
+                    <li class="px-4 py-3 border-b border-base-200/50 mb-1 pointer-events-none">
+                        <div class="flex flex-col w-full min-w-0 overflow-hidden items-start gap-0.5 !bg-transparent !p-0">
+                            <span class="text-[10px] font-black text-primary uppercase leading-none mb-1">{{ auth()->user()->role }}</span>
+                            <span class="font-black text-sm truncate w-full text-base-content" title="{{ auth()->user()->name }}">{{ auth()->user()->name }}</span>
+                            <span class="text-[11px] text-base-content/60 truncate w-full font-medium block" title="{{ auth()->user()->email }}">{{ auth()->user()->email }}</span>
+                        </div>
+                    </li>
                         @if(auth()->user()->role === 'admin')
                         <li><a href="/admin/dashboard" wire:navigate class="py-2.5 rounded-xl font-bold"><x-icon name="o-squares-2x2"
                                     class="w-4 h-4 opacity-70" /> Dashboard</a></li>
