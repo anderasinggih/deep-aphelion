@@ -79,7 +79,7 @@ new #[Layout('layouts.auth')] class extends Component
 }; ?>
 
 <div
-    class="flex flex-col md:flex-row w-full max-w-5xl mx-4 my-8 bg-base-100 rounded-[2rem] overflow-hidden shadow-xl border border-base-200 max-h-[95vh] md:max-h-[90vh]">
+    class="flex flex-col md:flex-row w-full min-h-screen md:min-h-0 md:max-w-5xl md:mx-4 md:my-8 bg-base-100 md:rounded-[2rem] overflow-hidden md:shadow-xl md:border md:border-base-200 md:max-h-[90vh]">
 
     <div class="hidden relative md:block md:w-5/12">
         <img src="{{ asset('storage/assets/banner.jpg') }}" alt="Kecamatan Kembaran"

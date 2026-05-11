@@ -51,7 +51,7 @@ new #[Layout('layouts.auth')] class extends Component
 }; ?>
 
 <div
-    class="flex flex-col md:flex-row w-full max-w-4xl mx-4 bg-base-100 rounded-[2rem] overflow-hidden shadow-xl border border-base-200">
+    class="flex flex-col md:flex-row w-full min-h-screen md:min-h-0 md:max-w-4xl md:mx-4 bg-base-100 md:rounded-[2rem] overflow-hidden md:shadow-xl md:border md:border-base-200">
 
     <div class="hidden relative md:block md:w-1/2">
         <img src="{{ asset('storage/assets/banner.jpg') }}" alt="Kabupaten Banyumas"
