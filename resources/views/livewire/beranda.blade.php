@@ -56,21 +56,21 @@
                 Silakan klik tombol di bawah untuk mulai melaporkan masalah maupun aspirasi Anda.
             </p>
 
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div class="flex flex-row items-center justify-center gap-2 sm:gap-4 w-full">
                 @auth
                 <a href="/pengaduan/create" wire:navigate
-                    class="btn border-none text-white shadow-2xl bg-[#0085FF] hover:bg-white hover:text-[#0085FF] hover:-translate-y-1 px-8 md:px-14 py-3 md:py-4 rounded-full font-black text-xs md:text-lg transition-all duration-300 w-full sm:w-auto">
+                    class="btn border-none text-white shadow-2xl bg-[#0085FF] hover:bg-white hover:text-[#0085FF] hover:-translate-y-1 px-4 sm:px-8 md:px-14 py-3 md:py-4 rounded-full font-black text-[10px] sm:text-xs md:text-lg transition-all duration-300 flex-1 sm:flex-none">
                     Mulai Pengaduan
                 </a>
                 @else
                 <a href="/login" wire:navigate
-                    class="btn border-none text-white shadow-2xl bg-[#0085FF] hover:bg-white hover:text-[#0085FF] hover:-translate-y-1 px-8 md:px-14 py-3 md:py-4 rounded-full font-black text-xs md:text-lg transition-all duration-300 w-full sm:w-auto">
+                    class="btn border-none text-white shadow-2xl bg-[#0085FF] hover:bg-white hover:text-[#0085FF] hover:-translate-y-1 px-4 sm:px-8 md:px-14 py-3 md:py-4 rounded-full font-black text-[10px] sm:text-xs md:text-lg transition-all duration-300 flex-1 sm:flex-none">
                     Mulai Pengaduan
                 </a>
                 @endauth
 
                 <a href="{{ route('tentang-kami') }}" wire:navigate
-                    class="btn btn-ghost bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white hover:text-[#0085FF] hover:-translate-y-1 px-8 md:px-14 py-3 md:py-4 rounded-full font-black text-xs md:text-lg transition-all duration-300 w-full sm:w-auto">
+                    class="btn btn-ghost bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white hover:text-[#0085FF] hover:-translate-y-1 px-4 sm:px-8 md:px-14 py-3 md:py-4 rounded-full font-black text-[10px] sm:text-xs md:text-lg transition-all duration-300 flex-1 sm:flex-none">
                     Tentang Kami
                 </a>
             </div>
