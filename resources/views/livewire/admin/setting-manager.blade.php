@@ -119,8 +119,23 @@
                         <x-input label="Batas Laporan Per Hari" type="number" wire:model="anti_spam_limit" />
                     </div>
                     <div class="space-y-4 border-l border-base-200 pl-6">
-                        <x-toggle label="Otomatis Hapus Foto Lama" wire:model="media_cleanup_aktif" hint="Hapus foto laporan yang sudah sangat lama." />
                         <x-input label="Hapus Foto Jika Lebih Dari (Bulan)" type="number" wire:model="media_cleanup_bulan" hint="Contoh: 24 (2 Tahun)." />
+                    </div>
+                </div>
+
+                <h2 class="text-xl font-bold mb-4 mt-8 border-b border-base-200 pb-2 flex items-center gap-2">
+                    <x-icon name="o-wrench-screwdriver" class="w-5 h-5 text-primary" /> Pemeliharaan & Perawatan
+                </h2>
+                <div class="bg-base-200/30 p-5 rounded-2xl border border-base-200">
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <div class="flex-1">
+                            <p class="font-bold text-sm">Bersihkan Cache Sistem</p>
+                            <p class="text-[10px] text-base-content/60">Hapus cache konfigurasi, rute, dan view untuk menyegarkan sistem.</p>
+                        </div>
+                        <x-button label="Bersihkan Seluruh Cache" icon="o-trash" 
+                            class="btn-outline btn-sm rounded-xl" 
+                            wire:click="clearCache" spinner="clearCache"
+                            wire:confirm="Bersihkan seluruh cache sistem? Ini mungkin akan membuat loading pertama sedikit lebih lambat." />
                     </div>
                 </div>
             </div>
@@ -137,9 +152,13 @@
                     <div class="md:col-span-2">
                         <x-file label="File Tanda Tangan (Format PNG transparan disarankan)" wire:model="ttd_file" accept="image/png, image/jpeg" hint="Maksimal ukuran file 2MB." />
                         @if ($existing_ttd_file)
-                            <div class="mt-4 flex items-center gap-4">
-                                <span class="text-sm font-bold">Tanda Tangan Saat Ini:</span>
-                                <img src="{{ asset('storage/' . $existing_ttd_file) }}" alt="Tanda Tangan" class="h-16 object-contain border border-base-200 rounded p-1 bg-white">
+                            <div class="mt-4 flex items-center gap-4 p-4 bg-base-200/50 rounded-xl border border-base-200">
+                                <div class="flex-1">
+                                    <p class="text-xs font-bold mb-2">Tanda Tangan Saat Ini:</p>
+                                    <img src="{{ asset('storage/' . $existing_ttd_file) }}" alt="Tanda Tangan" class="h-16 object-contain border border-base-200 rounded p-1 bg-white">
+                                </div>
+                                <x-button label="Hapus" icon="o-trash" wire:click="deleteSignature" class="btn-error btn-sm text-white rounded-lg" 
+                                    wire:confirm="Hapus tanda tangan ini?" />
                             </div>
                         @endif
                     </div>
@@ -179,12 +198,12 @@
                     <x-icon name="o-photo" class="w-5 h-5 text-primary" /> Logo & Banner Website
                 </h2>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <div class="space-y-4">
-                        <x-file label="Logo Utama (Instansi)" wire:model="app_logo" accept="image/*" hint="Disarankan format PNG transparan." />
-                        <div class="p-4 bg-base-200/30 rounded-xl border border-base-200">
-                            <p class="text-[10px] font-bold text-base-content/40 uppercase mb-3">Preview Logo Utama</p>
-                            <div class="flex items-center justify-center bg-white rounded-lg p-4 h-32 border border-base-200">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+                    {{-- Logo Section --}}
+                    <div class="space-y-6">
+                        <div class="space-y-4 p-4 bg-base-200/20 rounded-2xl border border-base-200">
+                            <x-file label="Logo Utama (Instansi)" wire:model="app_logo" accept="image/*" hint="Disarankan format PNG transparan." />
+                            <div class="flex items-center justify-center bg-white rounded-xl p-4 h-32 border border-base-200 shadow-inner">
                                 @if($app_logo)
                                     <img src="{{ $app_logo->temporaryUrl() }}" class="max-h-full object-contain">
                                 @elseif($existing_app_logo)
@@ -194,13 +213,10 @@
                                 @endif
                             </div>
                         </div>
-                    </div>
 
-                    <div class="space-y-4">
-                        <x-file label="Logo Sekunder (Pendamping)" wire:model="app_logo_sekunder" accept="image/*" hint="Contoh: Logo Kominfo." />
-                        <div class="p-4 bg-base-200/30 rounded-xl border border-base-200">
-                            <p class="text-[10px] font-bold text-base-content/40 uppercase mb-3">Preview Logo Sekunder</p>
-                            <div class="flex items-center justify-center bg-white rounded-lg p-4 h-32 border border-base-200">
+                        <div class="space-y-4 p-4 bg-base-200/20 rounded-2xl border border-base-200">
+                            <x-file label="Logo Sekunder (Pendamping)" wire:model="app_logo_sekunder" accept="image/*" hint="Contoh: Logo Kominfo." />
+                            <div class="flex items-center justify-center bg-white rounded-xl p-4 h-32 border border-base-200 shadow-inner">
                                 @if($app_logo_sekunder)
                                     <img src="{{ $app_logo_sekunder->temporaryUrl() }}" class="max-h-full object-contain">
                                 @elseif($existing_app_logo_sekunder)
@@ -212,20 +228,30 @@
                         </div>
                     </div>
 
-                    <div class="space-y-4 md:col-span-2 lg:col-span-1">
-                        <x-file label="Hero Banner (Beranda)" wire:model="app_banner" accept="image/*" hint="Resolusi tinggi (1920x1080)." />
-                        <div class="p-4 bg-base-200/30 rounded-xl border border-base-200">
-                            <p class="text-[10px] font-bold text-base-content/40 uppercase mb-3">Preview Banner</p>
-                            <div class="flex items-center justify-center bg-black/5 rounded-lg overflow-hidden h-32 border border-base-200">
-                                @if($app_banner)
-                                    <img src="{{ $app_banner->temporaryUrl() }}" class="w-full h-full object-cover">
-                                @elseif($existing_app_banner)
-                                    <img src="{{ asset('storage/' . $existing_app_banner) }}" class="w-full h-full object-cover">
+                    {{-- Banners Section --}}
+                    <div class="space-y-6">
+                        @foreach(range(1, 3) as $i)
+                        @php $prop = 'app_banner_' . $i; $exist = 'existing_app_banner_' . $i; @endphp
+                        <div class="space-y-4 p-4 bg-base-200/20 rounded-2xl border border-base-200">
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="label-text font-bold">Hero Banner #{{ $i }}</label>
+                                @if($this->{$exist})
+                                    <x-button icon="o-trash" wire:click="deleteBanner({{ $i }})" class="btn-xs btn-error text-white" 
+                                        wire:confirm="Hapus banner {{ $i }}?" />
+                                @endif
+                            </div>
+                            <x-file wire:model="{{ $prop }}" accept="image/*" hint="Resolusi tinggi (1920x1080)." />
+                            <div class="flex items-center justify-center bg-black/5 rounded-xl overflow-hidden h-32 border border-base-200 shadow-inner">
+                                @if($this->{$prop})
+                                    <img src="{{ $this->{$prop}->temporaryUrl() }}" class="w-full h-full object-cover">
+                                @elseif($this->{$exist})
+                                    <img src="{{ asset('storage/' . $this->{$exist}) }}" class="w-full h-full object-cover">
                                 @else
-                                    <div class="text-xs italic opacity-30">Belum ada banner</div>
+                                    <div class="text-xs italic opacity-30">Banner {{ $i }} Kosong</div>
                                 @endif
                             </div>
                         </div>
+                        @endforeach
                     </div>
                 </div>
             </div>
@@ -247,10 +273,13 @@
                     
                     <div class="p-4 bg-warning/10 border border-warning/20 rounded-xl flex items-center gap-4">
                         <div class="flex-1">
-                            <p class="text-xs font-black text-warning uppercase">Mode Proteksi</p>
-                            <p class="text-[10px] text-base-content/60">Aktifkan untuk mengubah data</p>
+                            <p class="text-xs font-black text-warning uppercase">Keamanan Konfigurasi</p>
+                            <p class="text-[10px] text-base-content/60">{{ $unlock_email ? 'Mode Edit Aktif' : 'Terproteksi - Klik Gembok' }}</p>
                         </div>
-                        <x-toggle wire:click="openUnlockModal" :checked="$unlock_email" class="toggle-warning" />
+                        <button type="button" wire:click="openUnlockModal" 
+                            class="btn btn-circle btn-sm {{ $unlock_email ? 'btn-error' : 'btn-ghost bg-base-200' }} shadow-sm transition-all duration-300">
+                            <x-icon name="{{ $unlock_email ? 'o-lock-open' : 'o-lock-closed' }}" class="w-4 h-4" />
+                        </button>
                     </div>
                 </div>
 
@@ -259,8 +288,9 @@
                     <x-input label="SMTP Port" wire:model="mail_port" type="number" placeholder="587" icon="o-hashtag" :disabled="!$unlock_email" />
                     <x-input label="Email / Username" wire:model="mail_username" placeholder="instansi@gmail.com" icon="o-user" :disabled="!$unlock_email" />
                     <x-input label="App Password" wire:model="mail_password" type="password" placeholder="Token app password" icon="o-key" :disabled="!$unlock_email" />
+                    <x-input label="Mail From Name" wire:model="mail_from_name" placeholder="Nama Instansi Anda" icon="o-identification" :disabled="!$unlock_email" />
                     
-                    <div class="md:col-span-2">
+                    <div>
                         <x-select 
                             label="Enkripsi" 
                             wire:model="mail_encryption" 
@@ -271,6 +301,35 @@
                             ]"
                             icon="o-lock-closed"
                             :disabled="!$unlock_email" />
+                    </div>
+                    
+                    @if($unlock_email)
+                        <div class="md:col-span-2 flex justify-end pt-2">
+                            <x-button label="Simpan Konfigurasi SMTP" type="submit" icon="o-check-circle" 
+                                class="btn-warning text-white rounded-xl shadow-md" 
+                                spinner="saveSettings" />
+                        </div>
+                    @endif
+                </div>
+
+                <div class="mt-10 pt-8 border-t border-base-200">
+                    <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                        <x-icon name="o-bell-alert" class="w-5 h-5 text-primary" /> Email Notifikasi Admin
+                    </h2>
+                    <div class="bg-base-200/30 p-5 rounded-2xl border border-base-200">
+                        <x-textarea 
+                            label="Email Penerima Notifikasi Laporan" 
+                            wire:model="notif_email_penerima" 
+                            placeholder="email1@gmail.com, email2@gmail.com, ..." 
+                            rows="2"
+                            hint="Pisahkan dengan tanda koma (,) jika lebih dari satu. Setiap email di sini akan menerima notifikasi otomatis ketika ada laporan baru masuk." 
+                            icon="o-user-group" />
+                        
+                        <div class="flex justify-end mt-4">
+                            <x-button label="Perbarui Daftar Email" icon="o-check" 
+                                class="btn-sm btn-primary text-white rounded-xl shadow-sm" 
+                                wire:click="saveNotifSettings" spinner="saveNotifSettings" />
+                        </div>
                     </div>
                 </div>
 
@@ -285,14 +344,9 @@
             </div>
 
             <x-slot:actions>
-                @if($activeTab !== 'email' || $unlock_email)
-                <x-button label="Simpan Pengaturan" type="submit" icon="o-check-circle" class="btn-primary text-white"
-                    spinner="saveSettings" />
-                @else
-                <div class="flex items-center gap-2 text-base-content/40 italic text-sm">
-                    <x-icon name="o-lock-closed" class="w-4 h-4" />
-                    Buka kunci untuk menyimpan perubahan email
-                </div>
+                @if($activeTab !== 'email')
+                    <x-button label="Simpan Pengaturan" type="submit" icon="o-check-circle" class="btn-primary text-white"
+                        spinner="saveSettings" />
                 @endif
             </x-slot:actions>
         </x-form>

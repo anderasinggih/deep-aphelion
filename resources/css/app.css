@@ -17,26 +17,91 @@
     --radius-box: 1rem;
 }
 
-/* Force override DaisyUI internal variables for Night theme */
-:root, [data-theme="night"] {
+/* Force override DaisyUI internal variables globally to avoid default purple */
+:root, [data-theme] {
     --p: #0085ff !important;
-    --pf: #006acc !important; /* Primary focus/hover */
-    --pc: #ffffff !important; /* Primary content */
+    --pf: #006acc !important;
+    --pc: #ffffff !important;
     --s: #3b82f6 !important;
     --a: #60a5fa !important;
-    --n: #1e293b !important;
     
-    /* Base colors override to ensure dark mode is really dark */
-    --b1: #0f172a !important; /* Night background */
+    /* Force neutral base colors in all themes to avoid purple tints */
+    --b1: #ffffff !important;
+    --b2: #f8fafc !important;
+    --b3: #f1f5f9 !important;
+    --bc: #0f172a !important;
+}
+
+/* Specific theme overrides for Dark Mode */
+[data-theme="night"] {
+    --n: #1e293b !important;
+    --b1: #0f172a !important; 
     --b2: #1e293b !important;
     --b3: #334155 !important;
-    --bc: #f8fafc !important; /* Base content (text) */
+    --bc: #f8fafc !important;
+}
+
+/* Global component overrides to kill purple and fix solid blue issue */
+.checkbox {
+    --chkbg: #0085ff !important;
+    --chkfg: #ffffff !important;
+    border-color: #cbd5e1 !important; /* Visible gray border */
+    background-color: transparent !important;
+    border-width: 2px !important;
+}
+
+[data-theme="night"] .checkbox {
+    border-color: #475569 !important;
+}
+
+.checkbox:checked,
+.checkbox[checked="true"],
+[type='checkbox']:checked {
+    border-color: #0085ff !important;
+    background-color: #0085ff !important;
+}
+
+/* Selection background fix */
+.bg-primary\/5 {
+    background-color: rgba(0, 133, 255, 0.05) !important;
+}
+
+/* Global hover fixes for menu items and table rows */
+.menu li > *:not(ul):not(.menu-title):not(details):hover,
+.menu li > details > summary:hover,
+.table tr.hover:hover,
+.table tr:hover {
+    background-color: rgba(0, 133, 255, 0.08) !important;
+}
+
+/* Specific fix for text hovers */
+.hover\:text-primary:hover,
+.group:hover .group-hover\:text-primary,
+.text-primary {
+    color: #0085ff !important;
 }
 
 /* Force primary colors for buttons and hovers */
-.btn-primary:hover {
+.btn-primary:not(.btn-outline) {
+    background-color: #0085ff !important;
+    border-color: #0085ff !important;
+    color: #ffffff !important;
+}
+
+.btn-primary:not(.btn-outline):hover {
     background-color: #006acc !important;
     border-color: #006acc !important;
+}
+
+.btn-primary.btn-outline {
+    color: #0085ff !important;
+    border-color: #0085ff !important;
+    background-color: transparent !important;
+}
+
+.btn-primary.btn-outline:hover {
+    background-color: #0085ff !important;
+    color: #ffffff !important;
 }
 
 /* Fix for all primary hover utilities in Tailwind */

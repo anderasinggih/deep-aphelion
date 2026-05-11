@@ -22,9 +22,15 @@
     </x-alert>
     @endif
 
-    <div class="mb-6">
-        <x-input placeholder="Cari kategori..." wire:model.live.debounce.500ms="search" icon="o-magnifying-glass"
-            class="w-full max-w-md bg-base-100" />
+    <div class="mb-6 flex flex-col gap-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <x-input placeholder="Cari kategori..." wire:model.live.debounce.500ms="search" icon="o-magnifying-glass"
+                class="w-full sm:max-w-md bg-base-100" />
+            
+            <div class="flex justify-start sm:justify-end">
+                <x-toggle label="Tampilkan Terhapus" wire:model.live="showDeleted" class="toggle-primary" />
+            </div>
+        </div>
     </div>
 
     <div class="border shadow-sm bg-base-100 rounded-2xl border-base-200">
@@ -40,11 +46,12 @@
                 </thead>
                 <tbody class="divide-y divide-base-200">
                     @forelse($kategoris as $index => $kategori)
-                    <tr class="transition-colors hover:bg-base-200/30">
+                    <tr class="transition-colors hover:bg-base-200/30 {{ $kategori->trashed() ? 'bg-error/5 italic opacity-70' : '' }}">
                         <td class="text-xs md:text-sm whitespace-nowrap text-base-content/80">
                             {{ $kategoris->firstItem() + $index }}
                         </td>
                         <td class="text-xs md:text-sm font-bold text-base-content whitespace-nowrap">
+                            @if($kategori->trashed()) <span class="badge badge-error badge-xs mr-1">Terhapus</span> @endif
                             {{ $kategori->nama }}
                         </td>
                         <td class="text-xs md:text-sm text-base-content/80">
@@ -52,14 +59,20 @@
                         </td>
                         <td class="text-right whitespace-nowrap">
                             <div class="flex items-center justify-end gap-1 md:gap-2">
-                                <x-button icon="o-pencil-square"
-                                    class="rounded-lg btn-xs md:btn-sm btn-ghost text-warning hover:bg-warning/10"
-                                    tooltip="Edit Kategori" wire:click="edit({{ $kategori->id }})" />
+                                @if($kategori->trashed())
+                                    <x-button icon="o-arrow-path"
+                                        class="rounded-lg btn-xs md:btn-sm btn-ghost text-success hover:bg-success/10"
+                                        tooltip="Aktifkan Kembali" wire:click="restore({{ $kategori->id }})" />
+                                @else
+                                    <x-button icon="o-pencil-square"
+                                        class="rounded-lg btn-xs md:btn-sm btn-ghost text-warning hover:bg-warning/10"
+                                        tooltip="Edit Kategori" wire:click="edit({{ $kategori->id }})" />
 
-                                <x-button icon="o-trash"
-                                    class="rounded-lg btn-xs md:btn-sm btn-ghost text-error hover:bg-error/10"
-                                    tooltip="Hapus Kategori" wire:click="delete({{ $kategori->id }})"
-                                    wire:confirm="Yakin ingin menghapus kategori ini? Data yang sudah dihapus tidak bisa dikembalikan." />
+                                    <x-button icon="o-trash"
+                                        class="rounded-lg btn-xs md:btn-sm btn-ghost text-error hover:bg-error/10"
+                                        tooltip="Hapus Kategori" wire:click="delete({{ $kategori->id }})"
+                                        wire:confirm="Yakin ingin menonaktifkan kategori ini? Kategori tidak akan muncul lagi di formulir laporan baru." />
+                                @endif
                             </div>
                         </td>
                     </tr>
@@ -88,12 +101,12 @@
     <x-modal wire:model="showModal" title="{{ $isEdit ? 'Edit Kategori' : 'Tambah Kategori Baru' }}"
         subtitle="Silakan isi detail kategori di bawah ini" separator>
         <x-form wire:submit="{{ $isEdit ? 'update' : 'store' }}">
-            <div class="space-y-4">
+            <div class="grid grid-cols-1 gap-4">
                 <x-input label="Nama Kategori" wire:model="nama" placeholder="Contoh: Infrastruktur" required
-                    icon="o-tag" />
+                    icon="o-tag" class="w-full" />
 
                 <x-textarea label="Deskripsi (Opsional)" wire:model="deskripsi"
-                    placeholder="Penjelasan singkat mengenai kategori ini..." rows="3" />
+                    placeholder="Penjelasan singkat mengenai kategori ini..." rows="3" class="w-full" />
             </div>
 
             <x-slot:actions>

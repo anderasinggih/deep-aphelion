@@ -13,6 +13,7 @@ class KategoriManager extends Component
     public $kategoriId, $nama, $deskripsi;
     public $isEdit = false;
     public $showModal = false;
+    public $showDeleted = false;
     public $search = '';
 
     public function mount()
@@ -31,9 +32,14 @@ class KategoriManager extends Component
 
     public function render()
     {
-        $kategoris = Kategori::where('nama', 'like', '%' . $this->search . '%')
-            ->orderBy('id', 'desc')
-            ->paginate(10);
+        $query = Kategori::query()
+            ->where('nama', 'like', '%' . $this->search . '%');
+
+        if ($this->showDeleted) {
+            $query->onlyTrashed();
+        }
+
+        $kategoris = $query->orderBy('id', 'desc')->paginate(10);
 
         return view('livewire.admin.kategori-manager', [
             'kategoris' => $kategoris
@@ -88,14 +94,15 @@ class KategoriManager extends Component
     {
         $kategori = Kategori::findOrFail($id);
 
-        // Cek apakah ada pengaduan terkait (opsional, ganti logika jika ingin restrict delete)
-        if ($kategori->pengaduans()->exists()) {
-            session()->flash('error', 'Kategori ini tidak dapat dihapus karena sudah ada laporan pengaduan terkait.');
-            return;
-        }
-
         $kategori->delete();
-        session()->flash('success', 'Kategori pengaduan berhasil dihapus.');
+        session()->flash('success', 'Kategori pengaduan berhasil dinonaktifkan.');
+    }
+
+    public function restore($id)
+    {
+        $kategori = Kategori::withTrashed()->findOrFail($id);
+        $kategori->restore();
+        session()->flash('success', 'Kategori pengaduan berhasil diaktifkan kembali.');
     }
 
     public function closeModal()

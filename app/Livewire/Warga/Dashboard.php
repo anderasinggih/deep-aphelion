@@ -14,7 +14,10 @@ class Dashboard extends Component
 
     public $ratingModal = false;
     public $selectedPengaduanId = null;
-    public $rating_value = 5;
+    public $rating_pelayanan = 5;
+    public $rating_respon = 5;
+    public $rating_kompetensi = 5;
+    public $rating_fasilitas = 5;
     public $rating_komentar = '';
 
     public function openRatingModal($id)
@@ -22,7 +25,10 @@ class Dashboard extends Component
         $pengaduan = Pengaduan::where('id', $id)->where('user_id', Auth::id())->first();
         if ($pengaduan && $pengaduan->status === 'selesai' && !$pengaduan->rating) {
             $this->selectedPengaduanId = $pengaduan->id;
-            $this->rating_value = 5; // default 5 stars
+            $this->rating_pelayanan = 5;
+            $this->rating_respon = 5;
+            $this->rating_kompetensi = 5;
+            $this->rating_fasilitas = 5;
             $this->rating_komentar = '';
             $this->ratingModal = true;
         }
@@ -31,7 +37,10 @@ class Dashboard extends Component
     public function saveRating()
     {
         $this->validate([
-            'rating_value' => 'required|integer|min:1|max:5',
+            'rating_pelayanan' => 'required|integer|min:1|max:5',
+            'rating_respon' => 'required|integer|min:1|max:5',
+            'rating_kompetensi' => 'required|integer|min:1|max:5',
+            'rating_fasilitas' => 'required|integer|min:1|max:5',
             'rating_komentar' => 'nullable|string|max:500',
         ]);
 
@@ -40,12 +49,18 @@ class Dashboard extends Component
             ->first();
 
         if ($pengaduan && $pengaduan->status === 'selesai') {
+            $averageRating = round(($this->rating_pelayanan + $this->rating_respon + $this->rating_kompetensi + $this->rating_fasilitas) / 4);
+
             $pengaduan->update([
-                'rating' => $this->rating_value,
+                'rating' => $averageRating,
+                'rating_pelayanan' => $this->rating_pelayanan,
+                'rating_respon' => $this->rating_respon,
+                'rating_kompetensi' => $this->rating_kompetensi,
+                'rating_fasilitas' => $this->rating_fasilitas,
                 'rating_komentar' => $this->rating_komentar
             ]);
 
-            $this->reset(['ratingModal', 'selectedPengaduanId', 'rating_value', 'rating_komentar']);
+            $this->reset(['ratingModal', 'selectedPengaduanId', 'rating_pelayanan', 'rating_respon', 'rating_kompetensi', 'rating_fasilitas', 'rating_komentar']);
             session()->flash('success', 'Terima kasih atas penilaian Anda!');
         }
     }

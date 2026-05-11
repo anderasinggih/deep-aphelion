@@ -1,6 +1,6 @@
 <footer class="bg-[#111] text-neutral-content relative z-20">
     <div class="border-t border-white/5"></div>
-    <div class="container mx-auto max-w-7xl px-6 py-12">
+    <div class="container mx-auto max-w-7xl px-6 py-8">
         <div class="flex flex-col md:flex-row justify-between items-center md:items-start gap-10 text-center md:text-left">
 
             {{-- Kiri: Logo + Info --}}
@@ -8,8 +8,7 @@
                 <div class="flex items-center gap-4">
                     {{-- Logo Banyumas --}}
                     <img src="{{ asset('storage/assets/logobanyumas.png') }}" alt="Logo Kabupaten Banyumas"
-                        class="w-14 h-14 object-contain drop-shadow-md"
-                        onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Lambang_Kabupaten_Banyumas.png/400px-Lambang_Kabupaten_Banyumas.png'">
+                        class="w-14 h-14 object-contain drop-shadow-md">
 
                     {{-- Logo Kominfo --}}
                     <div

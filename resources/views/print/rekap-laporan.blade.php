@@ -45,8 +45,7 @@
     <table class="kop-table">
         <tr>
             <td class="kop-logo">
-                <img src="{{ isset($settings['app_logo']) ? asset('storage/' . $settings['app_logo']) : asset('storage/assets/logobanyumas.png') }}" alt="Logo" style="width:72px; height:72px; object-fit:contain;"
-                    onerror="this.onerror=null;this.src='https://upload.wikimedia.org/wikipedia/commons/4/4e/Lambang_Kabupaten_Banyumas.png'">
+                <img src="{{ isset($settings['app_logo']) ? asset('storage/' . $settings['app_logo']) : asset('storage/assets/logobanyumas.png') }}" alt="Logo" style="width:72px; height:72px; object-fit:contain;">
             </td>
             <td class="kop-text">
                 <h1>Pemerintah Kabupaten Banyumas</h1>

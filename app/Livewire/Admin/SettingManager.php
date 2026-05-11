@@ -5,6 +5,7 @@ namespace App\Livewire\Admin;
 use Livewire\Component;
 use App\Models\Setting;
 use Livewire\WithFileUploads;
+use Livewire\Attributes\Url;
 
 class SettingManager extends Component
 {
@@ -37,10 +38,14 @@ class SettingManager extends Component
     // Aset Visual (Logo & Banner)
     public $app_logo;
     public $app_logo_sekunder;
-    public $app_banner;
+    public $app_banner_1;
+    public $app_banner_2;
+    public $app_banner_3;
     public $existing_app_logo;
     public $existing_app_logo_sekunder;
-    public $existing_app_banner;
+    public $existing_app_banner_1;
+    public $existing_app_banner_2;
+    public $existing_app_banner_3;
 
     // Content Settings
     public $instansi_nama;
@@ -57,8 +62,13 @@ class SettingManager extends Component
     public $mail_username;
     public $mail_password;
     public $mail_encryption;
+    public $mail_from_name;
+    
+    // Notification Settings
+    public $notif_email_penerima;
     
     // UI State
+    #[Url]
     public $activeTab = 'umum';
     public $unlock_email = false;
     public $showUnlockModal = false;
@@ -101,13 +111,65 @@ class SettingManager extends Component
 
         $this->existing_app_logo = $settings['app_logo'] ?? null;
         $this->existing_app_logo_sekunder = $settings['app_logo_sekunder'] ?? null;
-        $this->existing_app_banner = $settings['app_banner'] ?? null;
+        $this->existing_app_banner_1 = $settings['app_banner_1'] ?? null;
+        $this->existing_app_banner_2 = $settings['app_banner_2'] ?? null;
+        $this->existing_app_banner_3 = $settings['app_banner_3'] ?? null;
 
         $this->mail_host = $settings['mail_host'] ?? config('mail.mailers.smtp.host');
         $this->mail_port = $settings['mail_port'] ?? config('mail.mailers.smtp.port');
         $this->mail_username = $settings['mail_username'] ?? config('mail.mailers.smtp.username');
         $this->mail_password = $settings['mail_password'] ?? config('mail.mailers.smtp.password');
         $this->mail_encryption = $settings['mail_encryption'] ?? config('mail.mailers.smtp.encryption');
+        $this->mail_from_name = $settings['mail_from_name'] ?? config('mail.from.name');
+
+        $this->notif_email_penerima = $settings['notif_email_penerima'] ?? '';
+    }
+
+    public function deleteBanner($index)
+    {
+        $key = 'app_banner_' . $index;
+        $this->updateSetting($key, null);
+        
+        $prop = 'existing_app_banner_' . $index;
+        $this->$prop = null;
+        
+        $inputProp = 'app_banner_' . $index;
+        $this->$inputProp = null;
+        
+        session()->flash('success', 'Banner ' . $index . ' berhasil dihapus.');
+    }
+
+    public function deleteSignature()
+    {
+        $this->updateSetting('ttd_file', null);
+        $this->existing_ttd_file = null;
+        $this->ttd_file = null;
+        session()->flash('success', 'Tanda tangan berhasil dihapus.');
+    }
+
+    public function clearCache()
+    {
+        try {
+            \Illuminate\Support\Facades\Artisan::call('cache:clear');
+            \Illuminate\Support\Facades\Artisan::call('config:clear');
+            \Illuminate\Support\Facades\Artisan::call('route:clear');
+            \Illuminate\Support\Facades\Artisan::call('view:clear');
+            
+            session()->flash('success', 'Seluruh cache sistem (Config, Cache, Route, View) berhasil dibersihkan.');
+        } catch (\Exception $e) {
+            \Log::error('Gagal membersihkan cache: ' . $e->getMessage());
+            session()->flash('error', 'Gagal membersihkan cache sistem.');
+        }
+    }
+
+    public function saveNotifSettings()
+    {
+        $this->validate([
+            'notif_email_penerima' => 'nullable|string|max:1000',
+        ]);
+
+        $this->updateSetting('notif_email_penerima', $this->notif_email_penerima);
+        session()->flash('success', 'Daftar email notifikasi berhasil diperbarui.');
     }
 
     public function saveSettings()
@@ -143,12 +205,16 @@ class SettingManager extends Component
             'instansi_jam_sabtu' => 'required|string|max:100',
             'app_logo' => 'nullable|image|max:2048',
             'app_logo_sekunder' => 'nullable|image|max:2048',
-            'app_banner' => 'nullable|image|max:5120',
+            'app_banner_1' => 'nullable|image|max:5120',
+            'app_banner_2' => 'nullable|image|max:5120',
+            'app_banner_3' => 'nullable|image|max:5120',
             'mail_host' => 'nullable|string|max:255',
             'mail_port' => 'nullable|integer',
             'mail_username' => 'nullable|string|max:255',
             'mail_password' => 'nullable|string|max:255',
             'mail_encryption' => 'nullable|string|max:10',
+            'mail_from_name' => 'nullable|string|max:255',
+            'notif_email_penerima' => 'nullable|string|max:1000',
         ]);
 
         $this->updateSetting('sop_waktu_pemrosesan', $this->sop_waktu_pemrosesan);
@@ -185,8 +251,8 @@ class SettingManager extends Component
                 'MAIL_USERNAME' => $this->mail_username,
                 'MAIL_PASSWORD' => $this->mail_password,
                 'MAIL_ENCRYPTION' => $this->mail_encryption,
-                'MAIL_FROM_ADDRESS' => $this->mail_username, // Usually same as username
-                'MAIL_FROM_NAME' => $this->instansi_nama,
+                'MAIL_FROM_ADDRESS' => $this->mail_username, 
+                'MAIL_FROM_NAME' => $this->mail_from_name,
             ]);
         }
 
@@ -211,11 +277,25 @@ class SettingManager extends Component
             $this->app_logo_sekunder = null;
         }
 
-        if ($this->app_banner) {
-            $path = $this->app_banner->store('assets', 'public');
-            $this->updateSetting('app_banner', $path);
-            $this->existing_app_banner = $path;
-            $this->app_banner = null;
+        if ($this->app_banner_1) {
+            $path = $this->app_banner_1->store('assets', 'public');
+            $this->updateSetting('app_banner_1', $path);
+            $this->existing_app_banner_1 = $path;
+            $this->app_banner_1 = null;
+        }
+
+        if ($this->app_banner_2) {
+            $path = $this->app_banner_2->store('assets', 'public');
+            $this->updateSetting('app_banner_2', $path);
+            $this->existing_app_banner_2 = $path;
+            $this->app_banner_2 = null;
+        }
+
+        if ($this->app_banner_3) {
+            $path = $this->app_banner_3->store('assets', 'public');
+            $this->updateSetting('app_banner_3', $path);
+            $this->existing_app_banner_3 = $path;
+            $this->app_banner_3 = null;
         }
 
         session()->flash('success', 'Pengaturan berhasil disimpan.');

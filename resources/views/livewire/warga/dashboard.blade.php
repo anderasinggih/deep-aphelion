@@ -18,8 +18,25 @@
 
     <div class="overflow-hidden border shadow-sm bg-base-100 pb-4 rounded-2xl border-base-200">
         <div class="overflow-x-auto">
-            {{-- Pakai table-xs untuk padding super tipis di mobile --}}
-            <table class="table w-full table-xs sm:table-sm md:table-md">
+            {{-- Skeleton Loading --}}
+            <div wire:loading wire:target="deletePengaduan, gotoPage, nextPage, previousPage" class="w-full">
+                <table class="table w-full">
+                    <tbody class="divide-y divide-base-200">
+                        @foreach(range(1, 5) as $i)
+                        <tr class="animate-pulse">
+                            <td class="py-4 px-3"><div class="h-4 bg-base-200 rounded w-48"></div></td>
+                            <td class="hidden sm:table-cell"><div class="h-4 bg-base-200 rounded w-24"></div></td>
+                            <td class="hidden md:table-cell"><div class="h-4 bg-base-200 rounded w-24"></div></td>
+                            <td class="text-center"><div class="h-6 bg-base-200 rounded-full w-20 mx-auto"></div></td>
+                            <td class="text-right px-3"><div class="h-8 bg-base-200 rounded w-24 ml-auto"></div></td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            {{-- Table Content --}}
+            <table wire:loading.remove wire:target="deletePengaduan, gotoPage, nextPage, previousPage" class="table w-full table-xs sm:table-sm md:table-md">
                 <thead class="bg-base-200/50 text-base-content/60">
                     <tr>
                         <th class="py-3 px-3">Laporan</th>
@@ -31,7 +48,7 @@
                 </thead>
                 <tbody class="divide-y divide-base-200">
                     @forelse($pengaduans as $pengaduan)
-                    <tr class="transition-colors hover:bg-base-200/30">
+                    <tr class="transition-colors hover:bg-base-200/30 animate-in fade-in duration-500">
                         {{-- Info Utama (Mobile: Muncul Judul + Sub-info) --}}
                         <td class="py-2 px-3">
                             <div class="flex flex-col">
@@ -110,8 +127,15 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="py-10 text-center text-base-content/50">
-                            <span class="text-xs italic">Belum ada laporan.</span>
+                        <td colspan="5" class="py-20 text-center">
+                            <div class="flex flex-col items-center justify-center max-w-xs mx-auto">
+                                <div class="w-32 h-32 mb-6 opacity-80">
+                                    <img src="https://illustrations.popsy.co/amber/shaking-hands.svg" alt="Empty">
+                                </div>
+                                <h3 class="text-lg font-black text-base-content mb-1">Belum ada laporan</h3>
+                                <p class="text-xs text-base-content/50 mb-6 font-medium">Anda belum pernah membuat laporan. Ayo bantu kami meningkatkan kualitas layanan dengan aspirasi Anda!</p>
+                                <x-button label="Buat Laporan Pertama" icon="o-plus" class="btn-primary btn-sm rounded-xl text-white font-black" link="{{ route('pengaduan.create') }}" />
+                            </div>
                         </td>
                     </tr>
                     @endforelse
@@ -120,33 +144,67 @@
         </div>
     </div>
 
-    <div class="p-4 border-t border-base-200">
+    <div class="p-4">
         {{ $pengaduans->links() }}
     </div>
 
-    {{-- Modal Rating IKM --}}
-    <x-modal wire:model="ratingModal" title="Penilaian Layanan" separator>
-        <div class="flex flex-col gap-4">
-            <p class="text-sm text-base-content/70">Seberapa puas Anda dengan penanganan laporan ini?</p>
-            
-            <div class="flex justify-center gap-2 my-2">
-                @foreach(range(1, 5) as $i)
-                <button type="button" wire:click="$set('rating_value', {{ $i }})" 
-                    class="transition-transform transform hover:scale-110">
-                    <x-icon name="s-star" class="w-10 h-10 {{ $rating_value >= $i ? 'text-warning' : 'text-base-300' }}" />
-                </button>
-                @endforeach
+    {{-- Modal Rating IKM (Updated to 4 Questions) --}}
+    <x-modal wire:model="ratingModal" title="Penilaian Layanan" separator class="backdrop-blur-md">
+        <div class="flex flex-col gap-6 p-1">
+            <div class="bg-primary/5 p-4 rounded-2xl border border-primary/10">
+                <p class="text-xs font-bold text-primary uppercase tracking-widest mb-1">Terima Kasih!</p>
+                <p class="text-sm text-base-content/70">Laporan Anda telah selesai. Mohon bantu kami dengan memberikan penilaian cepat.</p>
             </div>
-            <div class="text-center text-xs font-bold text-warning mb-2">
-                {{ $rating_value }} Bintang
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {{-- Pertanyaan 1 --}}
+                <div class="space-y-2 text-center sm:text-left">
+                    <label class="text-[10px] font-black uppercase text-base-content/40 tracking-wider">1. Prosedur & Syarat</label>
+                    <div class="rating rating-sm flex justify-center sm:justify-start">
+                        @foreach(range(1, 5) as $i)
+                            <input type="radio" wire:model="rating_pelayanan" value="{{ $i }}" class="mask mask-star-2 bg-warning" />
+                        @endforeach
+                    </div>
+                </div>
+
+                {{-- Pertanyaan 2 --}}
+                <div class="space-y-2 text-center sm:text-left">
+                    <label class="text-[10px] font-black uppercase text-base-content/40 tracking-wider">2. Kecepatan Respon</label>
+                    <div class="rating rating-sm flex justify-center sm:justify-start">
+                        @foreach(range(1, 5) as $i)
+                            <input type="radio" wire:model="rating_respon" value="{{ $i }}" class="mask mask-star-2 bg-warning" />
+                        @endforeach
+                    </div>
+                </div>
+
+                {{-- Pertanyaan 3 --}}
+                <div class="space-y-2 text-center sm:text-left">
+                    <label class="text-[10px] font-black uppercase text-base-content/40 tracking-wider">3. Kompetensi Petugas</label>
+                    <div class="rating rating-sm flex justify-center sm:justify-start">
+                        @foreach(range(1, 5) as $i)
+                            <input type="radio" wire:model="rating_kompetensi" value="{{ $i }}" class="mask mask-star-2 bg-warning" />
+                        @endforeach
+                    </div>
+                </div>
+
+                {{-- Pertanyaan 4 --}}
+                <div class="space-y-2 text-center sm:text-left">
+                    <label class="text-[10px] font-black uppercase text-base-content/40 tracking-wider">4. Hasil & Fasilitas</label>
+                    <div class="rating rating-sm flex justify-center sm:justify-start">
+                        @foreach(range(1, 5) as $i)
+                            <input type="radio" wire:model="rating_fasilitas" value="{{ $i }}" class="mask mask-star-2 bg-warning" />
+                        @endforeach
+                    </div>
+                </div>
             </div>
 
-            <x-textarea wire:model="rating_komentar" label="Ulasan (Opsional)" 
-                placeholder="Bagaimana pelayanan dari kecamatan?" rows="3" />
+            <x-textarea wire:model="rating_komentar" label="Saran & Kritik" 
+                placeholder="Ada masukan untuk kami?" rows="2" class="rounded-2xl" />
         </div>
 
         <x-slot:actions>
-            <x-button label="Batal" @click="$wire.ratingModal = false" />
-            <x-button label="Kirim Penilaian" wire:click="saveRating" class="btn-primary" />
+            <x-button label="Batal" @click="$wire.ratingModal = false" class="btn-ghost" />
+            <x-button label="Kirim Feedback" wire:click="saveRating" class="btn-primary rounded-xl px-8 text-white font-black" spinner="saveRating" />
         </x-slot:actions>
     </x-modal>
+</div>

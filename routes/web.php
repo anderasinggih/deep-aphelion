@@ -26,6 +26,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/admin/kategori', \App\Livewire\Admin\KategoriManager::class)->name('admin.kategori');
     Route::get('/admin/users', \App\Livewire\Admin\UserManager::class)->name('admin.users');
     Route::get('/admin/pengaturan', \App\Livewire\Admin\SettingManager::class)->name('admin.pengaturan');
+    Route::get('/admin/laporan', \App\Livewire\Admin\LaporanManager::class)->name('admin.laporan');
     Route::get('/admin/pengaduan/print', [\App\Http\Controllers\PrintController::class, 'laporan'])->name('print.laporan');
     Route::get('/admin/pengaduan/{kode_tracking}', PengaduanDetail::class)->name('admin.pengaduan.detail')->where('kode_tracking', '.*');
     

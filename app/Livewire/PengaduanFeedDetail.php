@@ -9,6 +9,10 @@ class PengaduanFeedDetail extends Component
 {
     public Pengaduan $pengaduan;
     public $rating = 5;
+    public $rating_pelayanan = 5;
+    public $rating_respon = 5;
+    public $rating_kompetensi = 5;
+    public $rating_fasilitas = 5;
     public $rating_komentar = '';
     public $showFeedbackForm = false;
 
@@ -25,6 +29,10 @@ class PengaduanFeedDetail extends Component
         ])->where('kode_tracking', $kode_tracking)->firstOrFail();
 
         $this->rating = $this->pengaduan->rating ?? 5;
+        $this->rating_pelayanan = $this->pengaduan->rating_pelayanan ?? 5;
+        $this->rating_respon = $this->pengaduan->rating_respon ?? 5;
+        $this->rating_kompetensi = $this->pengaduan->rating_kompetensi ?? 5;
+        $this->rating_fasilitas = $this->pengaduan->rating_fasilitas ?? 5;
         $this->rating_komentar = $this->pengaduan->rating_komentar ?? '';
         
         // Show form if status is selesai and user is the reporter and rating is still null
@@ -48,12 +56,22 @@ class PengaduanFeedDetail extends Component
         if (auth()->id() !== $this->pengaduan->user_id) return;
 
         $this->validate([
-            'rating' => 'required|integer|min:1|max:5',
+            'rating_pelayanan' => 'required|integer|min:1|max:5',
+            'rating_respon' => 'required|integer|min:1|max:5',
+            'rating_kompetensi' => 'required|integer|min:1|max:5',
+            'rating_fasilitas' => 'required|integer|min:1|max:5',
             'rating_komentar' => 'nullable|string|max:200',
         ]);
 
+        // Calculate average for the main rating column
+        $averageRating = round(($this->rating_pelayanan + $this->rating_respon + $this->rating_kompetensi + $this->rating_fasilitas) / 4);
+
         $this->pengaduan->update([
-            'rating' => $this->rating,
+            'rating' => $averageRating,
+            'rating_pelayanan' => $this->rating_pelayanan,
+            'rating_respon' => $this->rating_respon,
+            'rating_kompetensi' => $this->rating_kompetensi,
+            'rating_fasilitas' => $this->rating_fasilitas,
             'rating_komentar' => $this->rating_komentar,
         ]);
 

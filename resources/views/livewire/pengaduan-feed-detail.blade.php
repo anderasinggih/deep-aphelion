@@ -1,12 +1,20 @@
 <div class="px-0 py-2 sm:py-4 mx-auto max-w-7xl sm:px-0 lg:px-8 text-base-content -mx-5 sm:mx-auto">
+    @push('meta')
+        <meta property="og:title" content="{{ $this->pengaduan->judul }} | Kembaran Ngadu" />
+        <meta property="og:description" content="{{ Str::limit($this->pengaduan->deskripsi, 150) }}" />
+        <meta property="og:image" content="{{ $this->pengaduan->foto_bukti && count($this->pengaduan->foto_bukti) > 0 ? url(Storage::url($this->pengaduan->foto_bukti[0])) : url(asset('storage/assets/logobanyumas.png')) }}" />
+        <meta property="og:url" content="{{ url()->current() }}" />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="description" content="{{ Str::limit($this->pengaduan->deskripsi, 150) }}">
+    @endpush
 
     {{-- Breadcrumb --}}
     <div class="mb-3 px-3 sm:px-0 sm:mb-5">
-        <div class="flex items-center gap-1 text-xs font-semibold text-base-content/50">
+        <div class="flex items-center gap-1 text-xs font-semibold text-base-content/70">
             <a href="{{ route('beranda') }}" wire:navigate class="hover:text-primary transition-colors">Beranda</a>
             <x-icon name="o-chevron-right" class="w-3 h-3" />
-            <span
-                class="text-base-content/80 truncate max-w-[220px]">{{ Str::limit($this->pengaduan->judul, 35) }}</span>
+            <span class="text-base-content/80 font-mono">{{ $this->pengaduan->kode_tracking }}</span>
         </div>
     </div>
 
@@ -83,11 +91,7 @@
                             {{-- Pelapor --}}
                             <div class="flex items-center gap-2 px-2.5 py-1 sm:px-3 sm:py-1.5 bg-base-200/50 border border-base-200 rounded-lg">
                                 @if($this->pengaduan->is_anonymous)
-                                    <div class="avatar placeholder">
-                                        <div class="bg-base-300 text-base-content/50 rounded-full w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center">
-                                            <span class="text-[8px] font-black">AN</span>
-                                        </div>
-                                    </div>
+                                    <x-user-avatar initials="AN" size="w-5 h-5 sm:w-6 sm:h-6" />
                                     <span class="text-[11px] sm:text-xs font-bold text-base-content/70">Anonim</span>
                                 @else
                                     <x-user-avatar :user="$this->pengaduan->user" size="w-5 h-5 sm:w-6 sm:h-6" />
@@ -96,14 +100,14 @@
                             </div>
 
                             {{-- Waktu --}}
-                            <div class="flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 bg-base-200/50 border border-base-200 rounded-lg text-base-content/60" title="{{ $this->pengaduan->created_at->isoFormat('D MMMM YYYY, HH:mm') }} WIB">
-                                <x-icon name="o-clock" class="w-3.5 h-3.5 sm:w-4 sm:h-4 opacity-70" />
+                            <div class="flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 bg-base-200/50 border border-base-200 rounded-lg text-base-content/70" title="{{ $this->pengaduan->created_at->isoFormat('D MMMM YYYY, HH:mm') }} WIB">
+                                <x-icon name="o-clock" class="w-3.5 h-3.5 sm:w-4 sm:h-4 opacity-80" />
                                 <span class="text-[11px] sm:text-xs font-semibold">{{ $this->pengaduan->created_at->diffForHumans() }}</span>
                             </div>
 
                             {{-- Kode Tracking --}}
-                            <div class="flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 bg-base-200/50 border border-base-200 rounded-lg text-base-content/60">
-                                <x-icon name="o-qr-code" class="w-3.5 h-3.5 sm:w-4 sm:h-4 opacity-70" />
+                            <div class="flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 bg-base-200/50 border border-base-200 rounded-lg text-base-content/70">
+                                <x-icon name="o-qr-code" class="w-3.5 h-3.5 sm:w-4 sm:h-4 opacity-80" />
                                 <span class="text-[11px] sm:text-xs font-mono font-bold tracking-wide">{{ $this->pengaduan->kode_tracking }}</span>
                             </div>
                         </div>
@@ -165,7 +169,7 @@
                                         <div id="detail-slide{{ $index }}"
                                             class="carousel-item relative w-full snap-start flex justify-center items-center bg-black/5"
                                             style="aspect-ratio: 3/4;">
-                                            <img src="{{ Storage::url($foto) }}"
+                                            <img src="{{ Storage::url($foto) }}" loading="lazy" decoding="async"
                                                 class="absolute inset-0 w-full h-full object-cover transition duration-500 cursor-zoom-in"
                                                 wire:click="openPreview('{{ Storage::url($foto) }}')">
 
@@ -241,7 +245,7 @@
                     @endif
 
                     <div
-                        class="text-[14px] sm:text-[15px] leading-loose text-base-content/80 font-medium whitespace-pre-line break-words overflow-hidden py-2 sm:py-4">
+                        class="text-[14px] sm:text-[15px] leading-loose text-base-content font-medium whitespace-pre-line break-words overflow-hidden py-2 sm:py-4">
                         {{ $this->pengaduan->deskripsi }}
                     </div>
 
@@ -287,61 +291,124 @@
                             <div class="mt-6 pt-6 border-t border-success/20">
                                 @if($showFeedbackForm)
                                     <div
-                                        class="bg-white/50 dark:bg-base-300/50 rounded-xl p-4 border border-dashed border-success/40">
-                                        <h4 class="text-sm font-black text-base-content mb-3 flex items-center gap-2">
+                                        class="bg-white/50 dark:bg-base-300/50 rounded-xl p-4 sm:p-6 border border-dashed border-success/40">
+                                        <h4 class="text-sm font-black text-base-content mb-5 flex items-center gap-2">
                                             <x-icon name="o-star" class="w-4 h-4 text-warning" />
-                                            Bagaimana pelayanan kami?
+                                            Beri Penilaian Pelayanan Kami
                                         </h4>
 
-                                        <form wire:submit="submitFeedback" class="space-y-4">
-                                            <div class="flex flex-col gap-2">
-                                                <div class="rating rating-lg">
-                                                    @foreach(range(1, 5) as $i)
-                                                        <input type="radio" wire:model="rating" value="{{ $i }}"
-                                                            class="mask mask-star-2 bg-warning" {{ $rating == $i ? 'checked' : '' }} />
-                                                    @endforeach
-                                                </div>
-                                                <div
-                                                    class="flex justify-between px-1 text-[10px] font-bold text-base-content/40 uppercase tracking-tighter">
-                                                    <span>Buruk</span>
-                                                    <span>Sangat Puas</span>
-                                                </div>
+                                        <form wire:submit="submitFeedback" class="space-y-6">
+                                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                                 {{-- Pertanyaan 1 --}}
+                                                 <div class="space-y-2">
+                                                     <label class="text-[11px] font-black uppercase text-base-content/60 block tracking-wider">1. Persyaratan & Prosedur</label>
+                                                     <div class="rating rating-md">
+                                                         @foreach(range(1, 5) as $i)
+                                                             <input type="radio" wire:model="rating_pelayanan" value="{{ $i }}"
+                                                                 class="mask mask-star-2 bg-warning" {{ $rating_pelayanan == $i ? 'checked' : '' }} />
+                                                         @endforeach
+                                                     </div>
+                                                 </div>
+
+                                                 {{-- Pertanyaan 2 --}}
+                                                 <div class="space-y-2">
+                                                     <label class="text-[11px] font-black uppercase text-base-content/60 block tracking-wider">2. Kecepatan Respon</label>
+                                                     <div class="rating rating-md">
+                                                         @foreach(range(1, 5) as $i)
+                                                             <input type="radio" wire:model="rating_respon" value="{{ $i }}"
+                                                                 class="mask mask-star-2 bg-warning" {{ $rating_respon == $i ? 'checked' : '' }} />
+                                                         @endforeach
+                                                     </div>
+                                                 </div>
+
+                                                 {{-- Pertanyaan 3 --}}
+                                                 <div class="space-y-2">
+                                                     <label class="text-[11px] font-black uppercase text-base-content/60 block tracking-wider">3. Kompetensi Petugas</label>
+                                                     <div class="rating rating-md">
+                                                         @foreach(range(1, 5) as $i)
+                                                             <input type="radio" wire:model="rating_kompetensi" value="{{ $i }}"
+                                                                 class="mask mask-star-2 bg-warning" {{ $rating_kompetensi == $i ? 'checked' : '' }} />
+                                                         @endforeach
+                                                     </div>
+                                                 </div>
+
+                                                 {{-- Pertanyaan 4 --}}
+                                                 <div class="space-y-2">
+                                                     <label class="text-[11px] font-black uppercase text-base-content/60 block tracking-wider">4. Hasil & Fasilitas</label>
+                                                     <div class="rating rating-md">
+                                                         @foreach(range(1, 5) as $i)
+                                                             <input type="radio" wire:model="rating_fasilitas" value="{{ $i }}"
+                                                                 class="mask mask-star-2 bg-warning" {{ $rating_fasilitas == $i ? 'checked' : '' }} />
+                                                         @endforeach
+                                                     </div>
+                                                 </div>
                                             </div>
 
-                                            <x-textarea wire:model="rating_komentar"
-                                                placeholder="Beri komentar (Maks. 200 karakter)..." rows="2"
-                                                maxlength="200"
-                                                class="bg-base-100 border-base-200 focus:border-success/50" />
+                                            <div class="space-y-2">
+                                                <label class="text-[11px] font-black uppercase text-base-content/60 block tracking-wider">Saran & Kritik</label>
+                                                <x-textarea wire:model="rating_komentar"
+                                                    placeholder="Ceritakan pengalaman Anda (Maks. 200 karakter)..." rows="2"
+                                                    maxlength="200"
+                                                    class="bg-base-100 border-base-200 focus:border-success/50" />
+                                            </div>
 
-                                            <div class="flex justify-end">
+                                            <div class="flex justify-end pt-2">
                                                 <x-button label="Kirim Feedback" type="submit"
-                                                    class="btn-success btn-sm text-white font-black" spinner="submitFeedback" />
+                                                    class="btn-success btn-sm sm:btn-md text-white font-black rounded-xl shadow-md" spinner="submitFeedback" />
                                             </div>
                                         </form>
                                     </div>
                                 @elseif($this->pengaduan->rating)
                                     <div
-                                        class="flex flex-col sm:flex-row items-center gap-4 bg-success/10 rounded-xl p-4 border border-success/20">
-                                        <div class="flex flex-col items-center shrink-0">
-                                            <div class="flex items-center gap-1 mb-1">
-                                                @foreach(range(1, 5) as $i)
-                                                    <x-icon name="o-star"
-                                                        class="w-4 h-4 {{ $i <= $this->pengaduan->rating ? 'text-warning fill-warning' : 'text-base-300' }}" />
-                                                @endforeach
+                                        class="flex flex-col gap-4 bg-success/10 rounded-xl p-4 sm:p-5 border border-success/20">
+                                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                                            <div class="flex flex-col">
+                                                <span class="text-[9px] font-black uppercase text-success/60 mb-1">Prosedur</span>
+                                                <div class="flex items-center gap-0.5">
+                                                    @foreach(range(1, 5) as $i)
+                                                        <x-icon name="o-star"
+                                                            class="w-3 h-3 {{ $i <= $this->pengaduan->rating_pelayanan ? 'text-warning fill-warning' : 'text-base-300' }}" />
+                                                    @endforeach
+                                                </div>
                                             </div>
-                                            <span class="text-[10px] font-black uppercase text-success/60">Rating Anda</span>
+                                            <div class="flex flex-col">
+                                                <span class="text-[9px] font-black uppercase text-success/60 mb-1">Kecepatan</span>
+                                                <div class="flex items-center gap-0.5">
+                                                    @foreach(range(1, 5) as $i)
+                                                        <x-icon name="o-star"
+                                                            class="w-3 h-3 {{ $i <= $this->pengaduan->rating_respon ? 'text-warning fill-warning' : 'text-base-300' }}" />
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <span class="text-[9px] font-black uppercase text-success/60 mb-1">Kompetensi</span>
+                                                <div class="flex items-center gap-0.5">
+                                                    @foreach(range(1, 5) as $i)
+                                                        <x-icon name="o-star"
+                                                            class="w-3 h-3 {{ $i <= $this->pengaduan->rating_kompetensi ? 'text-warning fill-warning' : 'text-base-300' }}" />
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <span class="text-[9px] font-black uppercase text-success/60 mb-1">Fasilitas</span>
+                                                <div class="flex items-center gap-0.5">
+                                                    @foreach(range(1, 5) as $i)
+                                                        <x-icon name="o-star"
+                                                            class="w-3 h-3 {{ $i <= $this->pengaduan->rating_fasilitas ? 'text-warning fill-warning' : 'text-base-300' }}" />
+                                                    @endforeach
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="flex-1 min-w-0">
-                                            @if($this->pengaduan->rating_komentar)
-                                                <p
-                                                    class="text-xs italic text-base-content/70 font-medium leading-relaxed break-words overflow-hidden">
+                                        
+                                        @if($this->pengaduan->rating_komentar)
+                                            <div class="pt-3 border-t border-success/10">
+                                                <p class="text-xs italic text-base-content/70 font-medium leading-relaxed">
                                                     "{{ $this->pengaduan->rating_komentar }}"
                                                 </p>
-                                            @else
-                                                <p class="text-xs font-bold text-success/70 italic">Terima kasih atas penilaian
-                                                    Anda!</p>
-                                            @endif
-                                        </div>
+                                            </div>
+                                        @else
+                                            <p class="text-xs font-bold text-success/70 italic border-t border-success/10 pt-3">Terima kasih atas penilaian Anda!</p>
+                                        @endif
                                     </div>
                                 @endif
                             </div>
@@ -358,19 +425,15 @@
 
         <div class="space-y-4 sm:space-y-6 px-0">
 
-            <div x-data="{ expanded: window.innerWidth >= 1024 }"
-                class="bg-base-100 sm:rounded-2xl sm:shadow-sm border-y sm:border border-base-200 overflow-hidden sticky top-6">
-                <div @click="expanded = !expanded"
-                    class="px-3 sm:px-4 py-3 sm:py-4 bg-base-200/30 border-b border-base-200 flex items-center justify-between cursor-pointer hover:bg-base-200/50 transition-colors">
+            <div class="bg-base-100 sm:rounded-2xl sm:shadow-sm border-y sm:border border-base-200 overflow-hidden sm:sticky sm:top-6">
+                <div class="px-3 sm:px-4 py-3 sm:py-4 bg-base-200/30 border-b border-base-200 flex items-center justify-between">
                     <div class="flex items-center gap-2">
                         <x-icon name="o-clock" class="w-4 h-4 text-primary" />
-                        <h2 class="font-bold text-base-content/80 text-xs">Riwayat Laporan</h2>
+                        <h2 class="font-bold text-base-content/80 text-xs uppercase tracking-wider">Riwayat Laporan</h2>
                     </div>
-                    <x-icon name="o-chevron-down" class="w-4 h-4 text-base-content/50 transition-transform"
-                        x-bind:class="expanded ? 'rotate-180' : ''" />
                 </div>
 
-                <div x-show="expanded" x-transition class="px-3 py-4 sm:p-5">
+                <div class="px-3 py-4 sm:p-5">
 
                     @if($this->pengaduan->histories->count() > 0)
                         <div class="space-y-3">
@@ -477,10 +540,6 @@
         </div>
     </div>
 
-    {{-- Footer --}}
-    <div class="relative w-[100vw] left-1/2 -ml-[50vw] mt-16">
-        <x-footer />
-    </div>
     <!-- Modal Preview Foto -->
     <x-modal wire:model="previewModal" class="backdrop-blur">
         <div class="p-1">

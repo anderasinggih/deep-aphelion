@@ -94,6 +94,8 @@ new #[Layout('layouts.auth')] class extends Component
             <p class="text-sm text-base-content/60 leading-relaxed">
                 Sebelum memulai, silakan verifikasi alamat email Anda dengan mengklik tautan yang baru saja kami kirimkan. 
                 Jika Anda tidak menerima email tersebut, kami akan dengan senang hati mengirimkannya kembali.
+                <br><br>
+                <span class="font-bold text-primary italic">Catatan: Silakan periksa folder <b>Spam</b> jika email tidak muncul di kotak masuk utama.</span>
             </p>
         </div>
 

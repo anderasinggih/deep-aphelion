@@ -38,6 +38,7 @@
     </style>
 </head>
 <body onload="window.print()">
+@php \Carbon\Carbon::setLocale('id'); @endphp
 
 <div class="print-container">
 
@@ -45,8 +46,7 @@
     <table class="kop-table">
         <tr>
             <td class="kop-logo">
-                <img src="{{ asset('storage/assets/logobanyumas.png') }}" alt="Logo Banyumas" style="width:72px; height:72px; object-fit:contain;"
-                    onerror="this.onerror=null;this.src='https://upload.wikimedia.org/wikipedia/commons/4/4e/Lambang_Kabupaten_Banyumas.png'">
+                <img src="{{ asset('storage/assets/logobanyumas.png') }}" alt="Logo Banyumas" style="width:72px; height:72px; object-fit:contain;">
             </td>
             <td class="kop-text">
                 <h1>Pemerintah Kabupaten Banyumas</h1>
@@ -62,7 +62,7 @@
     <div class="judul-doc">
         <h3>Laporan Rekapitulasi Data Pengaduan Masyarakat</h3>
         <p style="font-size:10pt; margin-top:4px;">
-            Dicetak: {{ now()->isoFormat('D MMMM YYYY') }} &nbsp;&nbsp;|&nbsp;&nbsp; Oleh: {{ auth()->user()->name }}
+            Dicetak: {{ now()->translatedFormat('d F Y') }} &nbsp;&nbsp;|&nbsp;&nbsp; Oleh: {{ auth()->user()->name }}
         </p>
     </div>
 
@@ -74,9 +74,9 @@
         <strong>Filter Aktif:</strong>
         Status: {{ isset($filterInfo['status']) && $filterInfo['status'] ? ($labelStatus[$filterInfo['status']] ?? $filterInfo['status']) : 'Semua' }}
         &nbsp;|&nbsp;
-        Periode: {{ isset($filterInfo['start_date']) && $filterInfo['start_date'] ? \Carbon\Carbon::parse($filterInfo['start_date'])->isoFormat('D MMMM YYYY') : 'Awal' }}
+        Periode: {{ isset($filterInfo['start_date']) && $filterInfo['start_date'] ? \Carbon\Carbon::parse($filterInfo['start_date'])->translatedFormat('d F Y') : 'Awal' }}
         &nbsp;&ndash;&nbsp;
-        {{ isset($filterInfo['end_date']) && $filterInfo['end_date'] ? \Carbon\Carbon::parse($filterInfo['end_date'])->isoFormat('D MMMM YYYY') : now()->isoFormat('D MMMM YYYY') }}
+        {{ isset($filterInfo['end_date']) && $filterInfo['end_date'] ? \Carbon\Carbon::parse($filterInfo['end_date'])->translatedFormat('d F Y') : now()->translatedFormat('d F Y') }}
         &nbsp;|&nbsp;
         <strong>Jumlah Data: {{ $pengaduans->count() }} laporan</strong>
     </div>
@@ -140,7 +140,7 @@
     {{-- Tanda Tangan --}}
     <div class="ttd-area">
         <div class="ttd-box">
-            <p>Kembaran, {{ now()->isoFormat('D MMMM YYYY') }}</p>
+            <p>Kembaran, {{ now()->translatedFormat('d F Y') }}</p>
             <p style="font-weight:bold; margin-top:4px;">{{ $ttd['jabatan'] }}</p>
             
             @if(!empty($ttd['file']))

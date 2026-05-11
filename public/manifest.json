@@ -8,13 +8,13 @@
   "theme_color": "#4f46e5",
   "icons": [
     {
-      "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Lambang_Kabupaten_Banyumas.png/192px-Lambang_Kabupaten_Banyumas.png",
+      "src": "/storage/assets/logobanyumas.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Lambang_Kabupaten_Banyumas.png/512px-Lambang_Kabupaten_Banyumas.png",
+      "src": "/storage/assets/logobanyumas.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

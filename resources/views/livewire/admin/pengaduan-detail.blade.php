@@ -15,39 +15,44 @@
                     class="btn-primary btn-outline shadow-sm rounded-xl shrink-0 btn-sm sm:btn-md" label="Update Status" />
             </x-slot:trigger>
 
-            <div class="my-1 opacity-50 divider mt-0"><span class="text-[10px] font-bold">Update Progres</span></div>
+            <div class="my-0.5 opacity-50 divider mt-0 px-2"><span class="text-[9px] font-bold uppercase tracking-tighter">Update Progres</span></div>
 
             @if($this->pengaduan->status === 'menunggu')
-                <x-menu-item title="Mulai Proses" icon="o-arrow-path" class="font-bold text-info"
+                <x-menu-item title="Mulai Proses" icon="o-arrow-path" class="font-bold text-info !py-1 text-xs"
                     wire:click="openUpdateStatusModal('diproses')" />
-                <x-menu-item title="Tolak Laporan" icon="o-x-circle" class="text-error"
+                <x-menu-item title="Tolak Laporan" icon="o-x-circle" class="text-error !py-1 text-xs"
                     wire:click="openUpdateStatusModal('ditolak')" />
             @endif
 
             @if($this->pengaduan->status !== 'selesai' && $this->pengaduan->status !== 'ditolak')
-                <div class="my-1 opacity-50 divider mt-0"></div>
-                <x-menu-item title="Rujuk Laporan (Duplikat)" icon="o-document-duplicate" class="font-bold text-primary"
+                <div class="my-0.5 opacity-30 divider mt-0"></div>
+                <x-menu-item title="Rujuk (Duplikat)" icon="o-document-duplicate" class="font-bold text-primary !py-1 text-xs"
                     wire:click="$set('linkModal', true)" />
             @endif
 
             @if($this->pengaduan->status === 'diproses')
-                <x-menu-item title="Tambah Progress" icon="o-pencil" class="font-bold text-info"
+                <div class="my-0.5 opacity-30 divider mt-0"></div>
+                <x-menu-item title="Tambah Progres" icon="o-pencil" class="font-bold text-info !py-1 text-xs"
                     wire:click="openUpdateStatusModal('diproses')" />
-                <x-menu-item title="Selesaikan" icon="o-check-circle" class="font-bold text-success"
+                <x-menu-item title="Selesaikan" icon="o-check-circle" class="font-bold text-success !py-1 text-xs"
                     wire:click="openUpdateStatusModal('selesai')" />
-                <x-menu-item title="Batalkan (Ke Menunggu)" icon="o-clock"
+                <x-menu-item title="Batalkan" icon="o-clock" class="!py-1 text-xs"
                     wire:click="openUpdateStatusModal('menunggu')" />
             @endif
 
             @if($this->pengaduan->status === 'selesai')
-                <x-menu-item title="Buka Kembali (Ke Proses)" icon="o-arrow-path"
+                <x-menu-item title="Buka Kembali" icon="o-arrow-path" class="!py-1 text-xs"
                     wire:click="openUpdateStatusModal('diproses')" />
             @endif
 
             @if($this->pengaduan->status === 'ditolak')
-                <x-menu-item title="Pulihkan (Ke Menunggu)" icon="o-clock"
+                <x-menu-item title="Pulihkan" icon="o-clock" class="!py-1 text-xs"
                     wire:click="openUpdateStatusModal('menunggu')" />
             @endif
+
+            <div class="my-0.5 opacity-30 divider mt-0"></div>
+            <x-menu-item title="Cetak Resi" icon="o-printer" class="!py-1 text-xs"
+                link="{{ route('print.resi', $this->pengaduan->id) }}" external target="_blank" />
         </x-dropdown>
     </div>
 
@@ -401,6 +406,15 @@
                             <span class="font-bold text-base-content/50">No. WA</span>
                             <span class="font-mono font-black text-base-content/80">{{ $this->pengaduan->user?->no_wa ?? '-' }}</span>
                         </div>
+                        @if($this->pengaduan->user?->no_wa)
+                        <div class="divider my-0 opacity-10"></div>
+                        <div class="pt-1">
+                            <a href="{{ $this->generateWaLink() }}" target="_blank" class="btn btn-xs w-full bg-green-500 hover:bg-green-600 text-white border-none rounded-lg font-bold flex items-center gap-1.5">
+                                <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.114 1.52 5.843L.057 23.535a.5.5 0 0 0 .607.607l5.696-1.462A11.935 11.935 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.923 0-3.716-.52-5.253-1.428l-.376-.222-3.904 1.002 1.003-3.776-.244-.389A9.96 9.96 0 0 1 2 12c0-5.514 4.486-10 10-10s10 4.486 10 10-4.486 10-10 10z"/></svg>
+                                Kirim Notifikasi WA
+                            </a>
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>

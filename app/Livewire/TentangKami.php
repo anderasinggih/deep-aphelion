@@ -17,14 +17,14 @@ class TentangKami extends Component
             'instansi_jam_senkam', 'instansi_jam_jumat', 'instansi_jam_sabtu', 'app_logo', 'app_logo_sekunder'
         ])->pluck('value', 'key');
 
-        $this->instansi_nama = $settings['instansi_nama'] ?? 'Kecamatan Kembaran';
-        $this->instansi_alamat = $settings['instansi_alamat'] ?? 'Jl. Raya Kembaran No. 1';
-        $this->instansi_telepon = $settings['instansi_telepon'] ?? '(0281) 123456';
-        $this->instansi_email = $settings['instansi_email'] ?? 'kecamatan@kembaran.go.id';
+        $this->instansi_nama = $settings['instansi_nama'] ?? 'Kantor Kecamatan Kembaran';
+        $this->instansi_alamat = $settings['instansi_alamat'] ?? 'Jl. Kyai Kembar No. 17, Kembaran';
+        $this->instansi_telepon = $settings['instansi_telepon'] ?? '(0281) 6840XXX';
+        $this->instansi_email = $settings['instansi_email'] ?? 'kecamatan.kembaran@banyumaskab.go.id';
         
         $this->jam_senin_kamis = $settings['instansi_jam_senkam'] ?? '07.30 – 16.00 WIB';
         $this->jam_jumat = $settings['instansi_jam_jumat'] ?? '07.30 – 11.00 WIB';
-        $this->jam_sabtu_minggu = $settings['instansi_jam_sabtu'] ?? 'Libur';
+        $this->jam_sabtu_minggu = $settings['instansi_jam_sabtu'] ?? 'LIBUR';
         $this->app_logo = $settings['app_logo'] ?? null;
         $this->app_logo_sekunder = $settings['app_logo_sekunder'] ?? null;
 
@@ -50,5 +50,15 @@ class TentangKami extends Component
             'app_logo' => $this->app_logo,
             'app_logo_sekunder' => $this->app_logo_sekunder
         ])->layout('layouts.app');
+    }
+
+    public function formatNumber($val)
+    {
+        if (!is_numeric($val)) return $val;
+        if ($val >= 1000) {
+            $formatted = number_format($val / 1000, 1, ',', '.');
+            return str_replace(',0', '', $formatted) . 'rb';
+        }
+        return number_format($val, 0, ',', '.');
     }
 }

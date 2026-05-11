@@ -7,21 +7,41 @@ use App\Models\Pengaduan;
 use App\Models\Kategori;
 use App\Models\PengaduanDukungan;
 use Livewire\WithPagination;
+use Livewire\Attributes\Url;
 use Illuminate\Support\Facades\Auth;
+use Mary\Traits\Toast;
 
 class Beranda extends Component
 {
-    use WithPagination;
+    use WithPagination, Toast;
 
     public $kategori_id = '';
     public $search = '';
     public $sort = 'terbaru';
     public $trackingCode = '';
+    
+    #[Url]
+    public $viewMode = 'grid';
+
+    public function updatedTrackingCode($value)
+    {
+        // 1. Force Uppercase
+        $value = strtoupper($value);
+        
+        // 2. Allow only A-Z, 0-9, hyphen (-), and slash (/)
+        $value = preg_replace('/[^A-Z0-9-\/]/', '', $value);
+        
+        // 3. Limit to 25 characters (Scalable for millions of reports)
+        $this->trackingCode = substr($value, 0, 25);
+    }
 
     public function lacakLaporan()
     {
         $this->validate([
-            'trackingCode' => 'required|string|max:50'
+            'trackingCode' => 'required|string|min:10|max:25'
+        ], [
+            'trackingCode.min' => 'Kode tracking terlalu pendek.',
+            'trackingCode.max' => 'Kode tracking terlalu panjang.'
         ]);
 
         $pengaduan = Pengaduan::where('kode_tracking', $this->trackingCode)->first();
@@ -45,28 +65,68 @@ class Beranda extends Component
         }
 
         $userId = Auth::id();
+        $pengaduan = Pengaduan::find($pengaduan_id);
+
+        if (!$pengaduan) {
+            return;
+        }
+
+        // 1. Anti-Cheat: Prevent self-support
+        if ($pengaduan->user_id === $userId) {
+            $this->error('Anda tidak dapat memberikan dukungan pada laporan sendiri.');
+            return;
+        }
+
+        // 2. Status Check: Only active reports can be supported
+        if (!in_array($pengaduan->status, ['menunggu', 'diproses'])) {
+            $this->error('Dukungan hanya dapat diberikan pada laporan yang sedang aktif.');
+            return;
+        }
+
         $existing = PengaduanDukungan::query()->where('pengaduan_id', $pengaduan_id)
             ->where('user_id', $userId)
             ->first();
 
         if ($existing) {
             $existing->delete(); // Toggle (Cancel upvote)
-            session()->flash('success', 'Dukungan dibatalkan.');
+            $this->success('Dukungan dibatalkan.');
         }
         else {
             PengaduanDukungan::create([
                 'pengaduan_id' => $pengaduan_id,
                 'user_id' => $userId
             ]);
-            session()->flash('success', 'Terima kasih atas dukungan Anda!');
+            $this->success('Terima kasih atas dukungan Anda!');
         }
+
+        // Auto-priority logic: > 50 upvotes automatic HIGH priority
+        $count = $pengaduan->dukungans()->count();
+        if ($count >= 50 && $pengaduan->prioritas !== 'tinggi' && in_array($pengaduan->status, ['menunggu', 'diproses'])) {
+            $pengaduan->update(['prioritas' => 'tinggi']);
+        }
+    }
+
+    public function updatedSearch() { $this->resetPage(); }
+    public function updatedKategoriId() { $this->resetPage(); }
+    public function updatedSort() { $this->resetPage(); }
+
+    public function paginationView()
+    {
+        return 'vendor.pagination.tailwind';
     }
 
     public function render()
     {
         $query = Pengaduan::query()
-            ->with(['user', 'kategori', 'dukungans'])
+            ->select('id', 'user_id', 'kategori_id', 'judul', 'deskripsi', 'status', 'foto_bukti', 'kode_tracking', 'is_anonymous', 'lokasi_kejadian', 'created_at')
+            ->with([
+                'user:id,name', 
+                'kategori:id,nama'
+            ])
             ->withCount('dukungans')
+            ->withExists(['dukungans as has_liked' => function($q) {
+                $q->where('user_id', auth()->id());
+            }])
             ->where('is_private', false)
             ->where('status', '!=', 'ditolak');
 
@@ -77,7 +137,8 @@ class Beranda extends Component
         if ($this->search) {
             $query->where(function ($q) {
                 $q->where('judul', 'like', '%' . $this->search . '%')
-                    ->orWhere('deskripsi', 'like', '%' . $this->search . '%');
+                    ->orWhere('deskripsi', 'like', '%' . $this->search . '%')
+                    ->orWhere('lokasi_kejadian', 'like', '%' . $this->search . '%');
             });
         }
 

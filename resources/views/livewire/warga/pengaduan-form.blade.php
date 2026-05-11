@@ -448,6 +448,7 @@
     };
 
     document.addEventListener('livewire:navigated', () => {
+        window.scrollTo(0, 0);
         const mapEl = document.getElementById('map');
         if (mapEl) {
              setTimeout(() => {

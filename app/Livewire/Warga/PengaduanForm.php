@@ -13,6 +13,9 @@ use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
+use App\Models\Setting;
+use App\Mail\Admin\NewReportNotification;
 
 class PengaduanForm extends Component
 {
@@ -178,10 +181,10 @@ class PengaduanForm extends Component
                 if (count($paths) >= 4) break;
 
                 $image = $manager->read($foto->getRealPath());
-                $image->scale(width: 1920);
+                $image->scale(width: 1000);
                 
                 $filename = 'pengaduans/' . $foto->hashName();
-                $encoded = $image->toJpeg(75);
+                $encoded = $image->toJpeg(60);
                 
                 Storage::disk('public')->put($filename, (string) $encoded);
                 $paths[] = $filename;
@@ -223,12 +226,27 @@ class PengaduanForm extends Component
             $pengaduan->kode_tracking = 'PKM-KBR/' . str_pad($nomorUrut, 3, '0', STR_PAD_LEFT) . '/' . $bulan . '/' . $tahun;
             $pengaduan->save();
 
-            // Kirim Email Konfirmasi Laporan Diterima
+            // Kirim Email Konfirmasi Laporan Diterima (Ke Warga)
             if ($user->email) {
                 try {
-                    \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\Pengaduan\StatusUpdate($pengaduan));
+                    Mail::to($user->email)->send(new \App\Mail\Pengaduan\StatusUpdate($pengaduan));
                 } catch (\Exception $e) {
-                    \Log::error('Gagal mengirim email pengaduan: ' . $e->getMessage());
+                    \Log::error('Gagal mengirim email konfirmasi warga: ' . $e->getMessage());
+                }
+            }
+
+            // Kirim Notifikasi ke Admin/Pegawai (Multiple Recipients)
+            $adminEmailsRaw = Setting::where('key', 'notif_email_penerima')->first()?->value;
+            if ($adminEmailsRaw) {
+                $adminEmails = array_map('trim', explode(',', $adminEmailsRaw));
+                $adminEmails = array_filter($adminEmails, fn($e) => filter_var($e, FILTER_VALIDATE_EMAIL));
+                
+                if (!empty($adminEmails)) {
+                    try {
+                        Mail::to($adminEmails)->send(new NewReportNotification($pengaduan));
+                    } catch (\Exception $e) {
+                        \Log::error('Gagal mengirim notifikasi email admin: ' . $e->getMessage());
+                    }
                 }
             }
 

@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ isset($title) ? $title.' - Kembaran Ngadu' : 'Kembaran Ngadu' }}</title>
 
@@ -19,12 +19,26 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Kembaran Ngadu">
-    <link rel="apple-touch-icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Lambang_Kabupaten_Banyumas.png/192px-Lambang_Kabupaten_Banyumas.png">
+    <link rel="apple-touch-icon" href="{{ asset('storage/assets/logobanyumas.png') }}">
+    
+    @stack('meta')
 
     @stack('styles')
     <style>
+        [wire\:loading], [wire\:loading\.delay], [wire\:loading\.delay\.long] {
+            display: none !important;
+        }
+        html {
+            height: 100%;
+            overflow-x: clip;
+        }
         body {
             touch-action: manipulation;
+            width: 100%;
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow-x: clip;
         }
         .toast {
             z-index: 2000 !important;
@@ -33,10 +47,10 @@
 
 </head>
 
-<body class="min-h-screen font-sans antialiased bg-base-200">
+<body class="font-sans antialiased bg-base-200 flex flex-col">
 
     {{-- Wrapper untuk ngatur posisi melayang (ada jarak dari atas dan samping) --}}
-    <div class="sticky top-4 z-[1000] w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-all">
+    <div class="sticky top-4 z-[1000] w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-all print:hidden">
 
         {{-- Navbar utamanya dibikin melengkung, blur tinggi, dan ada border kaca --}}
         <div
@@ -47,7 +61,7 @@
                     <summary class="btn btn-ghost lg:hidden rounded-full list-none [&::-webkit-details-marker]:hidden">
                         <x-icon name="o-bars-3" class="w-5 h-5" />
                     </summary>
-                    <ul onclick="this.closest('details').removeAttribute('open')"
+                    <ul onclick="if(event.target.closest('a')) this.closest('details').removeAttribute('open')"
                         class="menu menu-sm dropdown-content mt-5 z-[50] p-2 shadow-2xl bg-base-100 rounded-2xl w-64 border border-base-300">
                         <li><a href="/" class="{{ request()->is('/') ? 'active' : '' }}"><x-icon name="o-home"
                                      class="w-4 h-4" /> Beranda</a></li>
@@ -59,8 +73,8 @@
                                 class="{{ request()->is('admin/dashboard') ? 'active' : '' }}"><x-icon
                                     name="o-chart-bar" class="w-4 h-4" /> Dashboard Admin</a></li>
                         <li><a href="/admin/pengaduan"
-                                class="{{ request()->is('admin/pengaduan') ? 'active' : '' }}"><x-icon
-                                    name="o-inbox-stack" class="w-4 h-4" /> Kelola Pengaduan</a></li>
+                                 class="{{ request()->is('admin/pengaduan') ? 'active' : '' }}"><x-icon
+                                     name="o-inbox-stack" class="w-4 h-4" /> Kelola Pengaduan</a></li>
                         
                         @if(auth()->user()->role === 'admin')
                         <li>
@@ -109,7 +123,7 @@
 
             <div class="navbar-center hidden lg:flex">
                 <ul class="menu menu-horizontal px-1 gap-1 text-sm font-bold text-base-content/80">
-                    <li><a href="/"
+                    <li><a href="/" wire:navigate
                             class="{{ request()->is('/') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all py-1.5"><x-icon
                                  name="o-home" class="w-4 h-4" /> Beranda</a></li>
                     <li><a href="{{ route('tentang-kami') }}" wire:navigate
@@ -173,7 +187,7 @@
                             <span class="text-[10px] font-black tracking-tighter">{{ $initials }}</span>
                         </div>
                     </summary>
-                    <ul onclick="this.closest('details').removeAttribute('open')"
+                    <ul onclick="if(event.target.closest('a')) this.closest('details').removeAttribute('open')"
                         class="menu menu-sm dropdown-content mt-3 z-[100] p-2 shadow-2xl bg-base-100 rounded-2xl w-56 border border-base-200">
                         <li class="px-4 py-3 border-b border-base-200/50 mb-1 pointer-events-none">
                             <div class="flex flex-col w-full min-w-0 overflow-hidden items-start gap-0.5 !bg-transparent !p-0">
@@ -183,13 +197,13 @@
                             </div>
                         </li>
                         @if(auth()->user()->role === 'admin')
-                        <li><a href="/admin/dashboard" class="py-2.5 rounded-xl font-bold"><x-icon name="o-squares-2x2"
+                        <li><a href="/admin/dashboard" wire:navigate class="py-2.5 rounded-xl font-bold"><x-icon name="o-squares-2x2"
                                     class="w-4 h-4 opacity-70" /> Dashboard</a></li>
                         @else
-                        <li><a href="/dashboard" class="py-2.5 rounded-xl font-bold"><x-icon name="o-squares-2x2"
+                        <li><a href="/dashboard" wire:navigate class="py-2.5 rounded-xl font-bold"><x-icon name="o-squares-2x2"
                                     class="w-4 h-4 opacity-70" /> Dashboard</a></li>
                         @endif
-                        <li><a href="/profile" class="py-2.5 rounded-xl font-bold"><x-icon name="o-cog-6-tooth"
+                        <li><a href="/profile" wire:navigate class="py-2.5 rounded-xl font-bold"><x-icon name="o-cog-6-tooth"
                                     class="w-4 h-4 opacity-70" /> Settings</a></li>
                         <div class="divider my-0 opacity-30"></div>
                         <li><a href="/logout"
@@ -208,8 +222,8 @@
         </div>
     </div>
 
-    {{-- Gunakan main tag standar untuk kontrol penuh --}}
-    <main class="w-full pt-6 sm:pt-10">
+    {{-- Main Content --}}
+    <main class="flex-grow w-full pt-6 sm:pt-10">
         @isset($header)
         <div class="px-4 py-4 mx-auto mb-6 shadow-sm max-w-7xl sm:px-6 lg:px-8 bg-base-100 rounded-2xl border border-base-200">
             {{ $header }}
@@ -218,6 +232,13 @@
 
         {{ $slot }}
     </main>
+
+    {{-- Centralized Footer --}}
+    @if(!request()->routeIs('admin.*'))
+    <div class="print:hidden">
+        <x-footer />
+    </div>
+    @endif
 
     <x-toast />
     <script>
@@ -232,21 +253,48 @@
         }
         // Global Share Function
         function nativeShare(title, text, url) {
+            // Check if native share is available (usually requires HTTPS)
             if (navigator.share) {
                 navigator.share({
                     title: title,
                     text: text,
-                    url: url || window.location.href
-                }).catch(err => {
-                    if (err.name !== 'AbortError') {
-                        console.error('Error sharing:', err);
+                    url: url
+                })
+                .catch((error) => {
+                    if (error.name !== 'AbortError') {
+                        openShareModal(title, text, url);
                     }
                 });
             } else {
-                // Fallback to WhatsApp
-                const shareText = encodeURIComponent(text + ' ' + (url || window.location.href));
-                window.open(`https://wa.me/?text=${shareText}`, '_blank');
+                // Fallback to custom modal instead of direct WA
+                openShareModal(title, text, url);
             }
+        }
+
+        function openShareModal(title, text, url) {
+            const modal = document.getElementById('global_share_modal');
+            const waBtn = document.getElementById('share_wa_btn');
+            const copyBtn = document.getElementById('share_copy_btn');
+            
+            // Set WhatsApp link
+            waBtn.onclick = () => {
+                window.open(`https://wa.me/?text=${encodeURIComponent(title + ' ' + url)}`, '_blank');
+            };
+            
+            // Set Copy link
+            copyBtn.onclick = () => {
+                navigator.clipboard.writeText(url).then(() => {
+                    const originalText = copyBtn.innerHTML;
+                    copyBtn.innerHTML = '<x-icon name="o-check" class="w-5 h-5" /> Tersalin!';
+                    copyBtn.classList.add('btn-success');
+                    setTimeout(() => {
+                        copyBtn.innerHTML = originalText;
+                        copyBtn.classList.remove('btn-success');
+                    }, 2000);
+                });
+            };
+            
+            modal.showModal();
         }
 
         // Scroll Restoration for Livewire Navigate
@@ -260,30 +308,47 @@
         });
 
         document.addEventListener('livewire:navigated', () => {
-            const isSpaNav = sessionStorage.getItem('spa_navigating');
-            const savedScroll = sessionStorage.getItem('scroll_' + window.location.href);
-
-            if (isSpaNav && savedScroll) {
-                // Restore scroll if we have a saved position and we are in SPA mode
-                setTimeout(() => {
-                    window.scrollTo({
-                        top: parseInt(savedScroll),
-                        behavior: 'instant'
-                    });
-                }, 20);
-            } else if (!isSpaNav) {
-                // Always scroll to top on full page refresh
-                window.scrollTo(0, 0);
-            }
+            // Always scroll to top on any navigation
+            window.scrollTo(0, 0);
             
             sessionStorage.removeItem('spa_navigating');
         });
     </script>
 
+    {{-- Global Share Modal --}}
+    <dialog id="global_share_modal" class="modal modal-bottom sm:modal-middle">
+        <div class="modal-box bg-base-100 p-0 overflow-hidden border-t sm:border border-base-200">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="font-black text-xl">Bagikan Laporan</h3>
+                    <form method="dialog">
+                        <button class="btn btn-sm btn-circle btn-ghost">✕</button>
+                    </form>
+                </div>
 
+                <div class="grid grid-cols-2 gap-4">
+                    <button id="share_wa_btn" class="btn btn-lg h-24 flex-col gap-2 bg-[#25D366] hover:bg-[#20bd5a] text-white border-none transition-all hover:scale-95">
+                        <x-icon name="o-chat-bubble-left-right" class="w-8 h-8" />
+                        <span class="text-xs font-bold uppercase tracking-wider">WhatsApp</span>
+                    </button>
+                    
+                    <button id="share_copy_btn" class="btn btn-lg h-24 flex-col gap-2 bg-base-200 hover:bg-base-300 border-none transition-all hover:scale-95">
+                        <x-icon name="o-link" class="w-8 h-8" />
+                        <span class="text-xs font-bold uppercase tracking-wider">Salin Link</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="bg-base-200/50 p-4 text-center">
+                <p class="text-[10px] uppercase tracking-[0.2em] font-bold opacity-40">Bantu suarakan aspirasi warga</p>
+            </div>
+        </div>
+        <form method="dialog" class="modal-backdrop bg-black/40">
+            <button>close</button>
+        </form>
+    </dialog>
 
-
-
+    @livewireScripts
     @stack('scripts')
 </body>
 

@@ -143,7 +143,7 @@ class PengaduanDetail extends Component
             $image->scale(width: 1200);
             
             $filename = 'bukti_selesai/' . $this->update_foto->hashName();
-            $encoded = $image->toJpeg(75); // Compress to 75% quality
+            $encoded = $image->toJpeg(60); // Compress to 60% quality
             
             Storage::disk('public')->put($filename, (string) $encoded);
             $path = $filename;
@@ -186,26 +186,7 @@ class PengaduanDetail extends Component
         ]);
 
         // Generate WA notification link
-        $labelMap = ['menunggu' => 'Menunggu', 'diproses' => 'Sedang Diproses', 'selesai' => 'Selesai', 'ditolak' => 'Ditolak'];
-        $statusLabel = $labelMap[$this->update_status] ?? $this->update_status;
-        
-        $noWa = preg_replace('/[^0-9]/', '', $this->pengaduan->user->no_wa ?? '');
-        if ($noWa && str_starts_with($noWa, '0')) {
-            $noWa = '62' . substr($noWa, 1);
-        }
-
-        if ($noWa) {
-            if ($isUpdateOnly) {
-                $pesan = "Yth. {$this->pengaduan->user->name},\n\nAda update terbaru mengenai laporan Anda dengan kode *{$this->pengaduan->kode_tracking}* (\"_{$this->pengaduan->judul}_\").\n\n*Update Progres:* _{$this->update_keterangan}_";
-            } else {
-                $pesan = "Yth. {$this->pengaduan->user->name},\n\nLaporan Anda dengan kode *{$this->pengaduan->kode_tracking}* mengenai \"_{$this->pengaduan->judul}_\" telah diperbarui.\n\nStatus saat ini: *{$statusLabel}*";
-                if ($this->update_keterangan) {
-                    $pesan .= "\nKeterangan: _{$this->update_keterangan}_";
-                }
-            }
-            $pesan .= "\n\nKecamatan Kembaran — Kembaran Ngadu";
-            $this->waLink = 'https://wa.me/' . $noWa . '?text=' . rawurlencode($pesan);
-        }
+        $this->waLink = $this->generateWaLink($isUpdateOnly);
 
 
         $this->reset('updateModal', 'update_status', 'update_foto', 'update_keterangan');
@@ -224,9 +205,13 @@ class PengaduanDetail extends Component
     }
 
     public function clearWaLink()
-
     {
         $this->waLink = null;
+    }
+
+    public function generateWaLink($isUpdateOnly = false)
+    {
+        return $this->pengaduan->generateWaLink($isUpdateOnly ? $this->update_keterangan : null);
     }
 
     public function render()
