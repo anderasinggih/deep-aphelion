@@ -4,10 +4,12 @@
             <h1 class="text-3xl font-black tracking-tight text-primary">Dashboard Warga</h1>
             <p class="mt-1 text-sm text-base-content/70">Pantau laporan pengaduan yang telah Anda buat</p>
         </div>
+        @if($pengaduans->total() > 0)
         <div>
             <x-button label="Buat Pengaduan" icon="o-plus" class="shadow-sm btn-primary rounded-xl"
                 link="{{ route('pengaduan.create') }}" />
         </div>
+        @endif
     </div>
 
     @if (session()->has('success'))
