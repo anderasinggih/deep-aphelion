@@ -312,6 +312,23 @@
             window.scrollTo(0, 0);
             
             sessionStorage.removeItem('spa_navigating');
+
+            // --- DROPDOWN SYNC LOGIC ---
+            // Ensure only one <details> dropdown is open at a time
+            const allDetails = document.querySelectorAll('details.dropdown');
+            
+            allDetails.forEach(targetDetail => {
+                targetDetail.addEventListener('toggle', (e) => {
+                    if (targetDetail.open) {
+                        allDetails.forEach(detail => {
+                            if (detail !== targetDetail && detail.open) {
+                                detail.removeAttribute('open');
+                            }
+                        });
+                    }
+                });
+            });
+            // ----------------------------
         });
     </script>
 
