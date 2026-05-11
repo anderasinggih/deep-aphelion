@@ -1,4 +1,4 @@
-<div class="w-full max-w-7xl mx-auto px-1.5 lg:px-2">
+<div class="w-full overflow-x-clip">
     <style>
 
 
@@ -8,20 +8,9 @@
 
         .banner-paksa-atas {
             position: relative;
-            /* Safe breakout: Expand to edges of px-1.5 mobile padding */
-            margin-left: -0.375rem; 
-            margin-right: -0.375rem;
-            width: auto;
+            width: 100%;
             /* Tarik ke atas melampaui padding x-main (sesuaikan angka ini) */
             margin-top: -5rem !important;
-            overflow-x: clip;
-        }
-
-        @media (min-width: 1024px) {
-            .banner-paksa-atas {
-                margin-left: -0.5rem; /* Align with lg:px-2 */
-                margin-right: -0.5rem;
-            }
         }
 
         @media (min-width: 1024px) {
