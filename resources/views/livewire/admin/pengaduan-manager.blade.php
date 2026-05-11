@@ -1,4 +1,39 @@
-<div class="px-2 py-4 sm:py-8 mx-auto max-w-7xl sm:px-6 lg:px-8 text-base-content">
+<div class="w-full max-w-7xl mx-auto px-1.5 lg:px-2 py-4 sm:py-8 text-base-content" 
+    x-data="{ 
+        selectedIds: @entangle('selectedIds').live,
+        bulkMode: @entangle('bulkMode').live,
+        currentPageIds: @entangle('currentPageIds'),
+        finishedIds: @entangle('finishedIds'),
+        lastSelectedIndex: null,
+        toggle(id, index, event) {
+            if (!this.bulkMode) return;
+            id = String(id);
+            
+            if (event.shiftKey && this.lastSelectedIndex !== null) {
+                let start = Math.min(this.lastSelectedIndex, index);
+                let end = Math.max(this.lastSelectedIndex, index);
+                let rangeIds = this.currentPageIds.slice(start, end + 1);
+                
+                let shouldSelect = !this.selectedIds.includes(id);
+                
+                if (shouldSelect) {
+                    this.selectedIds = [...new Set([...this.selectedIds, ...rangeIds])];
+                } else {
+                    this.selectedIds = this.selectedIds.filter(i => !rangeIds.includes(i));
+                }
+            } else {
+                if (this.selectedIds.includes(id)) {
+                    this.selectedIds = this.selectedIds.filter(i => i !== id);
+                } else {
+                    this.selectedIds.push(id);
+                }
+            }
+            this.lastSelectedIndex = index;
+        },
+        get canBulkRefer() {
+            return this.selectedIds.length > 0 && !this.selectedIds.some(id => this.finishedIds.includes(id));
+        }
+    }">
     <style>
         .custom-scrollbar::-webkit-scrollbar {
             height: 4px;
@@ -55,20 +90,20 @@
             <p class="text-[10px] sm:text-sm text-base-content/60">Kelola aduan warga Kembaran</p>
         </div>
         <div class="flex items-center gap-1.5 flex-wrap sm:flex-nowrap">
-            <x-button label="Tambah" icon="o-plus"
-                class="btn-primary rounded-xl btn-xs sm:btn-md flex-1 sm:flex-none shadow-md text-white" 
-                link="/pengaduan/create" />
+            <x-button label="Aduan Internal" icon="o-chat-bubble-bottom-center-text"
+                class="btn-primary rounded-xl btn-sm sm:btn-md flex-1 sm:flex-none shadow-md text-white whitespace-nowrap" 
+                link="/admin/aduan-internal" />
             <x-button label="{{ $bulkMode ? 'Selesai' : 'Pilih' }}" 
                 icon="{{ $bulkMode ? 'o-check' : 'o-cursor-arrow-rays' }}"
-                class="btn-outline btn-primary rounded-xl btn-xs sm:btn-md shadow-sm {{ $bulkMode ? '!bg-success !text-white !border-success' : '' }} flex-1 sm:flex-none" 
-                wire:click="$set('bulkMode', {{ !$bulkMode ? 'true' : 'false' }}); if(!$bulkMode) $set('selectedIds', []);" />
+                class="btn-outline btn-primary rounded-xl btn-sm sm:btn-md shadow-sm {{ $bulkMode ? '!bg-success !text-white !border-success' : '' }} flex-1 sm:flex-none" 
+                wire:click="toggleBulkMode" />
             
             <a href="{{ route('print.laporan', array_filter(['status' => $statusFilter, 'kategori_id' => $kategoriFilter, 'start_date' => $startDate, 'end_date' => $endDate])) }}" 
-                target="_blank" class="btn btn-outline btn-primary rounded-xl btn-xs sm:btn-md shadow-sm px-2 flex-1 sm:flex-none">
+                target="_blank" class="btn btn-outline btn-primary rounded-xl btn-sm sm:btn-md shadow-sm px-2 flex-1 sm:flex-none">
                 <x-icon name="o-printer" class="w-3.5 h-3.5" /> <span class="text-[10px] sm:text-xs font-bold">PDF</span>
             </a>
             <x-button label="Excel" icon="o-document-arrow-down"
-                class="btn-outline btn-primary rounded-xl btn-xs sm:btn-md shadow-sm px-2 text-[10px] sm:text-xs font-bold flex-1 sm:flex-none" 
+                class="btn-outline btn-primary rounded-xl btn-sm sm:btn-md shadow-sm px-2 text-[10px] sm:text-xs font-bold flex-1 sm:flex-none" 
                 wire:click="exportExcel" spinner="exportExcel" />
         </div>
     </div>
@@ -117,7 +152,7 @@
                     placeholder="Cari laporan..."
                     icon="o-magnifying-glass"
                     clearable
-                    class="w-full h-10 sm:h-12 rounded-xl bg-base-100 border-base-300 focus:border-blue-500 focus:ring-blue-500/20 transition-all !text-left text-sm" />
+                    class="w-full input-bordered rounded-xl bg-base-100 text-sm" />
             </div>
             <x-button icon="o-adjustments-horizontal" 
                 class="btn-ghost border border-base-300 shadow-sm rounded-xl h-10 w-10 sm:h-12 sm:w-12 hover:bg-base-200 {{ $filtersOpen ? 'bg-base-200' : '' }}"
@@ -184,8 +219,8 @@
 
     <div class="pb-4 border shadow-sm bg-base-100 rounded-2xl border-base-200">
 
-        {{-- Wrapper Tabel --}}
-        <div class="overflow-x-auto custom-scrollbar">
+        {{-- Wrapper Tabel - Diberi min-height agar dropdown aksi tidak terpotong jika data sedikit --}}
+        <div class="overflow-x-auto lg:overflow-visible custom-scrollbar min-h-[450px]">
             <table class="table w-full table-xs sm:table-sm md:table-md">
                 <thead class="bg-base-200/50 text-base-content/60 text-[10px] sm:text-xs">
                     <tr>
@@ -203,14 +238,18 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-base-200">
-                    @forelse($pengaduans as $pengaduan)
-                        <tr class="transition-colors cursor-pointer hover:bg-base-200/50 group {{ in_array($pengaduan->id, $selectedIds) ? 'bg-primary/5' : '' }}" 
+                    @forelse($pengaduans as $index => $pengaduan)
+                        <tr class="transition-colors cursor-pointer hover:bg-base-200/50 group select-none" 
+                            :class="selectedIds.includes(String({{ $pengaduan->id }})) ? 'bg-primary/10' : ''"
                             wire:key="{{ $pengaduan->id }}"
-                            wire:click="{{ $bulkMode ? "toggleSelection($pengaduan->id)" : "goToDetail('{$pengaduan->kode_tracking}')" }}">
+                            @click="bulkMode ? toggle({{ $pengaduan->id }}, {{ $index }}, $event) : $wire.goToDetail('{{ $pengaduan->kode_tracking }}')">
                             {{-- Checkbox --}}
                             @if($bulkMode)
-                            <td class="px-2 sm:px-3" wire:click.stop>
-                                <input type="checkbox" wire:model.live="selectedIds" value="{{ $pengaduan->id }}" class="checkbox checkbox-xs" />
+                            <td class="px-2 sm:px-3" @click.stop>
+                                <input type="checkbox" 
+                                    class="checkbox checkbox-xs" 
+                                    :checked="selectedIds.includes(String({{ $pengaduan->id }}))"
+                                    @click.stop="toggle({{ $pengaduan->id }}, {{ $index }}, $event)" />
                             </td>
                             @endif
                             {{-- Info Utama --}}
@@ -404,12 +443,16 @@
                     @if(count($linkedReports) > 0)
                         <div class="space-y-2">
                             @foreach($linkedReports as $lr)
-                            <div class="flex items-center justify-between p-3 border border-base-300 rounded-xl bg-base-200/50 hover:border-primary transition-colors">
-                                <div class="overflow-hidden">
-                                    <div class="font-mono text-[10px] text-base-content/50">{{ $lr['kode_tracking'] }}</div>
-                                    <div class="font-bold text-xs truncate">{{ $lr['judul'] }}</div>
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 border border-base-300 rounded-2xl bg-base-200/50 hover:border-primary transition-all gap-3">
+                                <div class="overflow-hidden flex-1">
+                                    <div class="font-mono text-[9px] sm:text-[10px] text-base-content/50 leading-none mb-1">{{ $lr['kode_tracking'] }}</div>
+                                    <div class="font-bold text-xs sm:text-sm text-base-content truncate pr-4">{{ $lr['judul'] }}</div>
                                 </div>
-                                <x-button label="Pilih & Selesaikan" wire:click="linkToReport({{ $lr['id'] }})" wire:confirm="Yakin ingin merujuk laporan ini? Status otomatis menjadi Selesai." class="btn-sm btn-primary text-white" />
+                                <x-button label="Pilih & Selesaikan" 
+                                    icon="o-check"
+                                    wire:click="linkToReport({{ $lr['id'] }})" 
+                                    wire:confirm="Yakin ingin merujuk laporan ini? Status otomatis menjadi Selesai." 
+                                    class="btn-xs sm:btn-sm btn-primary text-white font-bold rounded-xl sm:w-auto w-full" />
                             </div>
                             @endforeach
                         </div>
@@ -428,21 +471,23 @@
 
     {{-- Bulk Action Floating Bar --}}
     @if(count($selectedIds) > 0)
-    <div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
-        <div class="bg-base-100 border border-primary/20 shadow-2xl rounded-2xl p-2 pl-4 flex items-center gap-4 backdrop-blur-md bg-opacity-90">
-            <div class="flex items-center gap-2">
-                <div class="bg-primary text-primary-content text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center">
+    <div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300 w-auto max-w-[95vw]">
+        <div class="bg-base-100 border border-primary/20 shadow-2xl rounded-full p-1.5 sm:p-2 sm:pl-4 flex items-center gap-2 sm:gap-4 backdrop-blur-md bg-opacity-90">
+            <div class="flex items-center gap-2 px-1 sm:px-0">
+                <div class="bg-primary text-primary-content text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center shrink-0">
                     {{ count($selectedIds) }}
                 </div>
-                <span class="text-xs font-bold text-base-content/80 whitespace-nowrap">Laporan terpilih</span>
+                <span class="hidden sm:inline text-xs font-bold text-base-content/80 whitespace-nowrap">Laporan terpilih</span>
             </div>
-            <div class="h-6 w-px bg-base-200"></div>
-            <div class="flex items-center gap-2 pr-1">
-                <x-button label="Rujuk Massal" icon="o-document-duplicate" 
-                    class="btn-sm btn-primary text-white rounded-xl font-bold shadow-sm"
-                    wire:click="openLinkModal" />
-                <x-button label="Kirim WA" icon="o-chat-bubble-left-right" 
-                    class="btn-sm bg-green-500 !text-white rounded-xl font-bold shadow-sm border-0 hover:bg-green-600"
+            <div class="h-5 sm:h-6 w-px bg-base-200"></div>
+            <div class="flex items-center gap-1.5 sm:gap-2 pr-0.5 sm:pr-1">
+                <template x-if="canBulkRefer">
+                    <x-button label="Rujuk" icon="o-document-duplicate" 
+                        class="btn-xs sm:btn-sm btn-primary text-white rounded-full font-bold shadow-sm"
+                        wire:click="openLinkModal" />
+                </template>
+                <x-button label="WA" icon="o-chat-bubble-left-right" 
+                    class="btn-xs sm:btn-sm bg-green-500 !text-white rounded-full font-bold shadow-sm border-0 hover:bg-green-600"
                     wire:click="startWaBlast" />
                 <x-button icon="o-x-mark" class="btn-sm btn-ghost btn-circle" wire:click="$set('selectedIds', [])" />
             </div>

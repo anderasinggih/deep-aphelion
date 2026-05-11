@@ -111,4 +111,26 @@ class Pengaduan extends Model
         
         return 'https://wa.me/' . $noWa . '?text=' . rawurlencode($pesan);
     }
+
+    public static function formatMessageWithLinks($message, $isAdmin = false)
+    {
+        if (empty($message)) return $message;
+        
+        $routeName = $isAdmin ? 'admin.pengaduan.detail' : 'pengaduan.feed-detail';
+        
+        // Regex for tracking code: PKM-KBR/006/V/2026
+        return preg_replace_callback(
+            '/PKM-KBR\/[0-9]{3}\/[IVXLCDM]+\/[0-9]{4}/',
+            function($matches) use ($routeName) {
+                $code = $matches[0];
+                try {
+                    $url = route($routeName, ['kode_tracking' => $code]);
+                    return '<a href="'.$url.'" class="text-primary font-bold underline hover:opacity-80 transition-opacity" wire:navigate>'.$code.'</a>';
+                } catch (\Exception $e) {
+                    return $code;
+                }
+            },
+            e($message)
+        );
+    }
 }

@@ -1,4 +1,4 @@
-<div class="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
+<div class="w-full max-w-7xl mx-auto px-1.5 lg:px-2 py-8">
     {{-- Header UI (Hidden during print) --}}
     <div class="flex flex-col gap-4 mb-8 print:hidden sm:flex-row sm:items-center sm:justify-between">
         <div>

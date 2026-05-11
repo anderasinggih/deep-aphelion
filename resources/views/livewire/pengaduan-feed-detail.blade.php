@@ -1,4 +1,4 @@
-<div class="px-0 py-2 sm:py-4 mx-auto max-w-7xl sm:px-0 lg:px-8 text-base-content -mx-5 sm:mx-auto">
+<div class="w-full max-w-7xl mx-auto px-1.5 lg:px-2 py-4 sm:py-8 text-base-content">
     @push('meta')
         <meta property="og:title" content="{{ $this->pengaduan->judul }} | Kembaran Ngadu" />
         <meta property="og:description" content="{{ Str::limit($this->pengaduan->deskripsi, 150) }}" />
@@ -76,7 +76,7 @@
                                     class="{{ $this->pengaduan->prioritas == 'tinggi' ? 'badge-error' : ($this->pengaduan->prioritas == 'sedang' ? 'badge-info' : 'badge-success') }} font-black sm:shadow-sm text-[10px] sm:text-xs px-2 py-1 h-auto min-h-0" />
                             </div>
 
-                            <button onclick="nativeShare('{{ addslashes($this->pengaduan->judul) }}', 'Cek laporan ini di Kembaran Ngadu: {{ addslashes($this->pengaduan->judul) }}', window.location.href)" 
+                            <button onclick="nativeShare({{ json_encode('LAPORAN: ' . $this->pengaduan->judul) }}, {{ json_encode('📢 Bantu dukung laporan warga ini agar segera ditindaklanjuti melalui aplikasi Kembaran Ngadu.') }}, window.location.href)" 
                                     class="btn btn-ghost btn-circle btn-sm text-base-content/60 hover:text-primary">
                                 <x-icon name="o-share" class="w-5 h-5" />
                             </button>
@@ -283,80 +283,24 @@
                         <div class="bg-base-100 rounded-lg p-2.5 sm:p-3 border border-base-200 shadow-sm relative">
                             <x-icon name="o-chat-bubble-left-ellipsis" class="w-4 h-4 text-success/20 absolute top-2.5 right-2.5" />
                             <p class="text-[10px] font-bold text-base-content/50 mb-0.5">Pesan Admin:</p>
-                            <p class="text-[12px] sm:text-[13px] text-base-content/90 font-medium whitespace-pre-line break-all overflow-hidden">{{ $this->pengaduan->pesan_penutup }}</p>
+                            <p class="text-[12px] sm:text-[13px] text-base-content/90 font-medium whitespace-pre-line break-words overflow-hidden">{!! \App\Models\Pengaduan::formatMessageWithLinks($this->pengaduan->pesan_penutup, false) !!}</p>
                         </div>
                         @endif
 
                             {{-- Feedback Section --}}
                             <div class="mt-6 pt-6 border-t border-success/20">
                                 @if($showFeedbackForm)
-                                    <div
-                                        class="bg-white/50 dark:bg-base-300/50 rounded-xl p-4 sm:p-6 border border-dashed border-success/40">
-                                        <h4 class="text-sm font-black text-base-content mb-5 flex items-center gap-2">
-                                            <x-icon name="o-star" class="w-4 h-4 text-warning" />
-                                            Beri Penilaian Pelayanan Kami
-                                        </h4>
-
-                                        <form wire:submit="submitFeedback" class="space-y-6">
-                                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                                 {{-- Pertanyaan 1 --}}
-                                                 <div class="space-y-2">
-                                                     <label class="text-[11px] font-black uppercase text-base-content/60 block tracking-wider">1. Persyaratan & Prosedur</label>
-                                                     <div class="rating rating-md">
-                                                         @foreach(range(1, 5) as $i)
-                                                             <input type="radio" wire:model="rating_pelayanan" value="{{ $i }}"
-                                                                 class="mask mask-star-2 bg-warning" {{ $rating_pelayanan == $i ? 'checked' : '' }} />
-                                                         @endforeach
-                                                     </div>
-                                                 </div>
-
-                                                 {{-- Pertanyaan 2 --}}
-                                                 <div class="space-y-2">
-                                                     <label class="text-[11px] font-black uppercase text-base-content/60 block tracking-wider">2. Kecepatan Respon</label>
-                                                     <div class="rating rating-md">
-                                                         @foreach(range(1, 5) as $i)
-                                                             <input type="radio" wire:model="rating_respon" value="{{ $i }}"
-                                                                 class="mask mask-star-2 bg-warning" {{ $rating_respon == $i ? 'checked' : '' }} />
-                                                         @endforeach
-                                                     </div>
-                                                 </div>
-
-                                                 {{-- Pertanyaan 3 --}}
-                                                 <div class="space-y-2">
-                                                     <label class="text-[11px] font-black uppercase text-base-content/60 block tracking-wider">3. Kompetensi Petugas</label>
-                                                     <div class="rating rating-md">
-                                                         @foreach(range(1, 5) as $i)
-                                                             <input type="radio" wire:model="rating_kompetensi" value="{{ $i }}"
-                                                                 class="mask mask-star-2 bg-warning" {{ $rating_kompetensi == $i ? 'checked' : '' }} />
-                                                         @endforeach
-                                                     </div>
-                                                 </div>
-
-                                                 {{-- Pertanyaan 4 --}}
-                                                 <div class="space-y-2">
-                                                     <label class="text-[11px] font-black uppercase text-base-content/60 block tracking-wider">4. Hasil & Fasilitas</label>
-                                                     <div class="rating rating-md">
-                                                         @foreach(range(1, 5) as $i)
-                                                             <input type="radio" wire:model="rating_fasilitas" value="{{ $i }}"
-                                                                 class="mask mask-star-2 bg-warning" {{ $rating_fasilitas == $i ? 'checked' : '' }} />
-                                                         @endforeach
-                                                     </div>
-                                                 </div>
+                                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-warning/5 border border-dashed border-warning/30 rounded-xl">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-full bg-warning/20 text-warning flex items-center justify-center shrink-0">
+                                                <x-icon name="o-star" class="w-6 h-6" />
                                             </div>
-
-                                            <div class="space-y-2">
-                                                <label class="text-[11px] font-black uppercase text-base-content/60 block tracking-wider">Saran & Kritik</label>
-                                                <x-textarea wire:model="rating_komentar"
-                                                    placeholder="Ceritakan pengalaman Anda (Maks. 200 karakter)..." rows="2"
-                                                    maxlength="200"
-                                                    class="bg-base-100 border-base-200 focus:border-success/50" />
+                                            <div>
+                                                <h4 class="text-sm font-black text-base-content">Laporan Telah Selesai</h4>
+                                                <p class="text-[11px] text-base-content/60 font-medium">Bantu kami meningkatkan kualitas layanan dengan memberikan penilaian singkat.</p>
                                             </div>
-
-                                            <div class="flex justify-end pt-2">
-                                                <x-button label="Kirim Feedback" type="submit"
-                                                    class="btn-success btn-sm sm:btn-md text-white font-black rounded-xl shadow-md" spinner="submitFeedback" />
-                                            </div>
-                                        </form>
+                                        </div>
+                                        <x-button label="Beri Penilaian" class="btn-warning btn-sm text-white font-black rounded-lg w-full sm:w-auto" @click="$wire.showFeedbackForm = true" />
                                     </div>
                                 @elseif($this->pengaduan->rating)
                                     <div
@@ -496,8 +440,8 @@
 
                                     @if($history->keterangan_admin)
                                         <p
-                                            class="text-[11px] sm:text-xs leading-relaxed text-base-content/80 italic mt-2 pl-2 border-l-2 border-current/30 break-words overflow-hidden line-clamp-3">
-                                            "{{ Str::limit($history->keterangan_admin, 150) }}"
+                                            class="text-[11px] sm:text-xs leading-relaxed text-base-content/80 italic mt-2 pl-2 border-l-2 border-current/30 break-words overflow-hidden">
+                                            "{!! \App\Models\Pengaduan::formatMessageWithLinks($history->keterangan_admin, false) !!}"
                                         </p>
                                     @endif
 
@@ -549,5 +493,70 @@
             <x-button label="Tutup" @click="$wire.previewModal = false" class="btn-ghost" />
             <a href="{{ $previewImageUrl }}" download class="btn btn-primary text-white">Unduh Foto</a>
         </x-slot:actions>
+    </x-modal>
+
+    {{-- Modal Rating --}}
+    <x-modal wire:model="showFeedbackForm" title="Beri Penilaian Pelayanan" separator class="backdrop-blur">
+        <form wire:submit="submitFeedback" class="space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                 {{-- Pertanyaan 1 --}}
+                 <div class="space-y-2">
+                     <label class="text-[11px] font-black uppercase text-base-content/60 block tracking-wider">1. Persyaratan & Prosedur</label>
+                     <div class="rating rating-md">
+                         @foreach(range(1, 5) as $i)
+                             <input type="radio" wire:model="rating_pelayanan" value="{{ $i }}"
+                                 class="mask mask-star-2 bg-warning" {{ $rating_pelayanan == $i ? 'checked' : '' }} />
+                         @endforeach
+                     </div>
+                 </div>
+
+                 {{-- Pertanyaan 2 --}}
+                 <div class="space-y-2">
+                     <label class="text-[11px] font-black uppercase text-base-content/60 block tracking-wider">2. Kecepatan Respon</label>
+                     <div class="rating rating-md">
+                         @foreach(range(1, 5) as $i)
+                             <input type="radio" wire:model="rating_respon" value="{{ $i }}"
+                                 class="mask mask-star-2 bg-warning" {{ $rating_respon == $i ? 'checked' : '' }} />
+                         @endforeach
+                     </div>
+                 </div>
+
+                 {{-- Pertanyaan 3 --}}
+                 <div class="space-y-2">
+                     <label class="text-[11px] font-black uppercase text-base-content/60 block tracking-wider">3. Kompetensi Petugas</label>
+                     <div class="rating rating-md">
+                         @foreach(range(1, 5) as $i)
+                             <input type="radio" wire:model="rating_kompetensi" value="{{ $i }}"
+                                 class="mask mask-star-2 bg-warning" {{ $rating_kompetensi == $i ? 'checked' : '' }} />
+                         @endforeach
+                     </div>
+                 </div>
+
+                 {{-- Pertanyaan 4 --}}
+                 <div class="space-y-2">
+                     <label class="text-[11px] font-black uppercase text-base-content/60 block tracking-wider">4. Hasil & Fasilitas</label>
+                     <div class="rating rating-md">
+                         @foreach(range(1, 5) as $i)
+                             <input type="radio" wire:model="rating_fasilitas" value="{{ $i }}"
+                                 class="mask mask-star-2 bg-warning" {{ $rating_fasilitas == $i ? 'checked' : '' }} />
+                         @endforeach
+                     </div>
+                 </div>
+            </div>
+
+            <div class="space-y-2">
+                <label class="text-[11px] font-black uppercase text-base-content/60 block tracking-wider">Saran & Kritik</label>
+                <x-textarea wire:model="rating_komentar"
+                    placeholder="Ceritakan pengalaman Anda (Maks. 200 karakter)..." rows="3"
+                    maxlength="200"
+                    class="bg-base-100 border-base-200 focus:border-success/50" />
+            </div>
+
+            <x-slot:actions>
+                <x-button label="Batal" @click="$wire.showFeedbackForm = false" class="btn-ghost" />
+                <x-button label="Kirim Penilaian" type="submit"
+                    class="btn-success text-white font-black rounded-xl shadow-md" spinner="submitFeedback" />
+            </x-slot:actions>
+        </form>
     </x-modal>
 </div>

@@ -1,5 +1,5 @@
-<div class="w-full max-w-7xl mx-auto px-1.5 lg:px-2 pt-8 sm:pt-12">
-    <div class="max-w-5xl mx-auto text-base-content/80">
+<div class="w-full max-w-7xl mx-auto px-1.5 lg:px-2 pt-8 sm:pt-12 pb-20">
+    <div class="text-base-content/80">
 
     {{-- Header --}}
     <div class="text-center mb-8">
@@ -216,18 +216,18 @@
     </div>
 
     {{-- CTA --}}
-    <div class="text-center pt-8 border-t border-base-200 mt-12">
-        <p class="text-sm text-base-content/50 mb-6">Sampaikan aspirasi Anda demi mewujudkan Kembaran yang lebih maju.</p>
-        <div class="text-center space-y-4 sm:space-y-0">
+    <div class="text-center pt-10 border-t border-base-200 mt-12">
+        <p class="text-sm text-base-content/50 mb-8">Sampaikan aspirasi Anda demi mewujudkan Kembaran yang lebih maju.</p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a href="{{ route('beranda') }}" wire:navigate
-                class="btn btn-primary btn-md rounded-xl font-bold shadow-lg hover:scale-105 transition-all px-8 mx-1">
+                class="btn btn-primary btn-md rounded-xl font-bold shadow-lg hover:scale-105 transition-all px-8 w-full sm:w-auto">
                 <x-icon name="o-megaphone" class="w-4 h-4" />
-                MULAI LAPOR SEKARANG
+                Mulai Lapor Sekarang
             </a>
             <a href="https://maps.google.com/?q=Kantor+Kecamatan+Kembaran" target="_blank"
-                class="btn btn-ghost btn-md rounded-xl font-bold border border-base-300 hover:bg-base-200 transition-all px-8 mx-1 mb-6">
+                class="btn btn-ghost btn-md rounded-xl font-bold border border-base-300 hover:bg-base-200 transition-all px-8 w-full sm:w-auto">
                 <x-icon name="o-map" class="w-4 h-4" />
-                LOKASI KANTOR
+                Lokasi Kantor
             </a>
         </div>
     </div>

@@ -1,4 +1,4 @@
-<div class="px-2 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8 text-base-content">
+<div class="w-full max-w-7xl mx-auto px-1.5 lg:px-2 py-8 text-base-content">
 
     <div class="flex flex-col gap-4 mb-8 sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -44,7 +44,7 @@
     </div>
 
     <div class="pb-4 border shadow-sm bg-base-100 rounded-2xl border-base-200 p-6 md:p-8">
-        <x-form wire:submit="saveSettings">
+        <x-form wire:submit="saveSettings" autocomplete="off">
             
             {{-- Tab Umum: SOP --}}
             <div class="{{ $activeTab === 'umum' ? 'block' : 'hidden' }}">
@@ -129,6 +129,7 @@
                     </div>
                 </div>
 
+                @if(auth()->user()->role === 'superadmin')
                 <h2 class="text-xl font-bold mb-4 mt-8 border-b border-base-200 pb-2 flex items-center gap-2">
                     <x-icon name="o-wrench-screwdriver" class="w-5 h-5 text-primary" /> Pemeliharaan & Perawatan
                 </h2>
@@ -144,6 +145,7 @@
                             wire:confirm="Bersihkan seluruh cache sistem? Ini mungkin akan membuat loading pertama sedikit lebih lambat." />
                     </div>
                 </div>
+                @endif
             </div>
 
             {{-- Tab Tanda Tangan --}}
@@ -185,7 +187,7 @@
                         <x-textarea label="Alamat Instansi" wire:model="instansi_alamat" placeholder="Alamat lengkap..." rows="2" required icon="o-map-pin" />
                     </div>
                     <x-input label="Nomor Telepon" wire:model="instansi_telepon" placeholder="Contoh: (0281) 684XXX" required icon="o-phone" />
-                    <x-input label="Email Instansi" wire:model="instansi_email" placeholder="Contoh: kec@banyumaskab.go.id" required icon="o-envelope" />
+                    <x-input label="Email Instansi" wire:model="instansi_email" placeholder="Contoh: kec@banyumaskab.go.id" required icon="o-envelope" autocomplete="off" />
                 </div>
 
                 <h2 class="text-lg font-bold mb-4 flex items-center gap-2 text-base-content/70">
@@ -292,8 +294,8 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 {{ !$unlock_email ? 'opacity-50 pointer-events-none' : '' }}">
                     <x-input label="SMTP Host" wire:model="mail_host" placeholder="smtp.gmail.com" icon="o-server" :disabled="!$unlock_email" />
                     <x-input label="SMTP Port" wire:model="mail_port" type="number" placeholder="587" icon="o-hashtag" :disabled="!$unlock_email" />
-                    <x-input label="Email / Username" wire:model="mail_username" placeholder="instansi@gmail.com" icon="o-user" :disabled="!$unlock_email" />
-                    <x-input label="App Password" wire:model="mail_password" type="password" placeholder="Token app password" icon="o-key" :disabled="!$unlock_email" />
+                    <x-input label="Email / Username" wire:model="mail_username" placeholder="instansi@gmail.com" icon="o-user" :disabled="!$unlock_email" autocomplete="off" />
+                    <x-input label="App Password" wire:model="mail_password" type="password" placeholder="Token app password" icon="o-key" :disabled="!$unlock_email" autocomplete="new-password" />
                     <x-input label="Mail From Name" wire:model="mail_from_name" placeholder="Nama Instansi Anda" icon="o-identification" :disabled="!$unlock_email" />
                     
                     <div>

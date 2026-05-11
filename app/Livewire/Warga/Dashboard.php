@@ -19,11 +19,23 @@ class Dashboard extends Component
     public $rating_kompetensi = 5;
     public $rating_fasilitas = 5;
     public $rating_komentar = '';
+    public $search = '';
+    public $orderBy = 'latest';
+
+    public function updatedSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedOrderBy()
+    {
+        $this->resetPage();
+    }
 
     public function openRatingModal($id)
     {
         $pengaduan = Pengaduan::where('id', $id)->where('user_id', Auth::id())->first();
-        if ($pengaduan && $pengaduan->status === 'selesai' && !$pengaduan->rating) {
+        if ($pengaduan && $pengaduan->status === 'selesai' && !$pengaduan->rating && auth()->user()->role === 'warga') {
             $this->selectedPengaduanId = $pengaduan->id;
             $this->rating_pelayanan = 5;
             $this->rating_respon = 5;
@@ -67,13 +79,29 @@ class Dashboard extends Component
 
     public function render()
     {
-        $pengaduans = Auth::user()->pengaduans()
+        $query = Auth::user()->pengaduans()
             ->with('kategori')
-            ->latest()
-            ->paginate(5);
+            ->when($this->search, function($q) {
+                $q->where(function($sq) {
+                    $sq->where('judul', 'like', '%' . $this->search . '%')
+                       ->orWhere('kode_tracking', 'like', '%' . $this->search . '%');
+                });
+            });
 
+        if ($this->orderBy === 'latest') {
+            $query->latest();
+        } elseif ($this->orderBy === 'oldest') {
+            $query->oldest();
+        }
+
+        $pengaduans = $query->paginate(10);
+
+        $isAdminView = request()->routeIs('admin.aduan-internal');
+        
         return view('livewire.warga.dashboard', [
-            'pengaduans' => $pengaduans
+            'pengaduans' => $pengaduans,
+            'viewTitle' => $isAdminView ? 'Aduan Internal' : 'Dashboard Warga',
+            'viewSubtitle' => $isAdminView ? 'Pantau laporan pengaduan internal Anda' : 'Pantau laporan pengaduan yang telah Anda buat'
         ])->layout('layouts.app');
     }
 

@@ -40,11 +40,22 @@ class PengaduanManager extends Component
     
     // Bulk Selection
     public $bulkMode = false;
-    public $selectedIds = [];
+    public array $selectedIds = [];
     public $selectAll = false;
 
     public $selectedPengaduanId = null;
     public bool $filtersOpen = false;
+    public array $currentPageIds = [];
+    public array $finishedIds = [];
+ 
+    public function toggleBulkMode()
+    {
+        $this->bulkMode = !$this->bulkMode;
+        if (!$this->bulkMode) {
+            $this->selectedIds = [];
+            $this->selectAll = false;
+        }
+    }
 
     // Update Status Modal State
     public $updateModal = false;
@@ -68,14 +79,27 @@ class PengaduanManager extends Component
     public function openLinkModal($id = null)
     {
         if ($id) {
-            $this->selectedIds = [$id];
+            $this->selectedIds = [(string)$id];
         }
 
         if (empty($this->selectedIds)) {
-            session()->flash('error', 'Pilih minimal satu laporan untuk dirujuk.');
+            $this->dispatch('toast', type: 'error', message: 'Pilih minimal satu laporan.');
             return;
         }
 
+        // Filter yang bisa dirujuk
+        $eligibleIds = Pengaduan::whereIn('id', $this->selectedIds)
+            ->whereNotIn('status', ['selesai', 'ditolak'])
+            ->pluck('id')
+            ->map(fn($id) => (string)$id)
+            ->toArray();
+
+        if (empty($eligibleIds)) {
+            $this->dispatch('toast', type: 'error', message: 'Laporan yang dipilih sudah Selesai/Ditolak.');
+            return;
+        }
+
+        $this->selectedIds = $eligibleIds;
         $this->searchLinkedQuery = '';
         $this->linkedReports = [];
         $this->linkModal = true;
@@ -90,7 +114,7 @@ class PengaduanManager extends Component
 
         $this->linkedReports = Pengaduan::where('status', 'selesai')
             ->whereNull('linked_id') // Hanya bisa merujuk ke laporan yang selesai "asli" (bukan rujukan juga)
-            ->where('id', '!=', $this->pengaduanToLink->id)
+            ->whereNotIn('id', (array)$this->selectedIds)
             ->where(function($q) {
                 $q->where('judul', 'like', '%' . $this->searchLinkedQuery . '%')
                   ->orWhere('kode_tracking', 'like', '%' . $this->searchLinkedQuery . '%');
@@ -157,11 +181,15 @@ class PengaduanManager extends Component
 
     public function toggleSelection($id)
     {
-        $id = (string)$id;
-        if (in_array($id, $this->selectedIds)) {
-            $this->selectedIds = array_diff($this->selectedIds, [$id]);
+        if (!$this->bulkMode) return;
+        
+        $id = (int)$id;
+        $currentIds = collect($this->selectedIds)->map(fn($val) => (int)$val);
+        
+        if ($currentIds->contains($id)) {
+            $this->selectedIds = $currentIds->reject(fn($val) => $val === $id)->values()->toArray();
         } else {
-            $this->selectedIds[] = $id;
+            $this->selectedIds = $currentIds->push($id)->unique()->values()->toArray();
         }
 
         // Sync SelectAll status
@@ -516,8 +544,16 @@ class PengaduanManager extends Component
             $query->whereDate('created_at', '<=', $this->endDate);
         }
 
+        $pengaduans = $query->paginate(15);
+        $this->currentPageIds = $pengaduans->pluck('id')->map(fn($id) => (string)$id)->toArray();
+        $this->finishedIds = Pengaduan::whereIn('id', $this->selectedIds)
+            ->whereIn('status', ['selesai', 'ditolak'])
+            ->pluck('id')
+            ->map(fn($id) => (string)$id)
+            ->toArray();
+
         return view('livewire.admin.pengaduan-manager', [
-            'pengaduans' => $query->paginate(15),
+            'pengaduans' => $pengaduans,
             'kategoris' => \App\Models\Kategori::all()
         ])->layout('layouts.app');
     }

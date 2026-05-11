@@ -1,4 +1,4 @@
-<div class="px-0 py-2 sm:py-4 mx-auto max-w-7xl sm:px-0 lg:px-8 text-base-content -mx-5 sm:mx-auto">
+<div class="w-full max-w-7xl mx-auto px-1.5 lg:px-2 py-4 sm:py-8 text-base-content">
 
     {{-- Breadcrumb + Action Bar --}}
     <div class="mb-3 px-3 sm:px-0 sm:mb-5 flex items-center justify-between flex-wrap gap-2">
@@ -53,6 +53,9 @@
             <div class="my-0.5 opacity-30 divider mt-0"></div>
             <x-menu-item title="Cetak Resi" icon="o-printer" class="!py-1 text-xs"
                 link="{{ route('print.resi', $this->pengaduan->id) }}" external target="_blank" />
+            <div class="my-0.5 opacity-30 divider mt-0"></div>
+            <x-menu-item title="Bagikan Laporan" icon="o-share" class="!py-1 text-xs"
+                onclick="nativeShare({{ json_encode('LAPORAN: ' . $this->pengaduan->judul) }}, {{ json_encode('📢 Bantu dukung laporan warga ini agar segera ditindaklanjuti melalui aplikasi Kembaran Ngadu.') }}, {{ json_encode(route('pengaduan.feed-detail', $this->pengaduan->kode_tracking)) }})" />
         </x-dropdown>
     </div>
 
@@ -454,7 +457,7 @@
                                 </div>
                                 <div class="text-[11px] font-medium text-base-content/70">Oleh: {{ $history->user?->name ?? 'User Terhapus' }} ({{ $history->user ? ucfirst($history->user->role) : 'N/A' }})</div>
                                 @if($history->keterangan_admin)
-                                <p class="text-[11px] leading-relaxed italic text-base-content/60 bg-base-200/50 p-2 rounded-lg mt-1 break-words overflow-hidden">"{{ $history->keterangan_admin }}"</p>
+                                <p class="text-[11px] leading-relaxed italic text-base-content/60 bg-base-200/50 p-2 rounded-lg mt-1 break-words overflow-hidden">"{!! \App\Models\Pengaduan::formatMessageWithLinks($history->keterangan_admin, true) !!}"</p>
                                 @endif
                                 @if($history->foto_bukti)
                                 <div class="mt-2">

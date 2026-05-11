@@ -1,8 +1,8 @@
-<div class="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
+<div class="w-full max-w-7xl mx-auto px-1.5 lg:px-2 pt-8">
     <div class="flex flex-col gap-4 mb-8 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <h1 class="text-3xl font-black tracking-tight text-primary">Dashboard Warga</h1>
-            <p class="mt-1 text-sm text-base-content/70">Pantau laporan pengaduan yang telah Anda buat</p>
+            <h1 class="text-3xl font-black tracking-tight text-primary">{{ $viewTitle }}</h1>
+            <p class="mt-1 text-sm text-base-content/70">{{ $viewSubtitle }}</p>
         </div>
         @if($pengaduans->total() > 0)
         <div>
@@ -11,6 +11,24 @@
         </div>
         @endif
     </div>
+    
+    {{-- Search & Sort --}}
+    <div class="mb-6 flex flex-col sm:flex-row gap-3 items-center">
+        <div class="w-full sm:flex-1">
+            <x-input 
+                wire:model.live.debounce.500ms="search" 
+                placeholder="Cari laporan..." 
+                icon="o-magnifying-glass"
+                class="w-full input-bordered rounded-xl bg-base-100 text-sm"
+                clearable />
+        </div>
+        <div class="w-full sm:w-48">
+            <select wire:model.live="orderBy" class="select select-bordered w-full rounded-xl h-11 bg-base-100 border-base-300 font-bold text-sm">
+                <option value="latest">Terbaru</option>
+                <option value="oldest">Terlama</option>
+            </select>
+        </div>
+    </div>
 
     @if (session()->has('success'))
     <x-alert icon="o-check-circle" class="mb-5 shadow-sm alert-success rounded-xl">
@@ -18,8 +36,8 @@
     </x-alert>
     @endif
 
-    <div class="overflow-hidden border shadow-sm bg-base-100 pb-4 rounded-2xl border-base-200">
-        <div class="overflow-x-auto">
+    <div class="border shadow-sm bg-base-100 pb-4 rounded-2xl border-base-200">
+        <div class="overflow-x-auto lg:overflow-visible min-h-[400px]">
             {{-- Skeleton Loading --}}
             <div wire:loading wire:target="deletePengaduan, gotoPage, nextPage, previousPage" class="w-full">
                 <table class="table w-full">
@@ -112,7 +130,7 @@
                                     wire:confirm="Hapus laporan ini?" />
                                 @endif
 
-                                @if($pengaduan->status === 'selesai' && !$pengaduan->rating)
+                                @if($pengaduan->status === 'selesai' && !$pengaduan->rating && auth()->user()->role === 'warga')
                                 <x-button icon="o-star" class="btn-ghost btn-xs text-warning hover:bg-warning/10"
                                     wire:click="openRatingModal({{ $pengaduan->id }})" tooltip="Beri Penilaian" />
                                 @endif

@@ -36,7 +36,7 @@ class PengaduanFeedDetail extends Component
         $this->rating_komentar = $this->pengaduan->rating_komentar ?? '';
         
         // Show form if status is selesai and user is the reporter and rating is still null
-        if ($this->pengaduan->status === 'selesai' && auth()->id() === $this->pengaduan->user_id && is_null($this->pengaduan->rating)) {
+        if ($this->pengaduan->status === 'selesai' && auth()->id() === $this->pengaduan->user_id && is_null($this->pengaduan->rating) && auth()->user()?->role === 'warga') {
             $this->showFeedbackForm = true;
         }
     }
@@ -53,7 +53,7 @@ class PengaduanFeedDetail extends Component
     public function submitFeedback()
 
     {
-        if (auth()->id() !== $this->pengaduan->user_id) return;
+        if (auth()->id() !== $this->pengaduan->user_id || auth()->user()?->role !== 'warga') return;
 
         $this->validate([
             'rating_pelayanan' => 'required|integer|min:1|max:5',

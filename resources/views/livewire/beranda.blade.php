@@ -31,16 +31,65 @@
         if(empty($banners)) $banners[] = asset('storage/assets/banner.jpg');
     @endphp
 
-    <div class="overflow-hidden mb-0 banner-paksa-atas min-h-[400px] md:min-h-[500px] lg:min-h-[600px] flex items-center justify-center relative">
-        {{-- Single Banner Background --}}
-        <div class="absolute inset-0 z-0 bg-neutral">
+    <div x-data="{ 
+        currentSlide: 0, 
+        slides: {{ count($banners) }},
+        autoPlay: null,
+        init() {
+            this.startAutoPlay();
+        },
+        startAutoPlay() {
+            if (this.slides > 1) {
+                this.autoPlay = setInterval(() => {
+                    this.currentSlide = (this.currentSlide + 1) % this.slides;
+                }, 6000);
+            }
+        },
+        stopAutoPlay() {
+            if (this.autoPlay) clearInterval(this.autoPlay);
+        },
+        goToSlide(index) {
+            this.currentSlide = index;
+            this.stopAutoPlay();
+            this.startAutoPlay();
+        }
+    }" 
+    class="overflow-hidden mb-0 banner-paksa-atas min-h-[400px] md:min-h-[500px] lg:min-h-[600px] flex items-center justify-center relative group">
+        
+        {{-- Slideshow Backgrounds --}}
+        @foreach($banners as $index => $banner)
+        <div x-show="currentSlide === {{ $index }}"
+             x-transition:enter="transition ease-out duration-1000"
+             x-transition:enter-start="opacity-0 scale-105"
+             x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-1000"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="absolute inset-0 z-0 bg-neutral"
+             @if($index > 0) style="display: none;" @endif>
             <img 
-                src="{{ $banners[0] }}" 
-                class="absolute inset-0 w-full h-full object-cover opacity-60"
+                src="{{ $banner }}" 
+                class="absolute inset-0 w-full h-full object-cover opacity-50"
+                loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
             >
             {{-- Gradient Overlay --}}
-            <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-transparent"></div>
+            <div class="absolute inset-0 bg-gradient-to-b from-black/80 via-black/30 to-transparent"></div>
         </div>
+        @endforeach
+
+        {{-- Next/Prev Buttons (Visible on Hover) --}}
+        @if(count($banners) > 1)
+        <div class="absolute inset-y-0 left-4 z-20 flex items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:flex">
+            <button @click="goToSlide((currentSlide - 1 + slides) % slides)" class="p-3 rounded-full bg-black/20 backdrop-blur-md text-white hover:bg-white hover:text-primary transition-all">
+                <x-icon name="o-chevron-left" class="w-6 h-6" />
+            </button>
+        </div>
+        <div class="absolute inset-y-0 right-4 z-20 flex items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:flex">
+            <button @click="goToSlide((currentSlide + 1) % slides)" class="p-3 rounded-full bg-black/20 backdrop-blur-md text-white hover:bg-white hover:text-primary transition-all">
+                <x-icon name="o-chevron-right" class="w-6 h-6" />
+            </button>
+        </div>
+        @endif
 
         {{-- Content --}}
         <div class="relative z-10 flex flex-col items-center justify-center text-center pt-32 pb-24 md:pt-44 md:pb-32 lg:pt-52 lg:pb-40 px-6 max-w-7xl mx-auto w-full">
@@ -321,7 +370,7 @@
                                             <span class="text-sm font-black">{{ $pengaduan->dukungans_count }}</span>
                                         </button>
 
-                                        <button onclick="event.preventDefault(); event.stopPropagation(); nativeShare('{{ addslashes($pengaduan->judul) }}', 'Bantu dukung laporan ini agar segera ditindaklanjuti!', '{{ route('pengaduan.feed-detail', $pengaduan->kode_tracking) }}')"
+                                        <button onclick="event.preventDefault(); event.stopPropagation(); nativeShare({{ json_encode('LAPORAN: ' . $pengaduan->judul) }}, {{ json_encode('📢 Bantu dukung laporan warga ini agar segera ditindaklanjuti melalui aplikasi Kembaran Ngadu.') }}, {{ json_encode(route('pengaduan.feed-detail', $pengaduan->kode_tracking)) }})"
                                             class="p-2 transition-colors rounded-full hover:bg-base-200 text-black hover:text-primary">
                                             <x-icon name="o-share" class="w-5 h-5" />
                                         </button>
@@ -437,7 +486,7 @@
                                             <span class="text-xs sm:text-sm font-bold">{{ $pengaduan->dukungans_count }}</span>
                                         </button>
                                         
-                                        <button onclick="event.preventDefault(); event.stopPropagation(); nativeShare('{{ addslashes($pengaduan->judul) }}', 'Bantu dukung laporan ini agar segera ditindaklanjuti!', '{{ route('pengaduan.feed-detail', $pengaduan->kode_tracking) }}')"
+                                        <button onclick="event.preventDefault(); event.stopPropagation(); nativeShare({{ json_encode('LAPORAN: ' . $pengaduan->judul) }}, {{ json_encode('📢 Bantu dukung laporan warga ini agar segera ditindaklanjuti melalui aplikasi Kembaran Ngadu.') }}, {{ json_encode(route('pengaduan.feed-detail', $pengaduan->kode_tracking)) }})"
                                             class="text-black hover:text-primary transition-colors p-1">
                                             <x-icon name="o-share" class="w-5 h-5 sm:w-5.5 sm:h-5.5" />
                                         </button>

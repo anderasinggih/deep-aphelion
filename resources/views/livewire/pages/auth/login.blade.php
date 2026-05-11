@@ -53,11 +53,34 @@ new #[Layout('layouts.auth')] class extends Component
 <div
     class="flex flex-col md:flex-row w-full min-h-screen md:min-h-0 md:max-w-4xl md:mx-4 bg-base-100 md:rounded-[2rem] overflow-hidden md:shadow-xl md:border md:border-base-200">
 
-    <div class="hidden relative md:block md:w-1/2">
-        <img src="{{ asset('storage/assets/banner.jpg') }}" alt="Kabupaten Banyumas"
-            class="absolute inset-0 object-cover w-full h-full" />
-        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-        <div class="absolute bottom-0 left-0 p-8">
+    @php
+        $banners = [];
+        if($b1 = \App\Models\Setting::get('app_banner_1')) $banners[] = asset('storage/' . $b1);
+        if($b2 = \App\Models\Setting::get('app_banner_2')) $banners[] = asset('storage/' . $b2);
+        if($b3 = \App\Models\Setting::get('app_banner_3')) $banners[] = asset('storage/' . $b3);
+        if(empty($banners)) $banners[] = asset('storage/assets/banner.jpg');
+    @endphp
+
+    <div class="hidden relative md:block md:w-1/2 overflow-hidden" 
+         x-data="{ currentSlide: 0, slides: {{ count($banners) }} }"
+         x-init="setInterval(() => { currentSlide = (currentSlide + 1) % slides }, 5000)">
+        
+        @foreach($banners as $index => $banner)
+            <div x-show="currentSlide === {{ $index }}"
+                 x-transition:enter="transition ease-out duration-1000"
+                 x-transition:enter-start="opacity-0 scale-105"
+                 x-transition:enter-end="opacity-100 scale-100"
+                 x-transition:leave="transition ease-in duration-1000"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 class="absolute inset-0"
+                 @if($index > 0) style="display: none;" @endif>
+                <img src="{{ $banner }}" alt="Kabupaten Banyumas" class="absolute inset-0 object-cover w-full h-full" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+            </div>
+        @endforeach
+
+        <div class="absolute bottom-0 left-0 p-8 z-10 w-full">
             <h2 class="mb-2 text-3xl font-bold text-white shadow-black drop-shadow-md">Kembaran Ngadu</h2>
             <p class="font-medium text-white/90 drop-shadow-sm">Layanan aspirasi dan pengaduan masyarakat terpadu
                 Kecamatan Kembaran.</p>
@@ -103,7 +126,7 @@ new #[Layout('layouts.auth')] class extends Component
                         placeholder="Masukkan password" required autocomplete="current-password" icon="o-lock-closed" />
 
                     <button type="button" @click="show = !show"
-                        class="absolute top-0 right-0 h-[48px] flex items-center pr-3 transition-colors cursor-pointer text-base-content/40 hover:text-primary z-10">
+                        class="absolute inset-y-0 right-0 flex items-center pr-3 transition-colors cursor-pointer text-base-content/40 hover:text-primary z-10">
                         <x-icon name="o-eye" x-show="!show" class="w-5 h-5" />
                         <x-icon name="o-eye-slash" x-show="show" class="w-5 h-5" style="display: none;" />
                     </button>

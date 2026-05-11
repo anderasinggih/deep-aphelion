@@ -28,31 +28,51 @@
         [wire\:loading], [wire\:loading\.delay], [wire\:loading\.delay\.long] {
             display: none !important;
         }
+        .livewire-progress-bar {
+            display: none !important;
+        }
         html {
-            height: 100%;
-            overflow-x: clip;
+            scroll-behavior: smooth;
+            /* Hide scrollbar for Chrome, Safari and Opera */
+            &::-webkit-scrollbar {
+                display: none;
+            }
+            /* Hide scrollbar for IE, Edge and Firefox */
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
         }
         body {
             touch-action: manipulation;
             width: 100%;
-            min-height: 100%;
-            display: flex;
-            flex-direction: column;
-            overflow-x: clip;
+            min-height: 100vh;
+            padding-top: env(safe-area-inset-top, 0px);
         }
         .toast {
             z-index: 2000 !important;
+        }
+        .toast-top {
+            margin-top: 5rem !important;
+        }
+        .sticky-nav {
+            position: sticky;
+            top: calc(0.5rem + env(safe-area-inset-top, 0px));
+            z-index: 1000;
+        }
+        @media (min-width: 1024px) {
+            .sticky-nav {
+                top: 1.5rem; /* Lebih kebawah sedikit di desktop */
+            }
         }
     </style>
 
 </head>
 
-<body class="font-sans antialiased bg-base-200/50 min-h-screen flex flex-col">
+<body class="font-sans antialiased bg-base-200/50 min-h-screen">
     {{-- Impersonation Banner --}}
     <livewire:impersonation-banner />
 
     {{-- Wrapper untuk ngatur posisi melayang (ada jarak dari atas dan samping) --}}
-    <div class="sticky top-4 z-[1000] w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-all print:hidden">
+    <div class="sticky-nav w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-all print:hidden">
 
         {{-- Navbar utamanya dibikin melengkung, blur tinggi, dan ada border kaca --}}
         <div
@@ -375,6 +395,28 @@
     </dialog>
 
     @livewireScripts
+    <script>
+        document.addEventListener('livewire:init', () => {
+            // Livewire progress bar is already hidden via CSS
+        });
+
+        function nativeShare(title, text, url) {
+            const shareContent = `${title}\n${text}\n${url}`;
+            if (navigator.share) {
+                navigator.share({
+                    title: title,
+                    text: text,
+                    url: url
+                }).catch(err => {
+                    console.log('Share failed or cancelled');
+                });
+            } else {
+                // Fallback: WhatsApp
+                const waUrl = `https://wa.me/?text=${encodeURIComponent(shareContent)}`;
+                window.open(waUrl, '_blank');
+            }
+        }
+    </script>
     @stack('scripts')
 </body>
 

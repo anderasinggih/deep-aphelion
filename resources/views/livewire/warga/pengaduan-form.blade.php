@@ -1,4 +1,4 @@
-<div class="w-full py-0 sm:py-8 sm:mx-auto sm:max-w-7xl sm:px-6 lg:px-8">
+<div class="w-full max-w-7xl mx-auto px-1.5 lg:px-2 pt-8 sm:pt-12">
     <style>
 
 
@@ -26,7 +26,7 @@
         }
     </style>
 
-    <div class="flex flex-col gap-4 mb-6 sm:mb-8 sm:flex-row sm:items-center sm:justify-between px-4 sm:px-0 pt-6 sm:pt-0">
+    <div class="flex flex-col gap-4 mb-6 sm:mb-8 sm:flex-row sm:items-center sm:justify-between pt-6 sm:pt-0">
         <div>
             <h1 class="text-3xl font-black tracking-tight text-primary">Buat Laporan Baru</h1>
             <p class="mt-1 text-sm text-base-content/70 font-medium">Ceritakan masalah atau aspirasi di sekitar Anda dengan jelas agar mudah ditangani.</p>
