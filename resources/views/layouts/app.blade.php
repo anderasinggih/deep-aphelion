@@ -43,13 +43,6 @@
         .toast {
             z-index: 2000 !important;
         }
-        /* Hide details triangle */
-        summary::-webkit-details-marker {
-            display: none !important;
-        }
-        summary {
-            list-style: none !important;
-        }
     </style>
 
 </head>
@@ -66,42 +59,42 @@
             <div class="navbar-start ">
                 <details class="dropdown">
                     <summary class="btn btn-ghost lg:hidden rounded-full list-none [&::-webkit-details-marker]:hidden">
-                        <x-icon name="o-bars-3" class="w-5 h-5" />
+                        <x-icon name="o-bars-3" class="w-6 h-6" />
                     </summary>
                     <ul onclick="if(event.target.closest('a')) this.closest('details').removeAttribute('open')"
-                        class="menu menu-sm dropdown-content mt-5 z-[50] p-2 shadow-2xl bg-base-100 rounded-2xl w-64 border border-base-300">
-                        <li><a href="/" class="{{ request()->is('/') ? 'active' : '' }}"><x-icon name="o-home"
-                                     class="w-4 h-4" /> Beranda</a></li>
-                        <li><a href="{{ route('tentang-kami') }}" wire:navigate class="{{ request()->is('tentang-kami') ? 'active' : '' }}"><x-icon name="o-information-circle"
-                                     class="w-4 h-4" /> Tentang Kami</a></li>
+                        class="menu dropdown-content mt-5 z-[50] p-2 shadow-2xl bg-base-100 rounded-2xl w-64 border border-base-200">
+                        <li><a href="/" class="{{ request()->is('/') ? 'active' : '' }} py-2.5 text-sm font-bold"><x-icon name="o-home"
+                                     class="w-4.5 h-4.5" /> Beranda</a></li>
+                        <li><a href="{{ route('tentang-kami') }}" wire:navigate class="{{ request()->is('tentang-kami') ? 'active' : '' }} py-2.5 text-sm font-bold"><x-icon name="o-information-circle"
+                                     class="w-4.5 h-4.5" /> Tentang Kami</a></li>
                         @auth
                         @if(in_array(auth()->user()->role, ['admin', 'petugas']))
                         <li><a href="/admin/dashboard"
-                                class="{{ request()->is('admin/dashboard') ? 'active' : '' }}"><x-icon
-                                    name="o-chart-bar" class="w-4 h-4" /> Dashboard Admin</a></li>
+                                class="{{ request()->is('admin/dashboard') ? 'active' : '' }} py-2.5 text-sm font-bold"><x-icon
+                                    name="o-chart-bar" class="w-4.5 h-4.5" /> Dashboard Admin</a></li>
                         <li><a href="/admin/pengaduan"
-                                 class="{{ request()->is('admin/pengaduan') ? 'active' : '' }}"><x-icon
-                                     name="o-inbox-stack" class="w-4 h-4" /> Kelola Pengaduan</a></li>
+                                 class="{{ request()->is('admin/pengaduan') ? 'active' : '' }} py-2.5 text-sm font-bold"><x-icon
+                                     name="o-inbox-stack" class="w-4.5 h-4.5" /> Kelola Pengaduan</a></li>
                         
                         @if(auth()->user()->role === 'admin')
                         <li>
                             {{-- MOBILE: Hapus 'open', tambah class hidden arrow --}}
                             <details class="[&>summary::after]:hidden">
                                 <summary
-                                    class="{{ request()->is('admin/kategori') || request()->is('admin/users') ? 'active' : '' }}">
-                                    <x-icon name="o-circle-stack" class="w-4 h-4" /> Data Set
+                                    class="{{ request()->is('admin/kategori') || request()->is('admin/users') ? 'active' : '' }} py-2.5 text-sm font-bold">
+                                    <x-icon name="o-circle-stack" class="w-4.5 h-4.5" /> Data Set
                                 </summary>
-                                <ul>
+                                <ul class="mt-1 ml-4 border-l border-base-200 pl-2">
                                     <li><a href="/admin/kategori"
                                             onclick="this.closest('details').removeAttribute('open')"
-                                            class="{{ request()->is('admin/kategori') ? 'active' : '' }}"><x-icon
+                                            class="{{ request()->is('admin/kategori') ? 'active' : '' }} py-2 text-xs font-bold"><x-icon
                                                 name="o-folder-open" class="w-4 h-4" /> Kategori</a></li>
                                     <li><a href="/admin/users" onclick="this.closest('details').removeAttribute('open')"
-                                            class="{{ request()->is('admin/users') ? 'active' : '' }}"><x-icon
+                                            class="{{ request()->is('admin/users') ? 'active' : '' }} py-2 text-xs font-bold"><x-icon
                                                 name="o-users" class="w-4 h-4" /> Pengguna</a></li>
                                     <div class="my-1 opacity-20 divider"></div>
                                     <li><a href="/admin/pengaturan" onclick="this.closest('details').removeAttribute('open')"
-                                            class="{{ request()->is('admin/pengaturan') ? 'active' : '' }}"><x-icon
+                                            class="{{ request()->is('admin/pengaturan') ? 'active' : '' }} py-2 text-xs font-bold"><x-icon
                                                 name="o-cog-8-tooth" class="w-4 h-4" /> Pengaturan Web</a></li>
                                 </ul>
                             </details>
@@ -109,8 +102,8 @@
                         @endif
 
                         @else
-                        <li><a href="/dashboard" class="{{ request()->is('dashboard') ? 'active' : '' }}"><x-icon
-                                     name="o-chart-pie" class="w-4 h-4" /> Dashboard</a></li>
+                        <li><a href="/dashboard" class="{{ request()->is('dashboard') ? 'active' : '' }} py-2.5 text-sm font-bold"><x-icon
+                                     name="o-chart-pie" class="w-4.5 h-4.5" /> Dashboard</a></li>
                         @endif
 
                         @endauth
@@ -241,7 +234,7 @@
     </main>
 
     {{-- Centralized Footer --}}
-    @if(!request()->routeIs('admin.*'))
+    @if(request()->routeIs('beranda', 'tentang-kami'))
     <div class="print:hidden">
         <x-footer />
     </div>
@@ -319,27 +312,31 @@
             window.scrollTo(0, 0);
             
             sessionStorage.removeItem('spa_navigating');
-        });
 
-        // --- FAIL-SAFE DROPDOWN SYNC ---
-        // Ensure only one <details> is open at a time and close on outside click
-        window.addEventListener('click', function (e) {
-            const summary = e.target.closest('summary');
-            const details = e.target.closest('details');
-            
-            if (summary && details) {
-                // If we are opening a NEW one
-                if (!details.open) {
-                    document.querySelectorAll('details').forEach(d => {
-                        if (d !== details) d.removeAttribute('open');
-                    });
-                }
-            } else if (!details) {
-                // Clicking outside: Close all
-                document.querySelectorAll('details').forEach(d => d.removeAttribute('open'));
-            }
-        }, { capture: true });
-        // ---------------------------------
+            // --- DROPDOWN SYNC LOGIC ---
+            // Ensure only one <details> dropdown is open at a time
+            const syncDropdowns = () => {
+                const allDetails = document.querySelectorAll('details.dropdown');
+                allDetails.forEach(targetDetail => {
+                    const summary = targetDetail.querySelector('summary');
+                    if (summary) {
+                        summary.addEventListener('click', (e) => {
+                            // If we are about to open this one, close others
+                            if (!targetDetail.open) {
+                                allDetails.forEach(detail => {
+                                    if (detail !== targetDetail) {
+                                        detail.removeAttribute('open');
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            };
+
+            syncDropdowns();
+            // ----------------------------
+        });
     </script>
 
     {{-- Global Share Modal --}}

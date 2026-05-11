@@ -348,7 +348,7 @@
 
     {{-- Modal Sukses Lapor --}}
     <x-modal wire:model="showSuccessModal" persistent class="backdrop-blur-md">
-        <div class="text-center p-2">
+        <div class="text-center p-2 pt-10 sm:pt-14 translate-y-2">
             <div class="w-20 h-20 bg-success/10 text-success rounded-full flex items-center justify-center mx-auto mb-4">
                 <x-icon name="o-check-badge" class="w-12 h-12" />
             </div>
@@ -358,9 +358,9 @@
                 Laporan Anda telah berhasil masuk ke sistem kami. Tim admin akan segera melakukan verifikasi.
             </p>
 
-            <div class="bg-base-200 rounded-2xl p-5 mb-8 border-2 border-dashed border-base-300">
+            <div class="bg-base-200 rounded-2xl p-4 mb-6 border-2 border-dashed border-base-300">
                 <p class="text-[10px] font-black text-base-content/40 uppercase tracking-widest mb-1">Kode Tracking Anda</p>
-                <div class="text-3xl font-mono font-black text-primary tracking-tighter">{{ $lastTrackingCode }}</div>
+                <div class="text-xl font-mono font-black text-primary tracking-tight">{{ $lastTrackingCode }}</div>
                 <p class="text-[10px] mt-2 text-base-content/50 italic">Simpan kode ini untuk memantau progres laporan Anda secara mandiri.</p>
             </div>
 

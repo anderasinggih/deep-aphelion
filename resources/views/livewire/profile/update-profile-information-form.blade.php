@@ -194,8 +194,10 @@ new class extends Component
             <x-input label="Nama Lengkap (Sesuai KTP)" wire:model="name" id="name" type="text" required autofocus autocomplete="name"
                 icon="o-user" class="uppercase" placeholder="Contoh: BUDI SANTOSO" />
 
-            <x-input label="Nomor Induk Kependudukan (NIK)" wire:model="nik" id="nik" type="text" required
-                autocomplete="off" icon="o-identification" maxlength="16" placeholder="16 digit NIK" oninput="this.value = this.value.replace(/[^0-9]/g, '');" />
+            <x-input label="Nomor Induk Kependudukan (NIK)" wire:model="nik" id="nik" type="text" readonly
+                autocomplete="off" icon="o-identification" maxlength="16" placeholder="16 digit NIK" 
+                class="bg-base-200/50 cursor-not-allowed opacity-70"
+                hint="NIK tidak dapat diubah secara mandiri demi keamanan data kependudukan." />
 
             <x-input label="Nomor WhatsApp" wire:model="no_wa" id="no_wa" type="text" required autocomplete="tel"
                 icon="o-phone" maxlength="15" placeholder="Contoh: 081234567890" oninput="this.value = this.value.replace(/[^0-9]/g, '');" />

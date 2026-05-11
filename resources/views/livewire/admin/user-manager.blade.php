@@ -128,7 +128,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <x-input label="Nama Lengkap" wire:model="name" placeholder="Sesuai KTP" required icon="o-user" />
                 <x-input label="NIK" wire:model="nik" type="number" placeholder="16 digit angka" required
-                    icon="o-identification" />
+                    icon="o-identification" :readonly="$isEdit" :class="$isEdit ? 'bg-base-200 opacity-60 cursor-not-allowed' : ''" />
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
