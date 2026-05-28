@@ -371,7 +371,6 @@ class PengaduanManager extends Component
                   ->orWhere('deskripsi', 'like', '%' . $this->search . '%')
                   ->orWhere('kode_tracking', 'like', '%' . $this->search . '%')
                   ->orWhere('lokasi_kejadian', 'like', '%' . $this->search . '%')
-                  ->orWhereHas('user', function ($uq) {
                   ->orWhere('guest_name', 'like', '%' . $this->search . '%')
                   ->orWhere('guest_wa', 'like', '%' . $this->search . '%')
                   ->orWhereHas('user', function ($uq) {
@@ -513,7 +512,6 @@ class PengaduanManager extends Component
                   ->orWhere('deskripsi', 'like', '%' . $this->search . '%')
                   ->orWhere('kode_tracking', 'like', '%' . $this->search . '%')
                   ->orWhere('lokasi_kejadian', 'like', '%' . $this->search . '%')
-                  ->orWhereHas('user', function ($uq) {
                   ->orWhere('guest_name', 'like', '%' . $this->search . '%')
                   ->orWhere('guest_wa', 'like', '%' . $this->search . '%')
                   ->orWhereHas('user', function ($uq) {
