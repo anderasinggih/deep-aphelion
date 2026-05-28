@@ -25,22 +25,17 @@ class CreateAdmin extends Command
      */
     public function handle()
     {
-        $this->info('--- Membuat Akun Administrator ---');
+        $this->info('--- Membuat Akun Staf/Administrator ---');
         
         $name = $this->ask('Nama Lengkap');
-        $nik = $this->ask('NIK (16 digit)');
         $no_wa = $this->ask('Nomor WhatsApp');
         $email = $this->ask('Alamat Email');
         $password = $this->secret('Password');
+        $role = $this->choice('Role Pengguna', ['superadmin', 'admin', 'petugas'], 1);
 
         // Validasi Sederhana
-        if (!$name || !$nik || !$no_wa || !$email || !$password) {
+        if (!$name || !$no_wa || !$email || !$password) {
             $this->error('Gagal: Semua field wajib diisi!');
-            return;
-        }
-
-        if (strlen($nik) !== 16) {
-            $this->error('Gagal: NIK harus tepat 16 digit angka!');
             return;
         }
 
@@ -49,23 +44,17 @@ class CreateAdmin extends Command
             return;
         }
 
-        if (\App\Models\User::where('nik', $nik)->exists()) {
-            $this->error('Gagal: NIK ini sudah terdaftar!');
-            return;
-        }
-
         try {
             $user = \App\Models\User::create([
                 'name' => strtoupper($name),
-                'nik' => $nik,
                 'no_wa' => $no_wa,
                 'email' => $email,
                 'password' => \Illuminate\Support\Facades\Hash::make($password),
-                'role' => 'admin',
+                'role' => $role,
                 'email_verified_at' => now(),
             ]);
 
-            $this->info("Sukses: Admin '{$user->name}' berhasil dibuat dan otomatis terverifikasi!");
+            $this->info("Sukses: Pengguna '{$user->name}' dengan role '{$role}' berhasil dibuat dan otomatis terverifikasi!");
         } catch (\Exception $e) {
             $this->error('Terjadi kesalahan sistem: ' . $e->getMessage());
         }
