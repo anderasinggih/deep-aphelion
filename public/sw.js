@@ -1,6 +1,5 @@
-const CACHE_NAME = 'kembaran-ngadu-v2';
+const CACHE_NAME = 'kembaran-ngadu-v3';
 const urlsToCache = [
-  '/',
   '/manifest.json'
 ];
 
@@ -8,6 +7,21 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(urlsToCache))
+      .then(() => self.skipWaiting())
+  );
+});
+
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cache => {
+          if (cache !== CACHE_NAME && cache !== 'kembaran-ngadu-assets') {
+            return caches.delete(cache);
+          }
+        })
+      );
+    }).then(() => self.clients.claim())
   );
 });
 
@@ -30,10 +44,10 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Default strategy for other requests
+  // Network First for HTML and dynamic content (including '/')
   event.respondWith(
-    caches.match(event.request)
-      .then(response => response || fetch(event.request))
+    fetch(event.request)
+      .catch(() => caches.match(event.request))
   );
 });
 
