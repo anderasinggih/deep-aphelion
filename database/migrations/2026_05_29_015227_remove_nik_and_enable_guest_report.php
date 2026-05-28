@@ -40,6 +40,11 @@ return new class extends Migration
                 'updated_at' => now(),
             ]
         );
+
+        // 4. Ubah user_id menjadi nullable di tabel pengaduan_histories
+        Schema::table('pengaduan_histories', function (Blueprint $table) {
+            $table->foreignId('user_id')->nullable()->change();
+        });
     }
 
     /**
@@ -55,6 +60,10 @@ return new class extends Migration
 
         Schema::table('users', function (Blueprint $table) {
             $table->string('nik', 16)->nullable()->unique();
+        });
+
+        Schema::table('pengaduan_histories', function (Blueprint $table) {
+            $table->foreignId('user_id')->nullable(false)->change();
         });
 
         DB::table('settings')->where('key', 'whatsapp_admin')->delete();
