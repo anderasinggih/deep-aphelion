@@ -31,15 +31,19 @@
         .livewire-progress-bar {
             display: none !important;
         }
+        /* Sembunyikan indikator koneksi Livewire (kotak pojok kanan bawah) */
+        [wire\:offline],
+        .livewire-failed-to-connect,
+        .livewire-connection-warning {
+            display: none !important;
+        }
         html {
             scroll-behavior: smooth;
-            /* Hide scrollbar for Chrome, Safari and Opera */
-            &::-webkit-scrollbar {
-                display: none;
-            }
-            /* Hide scrollbar for IE, Edge and Firefox */
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
+        }
+        html::-webkit-scrollbar {
+            display: none;
         }
         body {
             touch-action: manipulation;
@@ -307,7 +311,7 @@
             copyBtn.onclick = () => {
                 navigator.clipboard.writeText(url).then(() => {
                     const originalText = copyBtn.innerHTML;
-                    copyBtn.innerHTML = '<x-icon name="o-check" class="w-5 h-5" /> Tersalin!';
+                    copyBtn.innerHTML = `<x-icon name="o-check" class="w-5 h-5" /> Tersalin!`;
                     copyBtn.classList.add('btn-success');
                     setTimeout(() => {
                         copyBtn.innerHTML = originalText;
@@ -335,28 +339,29 @@
             
             sessionStorage.removeItem('spa_navigating');
 
-            // --- DROPDOWN SYNC LOGIC ---
-            // Ensure only one <details> dropdown is open at a time
-            const syncDropdowns = () => {
+            // --- DROPDOWN SYNC & CLICK-OUTSIDE LOGIC ---
+            // Ensure only one <details> dropdown is open and handle click-outside
+            document.addEventListener('click', (e) => {
                 const allDetails = document.querySelectorAll('details.dropdown');
-                allDetails.forEach(targetDetail => {
-                    const summary = targetDetail.querySelector('summary');
-                    if (summary) {
-                        summary.addEventListener('click', (e) => {
-                            // If we are about to open this one, close others
-                            if (!targetDetail.open) {
-                                allDetails.forEach(detail => {
-                                    if (detail !== targetDetail) {
-                                        detail.removeAttribute('open');
-                                    }
-                                });
-                            }
+                const targetSummary = e.target.closest('details.dropdown summary');
+                const targetDetails = e.target.closest('details.dropdown');
+
+                // 1. Handle Closing others when opening one
+                if (targetSummary) {
+                    const parent = targetSummary.closest('details.dropdown');
+                    if (parent && !parent.open) {
+                        allDetails.forEach(detail => {
+                            if (detail !== parent) detail.removeAttribute('open');
                         });
                     }
-                });
-            };
+                    return;
+                }
 
-            syncDropdowns();
+                // 2. Handle Click Outside
+                if (!targetDetails) {
+                    allDetails.forEach(detail => detail.removeAttribute('open'));
+                }
+            }, true);
             // ----------------------------
         });
     </script>
