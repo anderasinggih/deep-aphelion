@@ -1,0 +1,125 @@
+MASTER DOKUMENTASI SISTEM PENGADUAN MASYARAKAT: KEMBARAN NGADU
+
+=====================================================================
+1. PROFIL PROYEK
+=====================================================================
+Nama Sistem: Kembaran Ngadu
+Jenis Aplikasi: Sistem Informasi Berbasis Web (Responsive & Mobile-First)
+Tujuan Utama: 
+Menjadi platform digital resmi bagi warga Kecamatan Kembaran untuk menyampaikan pengaduan, aspirasi, dan laporan masalah infrastruktur/pelayanan publik secara transparan. Sistem ini memfasilitasi komunikasi dua arah antara masyarakat dan pemerintah daerah guna mempercepat penanganan masalah di lapangan.
+
+=====================================================================
+2. ARSITEKTUR TEKNOLOGI (TECH STACK)
+=====================================================================
+- PHP: v8.2+
+- Framework: Laravel v12.x
+- Frontend Logic: Livewire v3.x (TALL Stack)
+- UI Library: MaryUI (Blade-based components)
+- Styling: Tailwind CSS
+- Database: MySQL v8.0
+- Assets Manager: Vite
+
+=====================================================================
+3. DAFTAR FITUR & ROLE (BAHAN USE CASE)
+=====================================================================
+ROLE: WARGA
+- Registrasi Akun: Validasi NIK (16 digit), No. WA, dan Email.
+- Feed Pengaduan: Eksplorasi laporan publik, filter kategori, dan pencarian tracking code.
+- Sistem Dukungan (Upvote): Memberi dukungan pada laporan warga lain untuk menaikkan urgensi.
+- Komentar Interaktif: Diskusi di tiap laporan dengan fitur balasan (nested reply).
+- Kirim Laporan:
+  - Deskripsi & Judul detail.
+  - Geo-tagging: Pin point lokasi otomatis via Leaflet Maps.
+  - Multimedia: Upload hingga 5 foto bukti kejadian.
+  - Privasi: Fitur "Sembunyikan Nama" (Anonim) dan "Laporan Privat".
+- Tracking: Notifikasi real-time via bell icon dan WhatsApp terkait perubahan status.
+
+ROLE: ADMIN / PETUGAS
+- Dashboard: Grafik statistik laporan masuk vs selesai, serta monitoring SLA per kategori.
+- User Management: Pengelolaan akun petugas dan warga dengan fitur Soft Delete.
+- Category & SLA Management: Pengaturan kategori (Jalan, Sampah, dll) dengan batas waktu pengerjaan (SLA hari).
+- Update Status & Workflow:
+  - Menunggu -> Diproses -> Selesai / Ditolak.
+  - Lampiran foto bukti penyelesaian dan pesan penutup.
+- Audit Trail: Log otomatis setiap perubahan status (siapa petugasnya, kapan, dan alasannya).
+
+=====================================================================
+4. LOGIKA ALUR KERJA (BAHAN ACTIVITY DIAGRAM)
+=====================================================================
+[ ALUR PENGIRIMAN LAPORAN ]
+Mulai -> Warga login -> Isi Form (Judul, Kategori, Foto, Lokasi) -> Submit -> Sistem generate Tracking Code -> Notifikasi ke Admin -> Selesai.
+
+[ ALUR VERIFIKASI & PENANGANAN ]
+Laporan Masuk -> Admin review kelengkapan data -> 
+  A. Jika valid: Status berubah "Diproses" -> Disposisi ke petugas terkait.
+  B. Jika tidak valid: Status berubah "Ditolak" -> Beri alasan penolakan.
+Selesai.
+
+[ ALUR PENYELESAIAN ]
+Laporan "Diproses" -> Petugas eksekusi lapangan -> Petugas upload foto hasil & pesan penutup -> Klik "Selesai" -> Sistem hitung durasi kerja vs SLA -> Notifikasi ke warga -> Selesai.
+
+=====================================================================
+5. STRUKTUR DATABASE & RELASI (BAHAN ERD)
+=====================================================================
+1. Tabel: users
+   - PK: id
+   - Fields: name, nik, email, no_wa, role (enum), password, deleted_at (soft delete).
+   - Relasi: One to Many ke pengaduans (sebagai pelapor).
+   - Relasi: One to Many ke pengaduan_histories (sebagai petugas).
+
+2. Tabel: kategoris
+   - PK: id
+   - Fields: nama, icon, deskripsi, sla_hari (int).
+   - Relasi: One to Many ke pengaduans.
+
+3. Tabel: pengaduans
+   - PK: id
+   - Fields: kode_tracking (unique), user_id (FK), kategori_id (FK), judul, deskripsi, foto_bukti (json), lokasi_kejadian, latitude, longitude, status (enum), is_anonymous (bool), is_private (bool), pesan_penutup.
+   - Relasi: Many to One ke users.
+   - Relasi: Many to One ke kategoris.
+   - Relasi: One to Many ke pengaduan_histories, pengaduan_komentars, pengaduan_dukungans.
+
+4. Tabel: pengaduan_histories
+   - PK: id
+   - Fields: pengaduan_id (FK), user_id (FK - Petugas), status_sebelumnya, status_baru, keterangan_admin, foto_bukti.
+   - Relasi: Many to One ke pengaduans.
+
+5. Tabel: pengaduan_komentars
+   - PK: id
+   - Fields: pengaduan_id (FK), user_id (FK), parent_id (FK - Self), komentar (text).
+   - Relasi: Many to One ke pengaduans; Self-relation (Parent-Child) untuk nested reply.
+
+6. Tabel: pengaduan_dukungans
+   - PK: id
+   - Fields: pengaduan_id (FK), user_id (FK).
+   - Constraint: Unique(pengaduan_id, user_id).
+   - Relasi: Many to One ke pengaduans.
+
+=====================================================================
+6. LOGIKA INTERAKSI (BAHAN SEQUENCE DIAGRAM)
+=====================================================================
+[ PROSES KIRIM LAPORAN ]
+User -> [View: Form Component] -> Input Data -> Klik Submit
+[View] -> [Controller: Livewire Class] -> Validasi & Upload Foto
+[Controller] -> [Model: Pengaduan] -> Create Record (id, kode_tracking, dll)
+[Model] -> [Database: MySQL] -> Insert Row & Return Success
+[Database] -> [Model] -> Return Data
+[Model] -> [Controller] -> Flash Message & Redirect
+[Controller] -> [View] -> Tampilkan Detail Laporan (Success State)
+
+[ PROSES UPDATE STATUS (SELESAI) ]
+Admin -> [View: Admin Detail] -> Input Pesan Penutup & Foto Hasil -> Klik Selesai
+[View] -> [Controller: Admin Controller] -> Validasi Input
+[Controller] -> [Model: Pengaduan] -> update(status='selesai')
+[Controller] -> [Model: PengaduanHistory] -> create(log_perubahan)
+[Model] -> [Database] -> Transaction: Commit Update
+[Database] -> [Controller] -> Trigger Notification (WhatsApp & Web)
+[Controller] -> [View] -> Refresh Dashboard / Detail
+
+=====================================================================
+7. NILAI TAMBAH SISTEM (BAHAN SIDANG)
+=====================================================================
+1. TRANSPARANSI: Publik dapat melihat sejarah penanganan laporan secara detail (Audit Trail) sehingga tidak ada proses yang tertutup.
+2. KEAMANAN & INTEGRITAS DATA: Penggunaan Soft Deletes pada user memastikan data laporan historis tetap terjaga untuk keperluan statistik pemerintahan meskipun akun user terkait dinonaktifkan.
+3. PRIVASI & KEAMANAN: Opsi pelaporan anonim dan privat memberikan rasa aman bagi warga untuk melapor tanpa takut akan intimidasi.
+4. EFISIENSI & AKUNTABILITAS: Fitur SLA (Service Level Agreement) memberikan standar waktu pelayanan yang jelas, mempermudah evaluasi kinerja petugas lapangan berdasarkan durasi penyelesaian laporan.
