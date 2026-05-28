@@ -312,11 +312,11 @@ class PengaduanManager extends Component
             $manager = new ImageManager(new Driver());
             $image = $manager->read($this->update_foto->getRealPath());
             
-            // Resize to 1200px max width while maintaining aspect ratio
-            $image->scale(width: 1200);
+            // Resize to 600px max width while maintaining aspect ratio
+            $image->scale(width: 600);
             
             $filename = 'bukti_selesai/' . $this->update_foto->hashName();
-            $encoded = $image->toJpeg(75); // Compress to 75% quality
+            $encoded = $image->toJpeg(40); // Compress to 40% quality
             
             Storage::disk('public')->put($filename, (string) $encoded);
             $path = $filename;
