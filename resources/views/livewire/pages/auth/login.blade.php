@@ -38,11 +38,9 @@ new #[Layout('layouts.auth')] class extends Component
         Session::regenerate();
 
         $user = auth()->user();
-        $defaultUrl = route('dashboard', absolute: false);
+        $defaultUrl = '/admin/dashboard';
 
-        if ($user->role === 'admin') {
-            $defaultUrl = '/admin/dashboard';
-        } elseif ($user->role === 'petugas') {
+        if ($user->role === 'petugas') {
             $defaultUrl = '/admin/pengaduan';
         }
 
