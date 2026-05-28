@@ -44,7 +44,7 @@ new #[Layout('layouts.auth')] class extends Component
             $defaultUrl = '/admin/pengaduan';
         }
 
-        $this->redirectIntended(default: $defaultUrl, navigate: true);
+        $this->redirectIntended(default: $defaultUrl);
     }
 }; ?>
 
