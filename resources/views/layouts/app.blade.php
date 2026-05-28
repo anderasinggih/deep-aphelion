@@ -37,6 +37,10 @@
         .livewire-connection-warning {
             display: none !important;
         }
+        /* Sembunyikan toast container MaryUI sebelum Alpine.js load (x-cloak fix) */
+        [x-cloak] {
+            display: none !important;
+        }
         /* Sembunyikan toast container MaryUI saat tidak ada notifikasi */
         .toast:empty {
             display: none !important;
