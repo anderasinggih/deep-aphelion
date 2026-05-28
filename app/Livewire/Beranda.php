@@ -138,7 +138,7 @@ class Beranda extends Component
     public function render()
     {
         $query = Pengaduan::query()
-            ->select('id', 'user_id', 'kategori_id', 'judul', 'deskripsi', 'status', 'foto_bukti', 'kode_tracking', 'is_anonymous', 'lokasi_kejadian', 'created_at')
+            ->select('id', 'user_id', 'guest_name', 'kategori_id', 'judul', 'deskripsi', 'status', 'foto_bukti', 'kode_tracking', 'is_anonymous', 'lokasi_kejadian', 'created_at')
             ->with([
                 'user:id,name', 
                 'kategori:id,nama'

@@ -365,10 +365,11 @@
                                     </div>
 
                                     <div class="relative z-20 flex items-center gap-3">
-                                        <div class="flex items-center gap-1.5 text-black">
-                                            <x-icon name="o-hand-thumb-up" class="w-6 h-6" />
-                                            <span class="text-sm font-black">{{ $pengaduan->dukungans_count }}</span>
-                                        </div>
+                                         <button wire:click.prevent="upvote({{ $pengaduan->id }})" wire:key="upvote-grid-{{ $pengaduan->id }}"
+                                             class="flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95 {{ $pengaduan->has_liked ? 'text-primary' : 'text-black hover:text-primary' }}">
+                                             <x-icon name="{{ $pengaduan->has_liked ? 's-hand-thumb-up' : 'o-hand-thumb-up' }}" class="w-6 h-6" />
+                                             <span class="text-sm font-black">{{ $pengaduan->dukungans_count }}</span>
+                                         </button>
 
                                         <button onclick='event.preventDefault(); event.stopPropagation(); nativeShare(@js("LAPORAN: " . $pengaduan->judul), @js("📢 Bantu dukung laporan warga ini agar segera ditindaklanjuti melalui aplikasi Kembaran Ngadu."), @js(route("pengaduan.feed-detail", $pengaduan->kode_tracking)))'
                                             class="p-2 transition-colors rounded-full hover:bg-base-200 text-black hover:text-primary">
@@ -488,11 +489,12 @@
                                         @endif
                                     </div>
 
-                                    <div class="relative z-20 flex items-center gap-3 sm:gap-4">
-                                        <div class="flex items-center gap-1.5 sm:gap-2 text-black">
-                                            <x-icon name="o-hand-thumb-up" class="w-5.5 h-5.5 sm:w-6 sm:h-6" />
-                                            <span class="text-xs sm:text-sm font-bold">{{ $pengaduan->dukungans_count }}</span>
-                                        </div>
+                                     <div class="relative z-20 flex items-center gap-3 sm:gap-4">
+                                         <button wire:click.prevent="upvote({{ $pengaduan->id }})" wire:key="upvote-list-{{ $pengaduan->id }}"
+                                             class="flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95 {{ $pengaduan->has_liked ? 'text-primary' : 'text-black hover:text-primary' }}">
+                                             <x-icon name="{{ $pengaduan->has_liked ? 's-hand-thumb-up' : 'o-hand-thumb-up' }}" class="w-5.5 h-5.5 sm:w-6 sm:h-6" />
+                                             <span class="text-xs sm:text-sm font-bold">{{ $pengaduan->dukungans_count }}</span>
+                                         </button>
 
                                         <button onclick='event.preventDefault(); event.stopPropagation(); nativeShare(@js("LAPORAN: " . $pengaduan->judul), @js("📢 Bantu dukung laporan warga ini agar segera ditindaklanjuti melalui aplikasi Kembaran Ngadu."), @js(route("pengaduan.feed-detail", $pengaduan->kode_tracking)))'
                                             class="text-black hover:text-primary transition-colors p-1">
