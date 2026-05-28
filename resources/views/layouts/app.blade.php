@@ -413,6 +413,27 @@
             // Livewire progress bar is already hidden via CSS
         });
 
+        // Sembunyikan toast container MaryUI sampai ada toast sungguhan
+        (function() {
+            var style = document.createElement('style');
+            style.id = '__toast_hide__';
+            style.textContent = '.toast.rounded-box.fixed { display: none !important; }';
+            document.head.appendChild(style);
+
+            window.addEventListener('mary-toast', function() {
+                var s = document.getElementById('__toast_hide__');
+                if (s) s.remove();
+                // Tambahkan kembali setelah toast selesai (4 detik)
+                setTimeout(function() {
+                    var s2 = document.createElement('style');
+                    s2.id = '__toast_hide__';
+                    s2.textContent = '.toast.rounded-box.fixed { display: none !important; }';
+                    document.head.appendChild(s2);
+                }, 4000);
+            });
+        })();
+
+
         function nativeShare(title, text, url) {
             const shareContent = `${title}\n${text}\n${url}`;
             if (navigator.share) {
