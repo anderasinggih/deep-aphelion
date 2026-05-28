@@ -40,7 +40,7 @@ class PengaduanKomentar extends Component
         $this->validate(['komentar' => 'required|max:1000']);
         KomentarModel::create([
             'pengaduan_id' => $this->pengaduan_id,
-            'user_id' => Auth::id(),
+            'user_id' => Auth::check() ? Auth::id() : null,
             'komentar' => $this->komentar
         ]);
         $this->reset('komentar');
@@ -55,7 +55,7 @@ class PengaduanKomentar extends Component
         $this->validate(['reply_text' => 'required|max:1000']);
         KomentarModel::create([
             'pengaduan_id' => $this->pengaduan_id,
-            'user_id' => Auth::id(),
+            'user_id' => Auth::check() ? Auth::id() : null,
             'parent_id' => $parentId,
             'komentar' => $this->reply_text
         ]);
@@ -64,7 +64,7 @@ class PengaduanKomentar extends Component
 
     public function deleteComment($id) {
         $comment = KomentarModel::find($id);
-        if ($comment && (Auth::id() === $comment->user_id || in_array(Auth::user()->role, ['admin', 'petugas']))) {
+        if ($comment && Auth::check() && (Auth::id() === $comment->user_id || in_array(Auth::user()->role, ['admin', 'petugas']))) {
             $comment->delete();
         }
     }
