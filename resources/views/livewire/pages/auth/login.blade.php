@@ -150,10 +150,7 @@ new #[Layout('layouts.auth')] class extends Component
             </div>
         </form>
 
-        <p class="mt-8 text-sm text-center text-base-content/60">
-            Belum punya akun?
-            <a href="{{ route('register') }}" class="font-bold text-primary hover:underline" wire:navigate>Daftar</a>
-        </p>
+
     </div>
 
     <style>
