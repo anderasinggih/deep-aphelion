@@ -37,6 +37,10 @@
         .livewire-connection-warning {
             display: none !important;
         }
+        /* Sembunyikan toast container MaryUI saat tidak ada notifikasi */
+        .toast:empty {
+            display: none !important;
+        }
         html {
             scroll-behavior: smooth;
             -ms-overflow-style: none;  /* IE and Edge */
