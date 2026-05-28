@@ -20,6 +20,8 @@ Route::get('/pengaduan/create', PengaduanForm::class)->name('pengaduan.create');
 Route::get('/pengaduan/{id}/print', [\App\Http\Controllers\PrintController::class, 'resi'])->name('print.resi');
 Route::get('/pengaduan/{kode_tracking}', PengaduanFeedDetail::class)->name('pengaduan.feed-detail')->where('kode_tracking', '.*');
 
+Route::redirect('/login', '/admin/login');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     // Admin
     Route::get('/admin/dashboard', AdminDashboard::class)->name('admin.dashboard');
