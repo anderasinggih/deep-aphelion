@@ -54,16 +54,11 @@ return new class extends Migration
     {
         // Kembalikan ke semula (jika rollback)
         Schema::table('pengaduans', function (Blueprint $table) {
-            $table->foreignId('user_id')->nullable(false)->change();
             $table->dropColumn(['guest_name', 'guest_wa']);
         });
 
         Schema::table('users', function (Blueprint $table) {
             $table->string('nik', 16)->nullable()->unique();
-        });
-
-        Schema::table('pengaduan_histories', function (Blueprint $table) {
-            $table->foreignId('user_id')->nullable(false)->change();
         });
 
         DB::table('settings')->where('key', 'whatsapp_admin')->delete();
