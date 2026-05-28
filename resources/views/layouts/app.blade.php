@@ -134,6 +134,7 @@
                             </details>
                         </li>
                         @endif
+                        @endif
 
                         @endauth
                     </ul>
@@ -189,6 +190,7 @@
                             </ul>
                         </details>
                     </li>
+                    @endif
                     @endif
 
                     @endauth
