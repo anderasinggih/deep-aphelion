@@ -55,48 +55,68 @@ class Beranda extends Component
 
     public function upvote($pengaduan_id)
     {
-        if (!Auth::check()) {
-            return redirect()->route('login');
-        }
-
-        if (Auth::user()->role !== 'warga') {
-            session()->flash('error', 'Silakan login sebagai warga untuk memberikan dukungan.');
-            return;
-        }
-
-        $userId = Auth::id();
         $pengaduan = Pengaduan::find($pengaduan_id);
 
         if (!$pengaduan) {
             return;
         }
 
-        // 1. Anti-Cheat: Prevent self-support
-        if ($pengaduan->user_id === $userId) {
-            $this->error('Anda tidak dapat memberikan dukungan pada laporan sendiri.');
-            return;
-        }
-
-        // 2. Status Check: Only active reports can be supported
+        // 1. Status Check: Only active reports can be supported
         if (!in_array($pengaduan->status, ['menunggu', 'diproses'])) {
             $this->error('Dukungan hanya dapat diberikan pada laporan yang sedang aktif.');
             return;
         }
 
-        $existing = PengaduanDukungan::query()->where('pengaduan_id', $pengaduan_id)
-            ->where('user_id', $userId)
-            ->first();
+        if (Auth::check()) {
+            if (Auth::user()->role !== 'warga') {
+                session()->flash('error', 'Silakan login sebagai warga untuk memberikan dukungan.');
+                return;
+            }
 
-        if ($existing) {
-            $existing->delete(); // Toggle (Cancel upvote)
-            $this->success('Dukungan dibatalkan.');
-        }
-        else {
-            PengaduanDukungan::create([
-                'pengaduan_id' => $pengaduan_id,
-                'user_id' => $userId
-            ]);
-            $this->success('Terima kasih atas dukungan Anda!');
+            $userId = Auth::id();
+            
+            // Anti-Cheat: Prevent self-support
+            if ($pengaduan->user_id === $userId) {
+                $this->error('Anda tidak dapat memberikan dukungan pada laporan sendiri.');
+                return;
+            }
+
+            $existing = PengaduanDukungan::query()->where('pengaduan_id', $pengaduan_id)
+                ->where('user_id', $userId)
+                ->first();
+
+            if ($existing) {
+                $existing->delete(); // Toggle (Cancel upvote)
+                $this->success('Dukungan dibatalkan.');
+            }
+            else {
+                PengaduanDukungan::create([
+                    'pengaduan_id' => $pengaduan_id,
+                    'user_id' => $userId
+                ]);
+                $this->success('Terima kasih atas dukungan Anda!');
+            }
+        } else {
+            // Guest support logic based on IP address
+            $ipAddress = request()->ip();
+
+            $existing = PengaduanDukungan::query()->where('pengaduan_id', $pengaduan_id)
+                ->where('ip_address', $ipAddress)
+                ->whereNull('user_id')
+                ->first();
+
+            if ($existing) {
+                $existing->delete(); // Toggle (Cancel upvote)
+                $this->success('Dukungan dibatalkan.');
+            }
+            else {
+                PengaduanDukungan::create([
+                    'pengaduan_id' => $pengaduan_id,
+                    'ip_address' => $ipAddress,
+                    'user_id' => null
+                ]);
+                $this->success('Terima kasih atas dukungan Anda!');
+            }
         }
 
         // Auto-priority logic: > 50 upvotes automatic HIGH priority
@@ -125,7 +145,11 @@ class Beranda extends Component
             ])
             ->withCount('dukungans')
             ->withExists(['dukungans as has_liked' => function($q) {
-                $q->where('user_id', auth()->id());
+                if (auth()->check()) {
+                    $q->where('user_id', auth()->id());
+                } else {
+                    $q->where('ip_address', request()->ip());
+                }
             }])
             ->where('is_private', false)
             ->where('status', '!=', 'ditolak');

@@ -12,7 +12,7 @@ class PengaduanDukungan extends Model
     /** @use HasFactory<\Database\Factories\PengaduanDukunganFactory> */
     use HasFactory;
 
-    protected $fillable = ['user_id', 'pengaduan_id'];
+    protected $fillable = ['user_id', 'pengaduan_id', 'ip_address'];
 
     public function user()
     {

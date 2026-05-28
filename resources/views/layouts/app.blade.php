@@ -229,12 +229,6 @@
                                     name="o-arrow-right-start-on-rectangle" class="w-4 h-4" /> Log Out</a></li>
                     </ul>
                 </details>
-                @else
-
-                <div class="flex items-center gap-2">
-                    <a href="{{ route('login') }}"
-                        class="btn btn-ghost btn-sm rounded-full font-bold px-4 hover:bg-base-200/50 border border-transparent hover:border-white/20">Masuk</a>
-                </div>
                 @endauth
             </div>
         </div>
