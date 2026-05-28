@@ -103,11 +103,31 @@
             font-weight: bold;
             margin-bottom: 20px;
         }
+        
+        .btn-back {
+            display: inline-block;
+            background-color: #4b5563;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 20px;
+            margin-left: 10px;
+            font-family: sans-serif;
+            font-size: 13px;
+        }
+        .btn-back:hover {
+            background-color: #374151;
+        }
     </style>
 </head>
 <body>
     <div class="no-print" style="text-align: center; padding: 20px;">
         <button class="btn-print" onclick="window.print()">CETAK SEKARANG</button>
+        <a href="{{ route('beranda') }}" class="btn-back">KEMBALI KE BERANDA</a>
         <p style="font-size: 12px; color: #666;">Gunakan menu "Save as PDF" di dialog print jika ingin menyimpan sebagai file.</p>
     </div>
 
@@ -127,12 +147,12 @@
         <tr>
             <td class="label">Nama Pelapor</td>
             <td class="titik-dua">:</td>
-            <td>{{ $pengaduan->user->name }}</td>
+            <td>{{ $pengaduan->user ? $pengaduan->user->name : ($pengaduan->guest_name ?? 'Guest') }}</td>
         </tr>
         <tr>
-            <td class="label">NIK</td>
+            <td class="label">Nomor WhatsApp</td>
             <td class="titik-dua">:</td>
-            <td>{{ $pengaduan->user->nik ?? '-' }}</td>
+            <td>{{ $pengaduan->user ? ($pengaduan->user->no_wa ?? '-') : ($pengaduan->guest_wa ?? '-') }}</td>
         </tr>
         <tr>
             <td class="label">Tanggal Lapor</td>

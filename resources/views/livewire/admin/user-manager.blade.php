@@ -23,7 +23,7 @@
     @endif
 
     <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
-        <x-input placeholder="Cari nama, NIK, atau email..." wire:model.live.debounce.500ms="search"
+        <x-input placeholder="Cari nama atau email..." wire:model.live.debounce.500ms="search"
             icon="o-magnifying-glass" class="w-full max-w-md bg-base-100" />
         
         <x-checkbox label="Lihat Akun Terhapus" wire:model.live="showDeleted" class="checkbox-sm" />
@@ -50,7 +50,6 @@
                                     <span class="badge badge-error badge-xs font-bold">Terhapus</span>
                                 @endif
                             </div>
-                            <div class="text-xs opacity-70">NIK: {{ $user->nik }}</div>
                         </td>
                         <td class="text-xs md:text-sm text-base-content/80 whitespace-nowrap">
                             <div class="flex items-center gap-1"><x-icon name="o-envelope" class="w-3.5 h-3.5" /> {{
@@ -139,10 +138,8 @@
     <x-modal wire:model="showModal" title="{{ $isEdit ? 'Edit Pengguna' : 'Tambah Pengguna Baru' }}"
         subtitle="Silakan isi form profil dan hak akses di bawah ini" separator>
         <x-form wire:submit="{{ $isEdit ? 'update' : 'store' }}">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <x-input label="Nama Lengkap" wire:model="name" placeholder="Sesuai KTP" required icon="o-user" />
-                <x-input label="NIK" wire:model="nik" type="number" placeholder="16 digit angka" required
-                    icon="o-identification" :readonly="$isEdit" :class="$isEdit ? 'bg-base-200 opacity-60 cursor-not-allowed' : ''" />
+            <div class="mb-4">
+                <x-input label="Nama Lengkap" wire:model="name" placeholder="Nama Lengkap" required icon="o-user" />
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">

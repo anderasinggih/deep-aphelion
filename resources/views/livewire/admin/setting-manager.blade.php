@@ -129,6 +129,18 @@
                     </div>
                 </div>
 
+                <h2 class="text-xl font-bold mb-4 mt-8 border-b border-base-200 pb-2 flex items-center gap-2">
+                    <x-icon name="o-chat-bubble-left-right" class="w-5 h-5 text-primary" /> WhatsApp Admin
+                </h2>
+                <div class="bg-base-200/30 p-5 rounded-2xl border border-base-200">
+                    <x-input 
+                        label="Nomor WhatsApp Admin (Untuk menerima konfirmasi pengaduan)" 
+                        wire:model="whatsapp_admin" 
+                        placeholder="Contoh: 628123456789" 
+                        icon="o-phone" 
+                        hint="Format nomor harus menggunakan kode negara di depannya (misal: 62812xxx, tanpa tanda +)." />
+                </div>
+
                 @if(auth()->user()->role === 'superadmin')
                 <h2 class="text-xl font-bold mb-4 mt-8 border-b border-base-200 pb-2 flex items-center gap-2">
                     <x-icon name="o-wrench-screwdriver" class="w-5 h-5 text-primary" /> Pemeliharaan & Perawatan

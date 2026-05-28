@@ -88,7 +88,7 @@
                 <th style="width:32px; text-align:center;">No</th>
                 <th style="width:90px;">Kode Tracking</th>
                 <th style="width:70px;">Tgl Masuk</th>
-                <th style="width:120px;">Pelapor / NIK</th>
+                <th style="width:120px;">Pelapor / WA</th>
                 <th style="width:90px;">Kategori</th>
                 <th>Judul &amp; Lokasi Kejadian</th>
                 <th style="width:70px; text-align:center;">Status</th>
@@ -105,9 +105,9 @@
                     <span style="font-size:8pt; color:#555;">{{ $pengaduan->created_at->format('H:i') }} WIB</span>
                 </td>
                 <td>
-                    <span style="font-weight:bold;">{{ $pengaduan->is_anonymous ? 'ANONIM' : $pengaduan->user->name }}</span>
+                    <span style="font-weight:bold;">{{ $pengaduan->is_anonymous ? 'ANONIM' : ($pengaduan->user ? $pengaduan->user->name : ($pengaduan->guest_name ?? 'Guest')) }}</span>
                     @if(!$pengaduan->is_anonymous)
-                    <br><span style="font-size:8pt; color:#555;">{{ $pengaduan->user->nik ?? '-' }}</span>
+                    <br><span style="font-size:8pt; color:#555;">{{ $pengaduan->user ? ($pengaduan->user->no_wa ?? '-') : ($pengaduan->guest_wa ?? '-') }}</span>
                     @endif
                 </td>
                 <td>{{ $pengaduan->kategori->nama ?? '-' }}</td>

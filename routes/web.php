@@ -15,12 +15,12 @@ Route::get('/', Beranda::class)->name('beranda');
 Route::get('/tentang-kami', TentangKami::class)->name('tentang-kami');
 Route::get('/maintenance', \App\Livewire\Maintenance::class)->name('maintenance');
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    // Warga
-    Route::get('/pengaduan/create', PengaduanForm::class)->name('pengaduan.create');
-    Route::get('/pengaduan/{kode_tracking}/edit', PengaduanForm::class)->name('pengaduan.edit')->where('kode_tracking', '.*');
-    Route::get('/dashboard', WargaDashboard::class)->name('dashboard');
+// Warga (Public Access)
+Route::get('/pengaduan/create', PengaduanForm::class)->name('pengaduan.create');
+Route::get('/pengaduan/{id}/print', [\App\Http\Controllers\PrintController::class, 'resi'])->name('print.resi');
+Route::get('/pengaduan/{kode_tracking}', PengaduanFeedDetail::class)->name('pengaduan.feed-detail')->where('kode_tracking', '.*');
 
+Route::middleware(['auth', 'verified'])->group(function () {
     // Admin
     Route::get('/admin/dashboard', AdminDashboard::class)->name('admin.dashboard');
     Route::get('/admin/aduan-internal', WargaDashboard::class)->name('admin.aduan-internal');
@@ -31,15 +31,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/admin/laporan', \App\Livewire\Admin\LaporanManager::class)->name('admin.laporan');
     Route::get('/admin/pengaduan/print', [\App\Http\Controllers\PrintController::class, 'laporan'])->name('print.laporan');
     Route::get('/admin/pengaduan/{kode_tracking}', PengaduanDetail::class)->name('admin.pengaduan.detail')->where('kode_tracking', '.*');
-    
-    // Warga (Print Resi)
-    Route::get('/pengaduan/{id}/print', [\App\Http\Controllers\PrintController::class, 'resi'])->name('print.resi');
 });
-
-Route::get('/pengaduan/{kode_tracking}', PengaduanFeedDetail::class)->name('pengaduan.feed-detail')->where('kode_tracking', '.*');
-
-Route::view('profile', 'profile')
-    ->middleware(['auth'])
-    ->name('profile');
 
 require __DIR__ . '/auth.php';

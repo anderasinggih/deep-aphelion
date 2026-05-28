@@ -66,6 +66,7 @@ class SettingManager extends Component
     
     // Notification Settings
     public $notif_email_penerima;
+    public $whatsapp_admin;
     public $maintenance_mode = false;
     
     // UI State
@@ -128,6 +129,7 @@ class SettingManager extends Component
         $this->mail_from_name = $settings['mail_from_name'] ?? config('mail.from.name');
 
         $this->notif_email_penerima = $settings['notif_email_penerima'] ?? '';
+        $this->whatsapp_admin = $settings['whatsapp_admin'] ?? '';
         $this->maintenance_mode = (bool)($settings['maintenance_mode'] ?? false);
 
         if (auth()->user()->role === 'superadmin') {
@@ -299,6 +301,7 @@ class SettingManager extends Component
             'mail_encryption' => 'nullable|string|max:10',
             'mail_from_name' => 'nullable|string|max:255',
             'notif_email_penerima' => 'nullable|string|max:1000',
+            'whatsapp_admin' => 'required|numeric|digits_between:10,15',
         ]);
 
         $this->updateSetting('sop_waktu_pemrosesan', $this->sop_waktu_pemrosesan);
@@ -326,6 +329,7 @@ class SettingManager extends Component
         $this->updateSetting('mail_username', $this->mail_username);
         $this->updateSetting('mail_password', $this->mail_password);
         $this->updateSetting('mail_encryption', $this->mail_encryption);
+        $this->updateSetting('whatsapp_admin', $this->whatsapp_admin);
 
         // Update .env file for mail settings ONLY if email tab was unlocked
         if ($this->unlock_email) {

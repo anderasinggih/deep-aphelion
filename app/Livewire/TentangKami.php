@@ -9,12 +9,15 @@ class TentangKami extends Component
 {
     public $stats = [];
     public $instansi_nama, $instansi_alamat, $instansi_telepon, $instansi_email, $jam_senin_kamis, $jam_jumat, $jam_sabtu_minggu;
+    public $banners = [];
+    public $app_logo, $app_logo_sekunder;
 
     public function mount()
     {
         $settings = Setting::whereIn('key', [
             'instansi_nama', 'instansi_alamat', 'instansi_telepon', 'instansi_email',
-            'instansi_jam_senkam', 'instansi_jam_jumat', 'instansi_jam_sabtu', 'app_logo', 'app_logo_sekunder'
+            'instansi_jam_senkam', 'instansi_jam_jumat', 'instansi_jam_sabtu', 
+            'app_logo', 'app_logo_sekunder', 'app_banner_1', 'app_banner_2', 'app_banner_3'
         ])->pluck('value', 'key');
 
         $this->instansi_nama = $settings['instansi_nama'] ?? 'Kantor Kecamatan Kembaran';
@@ -22,11 +25,18 @@ class TentangKami extends Component
         $this->instansi_telepon = $settings['instansi_telepon'] ?? '(0281) 6840XXX';
         $this->instansi_email = $settings['instansi_email'] ?? 'kecamatan.kembaran@banyumaskab.go.id';
         
-        $this->jam_senin_kamis = $settings['instansi_jam_senkam'] ?? '07.30 – 16.00 WIB';
-        $this->jam_jumat = $settings['instansi_jam_jumat'] ?? '07.30 – 11.00 WIB';
+        $this->jam_senin_kamis = $settings['instansi_jam_senkam'] ?? '07.30 - 16.00 WIB';
+        $this->jam_jumat = $settings['instansi_jam_jumat'] ?? '07.30 - 11.00 WIB';
         $this->jam_sabtu_minggu = $settings['instansi_jam_sabtu'] ?? 'LIBUR';
         $this->app_logo = $settings['app_logo'] ?? null;
         $this->app_logo_sekunder = $settings['app_logo_sekunder'] ?? null;
+
+        $this->banners = [];
+        if(isset($settings['app_banner_1'])) $this->banners[] = asset('storage/' . $settings['app_banner_1']);
+        if(isset($settings['app_banner_2'])) $this->banners[] = asset('storage/' . $settings['app_banner_2']);
+        if(isset($settings['app_banner_3'])) $this->banners[] = asset('storage/' . $settings['app_banner_3']);
+        
+        if(empty($this->banners)) $this->banners[] = asset('storage/assets/banner.jpg');
 
         // Fetch Public Stats
         $this->stats = [
@@ -48,7 +58,8 @@ class TentangKami extends Component
             'instansi_jam_sabtu' => $this->jam_sabtu_minggu,
             'stats' => $this->stats,
             'app_logo' => $this->app_logo,
-            'app_logo_sekunder' => $this->app_logo_sekunder
+            'app_logo_sekunder' => $this->app_logo_sekunder,
+            'banners' => $this->banners
         ])->layout('layouts.app');
     }
 

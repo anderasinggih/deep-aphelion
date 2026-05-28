@@ -22,6 +22,22 @@ class Dashboard extends Component
     public $search = '';
     public $orderBy = 'latest';
 
+    public function mount()
+    {
+        // Auto-popup rating if there are unrated completed reports
+        if (auth()->check() && auth()->user()->role === 'warga') {
+            $unrated = Pengaduan::where('user_id', Auth::id())
+                ->where('status', 'selesai')
+                ->whereNull('rating')
+                ->latest()
+                ->first();
+
+            if ($unrated) {
+                $this->openRatingModal($unrated->id);
+            }
+        }
+    }
+
     public function updatedSearch()
     {
         $this->resetPage();

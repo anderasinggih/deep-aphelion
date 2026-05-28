@@ -134,10 +134,19 @@
                                             <span class="text-[8px] font-black">AN</span>
                                         </div>
                                     </div>
-                                    <span class="text-[11px] sm:text-xs font-bold text-base-content/70">Anonim ({{ $this->pengaduan->user?->name ?? 'User Terhapus' }})</span>
+                                    <span class="text-[11px] sm:text-xs font-bold text-base-content/70">Anonim ({{ $this->pengaduan->user ? $this->pengaduan->user->name : ($this->pengaduan->guest_name ?? 'Guest') }})</span>
                                 @else
-                                    <x-user-avatar :user="$this->pengaduan->user" size="w-5 h-5 sm:w-6 sm:h-6" />
-                                    <span class="text-[11px] sm:text-xs font-bold text-base-content/70">{{ $this->pengaduan->user?->name ?? 'User Terhapus' }}</span>
+                                    @if($this->pengaduan->user)
+                                        <x-user-avatar :user="$this->pengaduan->user" size="w-5 h-5 sm:w-6 sm:h-6" />
+                                        <span class="text-[11px] sm:text-xs font-bold text-base-content/70">{{ $this->pengaduan->user->name }}</span>
+                                    @else
+                                        <div class="avatar placeholder">
+                                            <div class="bg-base-300 text-base-content/50 rounded-full w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center">
+                                                <x-icon name="o-user" class="w-3.5 h-3.5" />
+                                            </div>
+                                        </div>
+                                        <span class="text-[11px] sm:text-xs font-bold text-base-content/70">{{ $this->pengaduan->guest_name ?? 'Guest' }} (Guest)</span>
+                                    @endif
                                 @endif
                             </div>
 
@@ -154,7 +163,7 @@
                             </div>
 
                             @if($this->pengaduan->linked_id)
-                            <a href="{{ route('admin.pengaduan.detail', $this->pengaduan->linkedReport->kode_tracking) }}" target="_blank" class="flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 bg-primary/10 border border-primary/20 rounded-lg text-primary hover:bg-primary hover:text-white transition-colors">
+                            <a href="{{ route('admin.pengaduan.detail', $this->pengaduan->linkedReport->kode_tracking) }}" target="_blank" class="flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 bg-blue-50 border border-blue-100 rounded-lg text-[#0085ff] hover:bg-primary hover:text-white transition-colors">
                                 <x-icon name="o-link" class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                 <span class="text-[11px] sm:text-xs font-bold tracking-wide">Dirujuk: {{ $this->pengaduan->linkedReport->kode_tracking }}</span>
                             </a>
@@ -392,27 +401,41 @@
                     </h2>
                 </div>
                 <div class="p-4 flex flex-col gap-4">
+                    @if($this->pengaduan->user)
                     <div class="flex items-center gap-3">
                         <x-user-avatar :user="$this->pengaduan->user" size="w-10 h-10" />
                         <div class="overflow-hidden">
-                            <p class="font-bold text-base-content text-sm truncate">{{ $this->pengaduan->user?->name ?? 'User Terhapus' }}</p>
-                            <p class="text-[11px] text-base-content/60 truncate">{{ $this->pengaduan->user?->email ?? '-' }}</p>
+                            <p class="font-bold text-base-content text-sm truncate">{{ $this->pengaduan->user->name }}</p>
+                            <p class="text-[11px] text-base-content/60 truncate">{{ $this->pengaduan->user->email }}</p>
                         </div>
                     </div>
+                    @else
+                    <div class="flex items-center gap-3">
+                        <div class="avatar placeholder">
+                            <div class="bg-base-300 text-base-content/50 rounded-full w-10 h-10 flex items-center justify-center">
+                                <x-icon name="o-user" class="w-6 h-6" />
+                            </div>
+                        </div>
+                        <div class="overflow-hidden">
+                            <p class="font-bold text-base-content text-sm truncate">{{ $this->pengaduan->guest_name ?? 'Guest' }}</p>
+                            <p class="text-[11px] text-base-content/60 truncate">Warga (Guest)</p>
+                        </div>
+                    </div>
+                    @endif
                     <div class="bg-base-200/50 rounded-xl p-3 border border-base-200 space-y-2">
                         <div class="flex justify-between items-center text-[11px]">
-                            <span class="font-bold text-base-content/50">NIK</span>
-                            <span class="font-mono font-black text-base-content/80">{{ $this->pengaduan->user?->nik ?? '-' }}</span>
+                            <span class="font-bold text-base-content/50">Status Akun</span>
+                            <span class="font-mono font-black text-base-content/80">{{ $this->pengaduan->user ? 'Warga Terdaftar' : 'Guest' }}</span>
                         </div>
                         <div class="divider my-0 opacity-10"></div>
                         <div class="flex justify-between items-center text-[11px]">
                             <span class="font-bold text-base-content/50">No. WA</span>
-                            <span class="font-mono font-black text-base-content/80">{{ $this->pengaduan->user?->no_wa ?? '-' }}</span>
+                            <span class="font-mono font-black text-base-content/80">{{ $this->pengaduan->user ? ($this->pengaduan->user->no_wa ?? '-') : ($this->pengaduan->guest_wa ?? '-') }}</span>
                         </div>
-                        @if($this->pengaduan->user?->no_wa)
+                        @if($this->pengaduan->user?->no_wa || $this->pengaduan->guest_wa)
                         <div class="divider my-0 opacity-10"></div>
                         <div class="pt-1">
-                            <a href="{{ $this->generateWaLink() }}" target="_blank" class="btn btn-xs w-full bg-green-500 hover:bg-green-600 text-white border-none rounded-lg font-bold flex items-center gap-1.5">
+                            <a href="{{ $this->pengaduan->generateWaLink() }}" target="_blank" class="btn btn-xs w-full bg-green-500 hover:bg-green-600 text-white border-none rounded-lg font-bold flex items-center gap-1.5">
                                 <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.114 1.52 5.843L.057 23.535a.5.5 0 0 0 .607.607l5.696-1.462A11.935 11.935 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.923 0-3.716-.52-5.253-1.428l-.376-.222-3.904 1.002 1.003-3.776-.244-.389A9.96 9.96 0 0 1 2 12c0-5.514 4.486-10 10-10s10 4.486 10 10-4.486 10-10 10z"/></svg>
                                 Kirim Notifikasi WA
                             </a>

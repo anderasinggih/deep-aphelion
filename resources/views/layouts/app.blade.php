@@ -135,11 +135,6 @@
                         </li>
                         @endif
 
-                        @else
-                        <li><a href="/dashboard" class="{{ request()->is('dashboard') ? 'active' : '' }} py-2.5 text-sm font-bold"><x-icon
-                                     name="o-chart-pie" class="w-4.5 h-4.5" /> Dashboard</a></li>
-                        @endif
-
                         @endauth
                     </ul>
                 </details>
@@ -196,12 +191,6 @@
                     </li>
                     @endif
 
-                    @else
-                    <li><a href="/dashboard"
-                            class="{{ request()->is('dashboard') ? 'active bg-base-200/50 text-primary shadow-sm' : 'hover:bg-base-200/30' }} rounded-xl transition-all py-1.5"><x-icon
-                                name="o-chart-pie" class="w-4 h-4" /> Dashboard</a></li>
-                    @endif
-
                     @endauth
                 </ul>
             </div>
@@ -230,15 +219,8 @@
                             <span class="text-[11px] text-base-content/60 truncate w-full font-medium block" title="{{ auth()->user()->email }}">{{ auth()->user()->email }}</span>
                         </div>
                     </li>
-                        @if(in_array(auth()->user()->role, ['superadmin', 'admin']))
                         <li><a href="/admin/dashboard" wire:navigate class="py-2.5 rounded-xl font-bold"><x-icon name="o-squares-2x2"
                                     class="w-4 h-4 opacity-70" /> Dashboard Admin</a></li>
-                        @else
-                        <li><a href="/dashboard" wire:navigate class="py-2.5 rounded-xl font-bold"><x-icon name="o-squares-2x2"
-                                    class="w-4 h-4 opacity-70" /> Dashboard</a></li>
-                        @endif
-                        <li><a href="/profile" wire:navigate class="py-2.5 rounded-xl font-bold"><x-icon name="o-cog-6-tooth"
-                                    class="w-4 h-4 opacity-70" /> Settings</a></li>
                         <div class="divider my-0 opacity-30"></div>
                         <li><a href="/logout"
                                 class="py-2.5 text-error hover:bg-error/10 hover:text-error rounded-xl font-bold"><x-icon
@@ -248,7 +230,7 @@
                 @else
 
                 <div class="flex items-center gap-2">
-                    <a href="/login"
+                    <a href="{{ route('login') }}"
                         class="btn btn-ghost btn-sm rounded-full font-bold px-4 hover:bg-base-200/50 border border-transparent hover:border-white/20">Masuk</a>
                 </div>
                 @endauth

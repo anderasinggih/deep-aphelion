@@ -33,7 +33,11 @@ class PengaduanForm extends Component
     public $longitude;
     public $is_anonymous = false;
     public $is_private = false;
-    public $pernyataan = false;
+
+    // Guest properties
+    public $guest_name;
+    public $guest_wa;
+    public $waAdminLink = null;
 
     public $pengaduanId = null;
     public $isEdit = false;
@@ -101,21 +105,40 @@ class PengaduanForm extends Component
     public $lastSavedId = null;
     public $lastTrackingCode = null;
 
-    protected $rules = [
-        'judul' => 'required|string|max:100',
-        'kategori_id' => 'required|exists:kategoris,id',
-        'deskripsi' => 'required|string|max:2000',
-        'tanggal_kejadian' => 'required|date|before_or_equal:today',
-        'prioritas' => 'required|in:rendah,sedang,tinggi',
-        'harapan_pelapor' => 'nullable|string|max:500',
-        'foto_bukti.*' => 'image|max:10240',
-        'lokasi_kejadian' => 'required|string|max:255',
-        'latitude' => 'nullable|numeric',
-        'longitude' => 'nullable|numeric',
-        'is_anonymous' => 'boolean',
-        'is_private' => 'boolean',
-        'pernyataan' => 'accepted',
-    ];
+    public function rules()
+    {
+        $rules = [
+            'judul' => 'required|string|max:100',
+            'kategori_id' => 'required|exists:kategoris,id',
+            'deskripsi' => 'required|string|max:2000',
+            'tanggal_kejadian' => 'required|date|before_or_equal:today',
+            'prioritas' => 'required|in:rendah,sedang,tinggi',
+            'harapan_pelapor' => 'nullable|string|max:500',
+            'foto_bukti.*' => 'image|max:10240',
+            'lokasi_kejadian' => 'required|string|max:255',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
+            'is_anonymous' => 'boolean',
+            'is_private' => 'boolean',
+        ];
+
+        if (!auth()->check()) {
+            $rules['guest_name'] = 'required|string|max:100';
+            $rules['guest_wa'] = 'required|numeric|digits_between:10,15';
+        }
+
+        return $rules;
+    }
+
+    protected function messages()
+    {
+        return [
+            'guest_name.required' => 'Nama Pelapor wajib diisi.',
+            'guest_wa.required' => 'Nomor WhatsApp wajib diisi.',
+            'guest_wa.numeric' => 'Nomor WhatsApp harus berupa angka.',
+            'guest_wa.digits_between' => 'Nomor WhatsApp harus di antara 10 hingga 15 digit.',
+        ];
+    }
 
     public function mount($id = null, $kode_tracking = null)
     {
@@ -163,7 +186,7 @@ class PengaduanForm extends Component
             $antiSpamLimit = (int) ($settings['anti_spam_limit'] ?? 3);
 
             if ($antiSpamAktif) {
-                $rateLimitKey = 'pengaduan_' . $user->id;
+                $rateLimitKey = 'pengaduan_' . ($user ? $user->id : request()->ip());
                 if (RateLimiter::tooManyAttempts($rateLimitKey, $antiSpamLimit)) {
                     $this->error("Anti-Spam Aktif: Batas maksimal {$antiSpamLimit} laporan per hari tercapai.", position: 'toast-top toast-end');
                     $this->dispatch('scroll-to-top');
@@ -212,7 +235,12 @@ class PengaduanForm extends Component
             session()->flash('success', 'Laporan berhasil diperbarui.');
         }
         else {
-            $data['user_id'] = $user->id;
+            if ($user) {
+                $data['user_id'] = $user->id;
+            } else {
+                $data['guest_name'] = $this->guest_name;
+                $data['guest_wa'] = $this->guest_wa;
+            }
             $data['status'] = 'menunggu';
             $pengaduan = Pengaduan::create($data);
 
@@ -226,37 +254,22 @@ class PengaduanForm extends Component
             $pengaduan->kode_tracking = 'PKM-KBR/' . str_pad($nomorUrut, 3, '0', STR_PAD_LEFT) . '/' . $bulan . '/' . $tahun;
             $pengaduan->save();
 
-            // Kirim Email Konfirmasi Laporan Diterima (Ke Warga)
-            if ($user->email) {
-                try {
-                    Mail::to($user->email)->send(new \App\Mail\Pengaduan\StatusUpdate($pengaduan));
-                } catch (\Exception $e) {
-                    \Log::error('Gagal mengirim email konfirmasi warga: ' . $e->getMessage());
-                }
-            }
-
-            // Kirim Notifikasi ke Admin/Pegawai (Multiple Recipients)
-            $adminEmailsRaw = Setting::where('key', 'notif_email_penerima')->first()?->value;
-            if ($adminEmailsRaw) {
-                $adminEmails = array_map('trim', explode(',', $adminEmailsRaw));
-                $adminEmails = array_filter($adminEmails, fn($e) => filter_var($e, FILTER_VALIDATE_EMAIL));
-                
-                if (!empty($adminEmails)) {
-                    try {
-                        Mail::to($adminEmails)->send(new NewReportNotification($pengaduan));
-                    } catch (\Exception $e) {
-                        \Log::error('Gagal mengirim notifikasi email admin: ' . $e->getMessage());
-                    }
-                }
-            }
-
             PengaduanHistory::create([
                 'pengaduan_id' => $pengaduan->id,
-                'user_id' => $user->id,
+                'user_id' => $user ? $user->id : null,
                 'status_sebelumnya' => null,
                 'status_baru' => 'menunggu',
                 'keterangan_admin' => 'Laporan berhasil dibuat warga dan masuk ke antrean kecamatan.',
             ]);
+
+            // Buat WA Admin redirection link
+            $waAdmin = Setting::where('key', 'whatsapp_admin')->first()?->value ?? '628123456789';
+            $namaPelapor = $user ? $user->name : $this->guest_name;
+            $tgl = $this->tanggal_kejadian ? \Carbon\Carbon::parse($this->tanggal_kejadian)->format('d-m-Y') : now()->format('d-m-Y');
+            
+            $pesan = "Halo Admin Kecamatan Kembaran, saya ingin mengonfirmasi laporan pengaduan baru di website Kembaran Ngadu.\n\nDetail Laporan:\n- Kode Tracking: {$pengaduan->kode_tracking}\n- Nama Pelapor: {$namaPelapor}\n- Judul Laporan: {$this->judul}\n- Tanggal Kejadian: {$tgl}\n\nMohon untuk segera diverifikasi dan ditindaklanjuti. Terima kasih.";
+            
+            $this->waAdminLink = 'https://wa.me/' . preg_replace('/[^0-9]/', '', $waAdmin) . '?text=' . rawurlencode($pesan);
 
             session()->flash('success', 'Laporan berhasil disubmit. Kode Tracking Anda: ' . $pengaduan->kode_tracking);
             
@@ -266,7 +279,7 @@ class PengaduanForm extends Component
             return;
         }
 
-        return redirect()->route('dashboard');
+        return redirect()->route('beranda');
     }
 
     public function reverseGeocode($lat, $lng)

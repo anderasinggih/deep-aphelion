@@ -12,7 +12,7 @@ class UserManager extends Component
 {
     use WithPagination;
 
-    public $userId, $name, $nik, $no_wa, $email, $role, $password, $password_confirmation;
+    public $userId, $name, $no_wa, $email, $role, $password, $password_confirmation;
     public $isEdit = false;
     public $search = '';
     public $showDeleted = false;
@@ -33,7 +33,6 @@ class UserManager extends Component
 
         $query->where(function($q) {
             $q->where('name', 'like', '%' . $this->search . '%')
-              ->orWhere('nik', 'like', '%' . $this->search . '%')
               ->orWhere('email', 'like', '%' . $this->search . '%');
         });
 
@@ -55,7 +54,6 @@ class UserManager extends Component
     {
         $this->validate([
             'name' => 'required|string|max:255',
-            'nik' => 'required|numeric|digits:16|unique:users,nik',
             'no_wa' => 'required|numeric|min_digits:10|max_digits:15',
             'email' => 'nullable|string|email|max:255|unique:users,email',
             'role' => [
@@ -67,7 +65,6 @@ class UserManager extends Component
 
         User::create([
             'name' => strtoupper($this->name),
-            'nik' => $this->nik,
             'no_wa' => $this->no_wa,
             'email' => $this->email,
             'role' => $this->role,
@@ -83,7 +80,6 @@ class UserManager extends Component
         $user = User::findOrFail($id);
         $this->userId = $user->id;
         $this->name = $user->name;
-        $this->nik = $user->nik;
         $this->no_wa = $user->no_wa;
         $this->email = $user->email;
         $this->role = $user->role;
@@ -96,7 +92,6 @@ class UserManager extends Component
     {
         $rules = [
             'name' => 'required|string|max:255',
-            'nik' => ['required', 'numeric', 'digits:16', Rule::unique('users')->ignore($this->userId)],
             'no_wa' => 'required|numeric|min_digits:10|max_digits:15',
             'email' => ['nullable', 'string', 'email', 'max:255', Rule::unique('users')->ignore($this->userId)],
             'role' => [
@@ -116,7 +111,6 @@ class UserManager extends Component
 
         $updateData = [
             'name' => strtoupper($this->name),
-            'nik' => $this->nik,
             'no_wa' => $this->no_wa,
             'email' => $this->email,
             'role' => $this->role,
@@ -199,7 +193,6 @@ class UserManager extends Component
     {
         $this->userId = null;
         $this->name = '';
-        $this->nik = '';
         $this->no_wa = '';
         $this->email = '';
         $this->role = 'warga'; // default

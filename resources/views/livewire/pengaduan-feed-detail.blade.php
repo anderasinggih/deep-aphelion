@@ -76,7 +76,7 @@
                                     class="{{ $this->pengaduan->prioritas == 'tinggi' ? 'badge-error' : ($this->pengaduan->prioritas == 'sedang' ? 'badge-info' : 'badge-success') }} font-black sm:shadow-sm text-[10px] sm:text-xs px-2 py-1 h-auto min-h-0" />
                             </div>
 
-                            <button onclick="nativeShare({{ json_encode('LAPORAN: ' . $this->pengaduan->judul) }}, {{ json_encode('📢 Bantu dukung laporan warga ini agar segera ditindaklanjuti melalui aplikasi Kembaran Ngadu.') }}, window.location.href)" 
+                            <button onclick='nativeShare(@js("LAPORAN: " . $this->pengaduan->judul), @js("📢 Bantu dukung laporan warga ini agar segera ditindaklanjuti melalui aplikasi Kembaran Ngadu."), window.location.href)' 
                                     class="btn btn-ghost btn-circle btn-sm text-base-content/60 hover:text-primary">
                                 <x-icon name="o-share" class="w-5 h-5" />
                             </button>
@@ -94,8 +94,17 @@
                                     <x-user-avatar initials="AN" size="w-5 h-5 sm:w-6 sm:h-6" />
                                     <span class="text-[11px] sm:text-xs font-bold text-base-content/70">Anonim</span>
                                 @else
-                                    <x-user-avatar :user="$this->pengaduan->user" size="w-5 h-5 sm:w-6 sm:h-6" />
-                                    <span class="text-[11px] sm:text-xs font-bold text-base-content/70">{{ $this->pengaduan->user->name }}</span>
+                                    @if($this->pengaduan->user_id)
+                                        <x-user-avatar :user="$this->pengaduan->user" size="w-5 h-5 sm:w-6 sm:h-6" />
+                                        <span class="text-[11px] sm:text-xs font-bold text-base-content/70">{{ $this->pengaduan->user->name }}</span>
+                                    @else
+                                        @php
+                                            $guestParts = explode(' ', $this->pengaduan->guest_name ?? 'Guest');
+                                            $guestInitials = collect($guestParts)->map(fn($part) => substr($part, 0, 1))->take(2)->join('');
+                                        @endphp
+                                        <x-user-avatar :initials="$guestInitials" size="w-5 h-5 sm:w-6 sm:h-6" />
+                                        <span class="text-[11px] sm:text-xs font-bold text-base-content/70">{{ $this->pengaduan->guest_name ?? 'Guest' }}</span>
+                                    @endif
                                 @endif
                             </div>
 

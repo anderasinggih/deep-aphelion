@@ -106,17 +106,10 @@
             </p>
 
             <div class="flex flex-row items-center justify-center gap-2 sm:gap-4 w-full">
-                @auth
                 <a href="/pengaduan/create" wire:navigate
                     class="btn border-none text-white shadow-2xl bg-[#0085FF] hover:bg-white hover:text-[#0085FF] hover:-translate-y-1 px-4 sm:px-8 md:px-14 py-3 md:py-4 rounded-full font-black text-[10px] sm:text-xs md:text-lg transition-all duration-300 flex-1 sm:flex-none">
                     Mulai Pengaduan
                 </a>
-                @else
-                <a href="/login" wire:navigate
-                    class="btn border-none text-white shadow-2xl bg-[#0085FF] hover:bg-white hover:text-[#0085FF] hover:-translate-y-1 px-4 sm:px-8 md:px-14 py-3 md:py-4 rounded-full font-black text-[10px] sm:text-xs md:text-lg transition-all duration-300 flex-1 sm:flex-none">
-                    Mulai Pengaduan
-                </a>
-                @endauth
 
                 <a href="{{ route('tentang-kami') }}" wire:navigate
                     class="btn btn-ghost bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white hover:text-[#0085FF] hover:-translate-y-1 px-4 sm:px-8 md:px-14 py-3 md:py-4 rounded-full font-black text-[10px] sm:text-xs md:text-lg transition-all duration-300 flex-1 sm:flex-none">
@@ -353,24 +346,31 @@
 
                                 <div class="flex items-center justify-between pt-4 mt-auto border-t border-base-200">
                                     <div class="flex items-center gap-2.5 text-sm font-medium text-base-content/80">
-                                            @if($pengaduan->is_anonymous)
-                                                <x-user-avatar initials="AN" size="w-10 h-10" />
-                                                <span class="line-clamp-1 max-w-[100px]">Anonim</span>
-                                            @else
+                                        @if($pengaduan->is_anonymous)
+                                            <x-user-avatar initials="AN" size="w-10 h-10" />
+                                            <span class="line-clamp-1 max-w-[100px]">Anonim</span>
+                                        @else
+                                            @if($pengaduan->user_id)
                                                 <x-user-avatar :user="$pengaduan->user" size="w-10 h-10" />
                                                 <span class="line-clamp-1 max-w-[180px]">{{ $pengaduan->user->name }}</span>
+                                            @else
+                                                @php
+                                                    $guestParts = explode(' ', $pengaduan->guest_name ?? 'Guest');
+                                                    $guestInitials = collect($guestParts)->map(fn($part) => substr($part, 0, 1))->take(2)->join('');
+                                                @endphp
+                                                <x-user-avatar :initials="$guestInitials" size="w-10 h-10" />
+                                                <span class="line-clamp-1 max-w-[180px]">{{ $pengaduan->guest_name ?? 'Guest' }}</span>
                                             @endif
-                                        </div>
+                                        @endif
+                                    </div>
 
                                     <div class="relative z-20 flex items-center gap-3">
-                                        <button wire:click.stop="upvote({{ $pengaduan->id }})"
-                                            class="flex items-center gap-1.5 transition-all duration-300 group/vote
-                                            {{ $pengaduan->has_liked ? 'text-primary scale-110' : 'text-black hover:text-primary ' }}">
-                                            <x-icon name="{{ $pengaduan->has_liked ? 's-hand-thumb-up' : 'o-hand-thumb-up' }}" class="w-6 h-6" />
+                                        <div class="flex items-center gap-1.5 text-black">
+                                            <x-icon name="o-hand-thumb-up" class="w-6 h-6" />
                                             <span class="text-sm font-black">{{ $pengaduan->dukungans_count }}</span>
-                                        </button>
+                                        </div>
 
-                                        <button onclick="event.preventDefault(); event.stopPropagation(); nativeShare({{ json_encode('LAPORAN: ' . $pengaduan->judul) }}, {{ json_encode('📢 Bantu dukung laporan warga ini agar segera ditindaklanjuti melalui aplikasi Kembaran Ngadu.') }}, {{ json_encode(route('pengaduan.feed-detail', $pengaduan->kode_tracking)) }})"
+                                        <button onclick='event.preventDefault(); event.stopPropagation(); nativeShare(@js("LAPORAN: " . $pengaduan->judul), @js("📢 Bantu dukung laporan warga ini agar segera ditindaklanjuti melalui aplikasi Kembaran Ngadu."), @js(route("pengaduan.feed-detail", $pengaduan->kode_tracking)))'
                                             class="p-2 transition-colors rounded-full hover:bg-base-200 text-black hover:text-primary">
                                             <x-icon name="o-share" class="w-5 h-5" />
                                         </button>
@@ -474,19 +474,27 @@
                                             <x-user-avatar initials="AN" size="w-6 h-6 sm:w-8 sm:h-8" />
                                             <span class="text-[9px] sm:text-xs text-base-content/50 truncate max-w-[50px]">Anonim</span>
                                         @else
-                                            <x-user-avatar :user="$pengaduan->user" size="w-6 h-6 sm:w-8 sm:h-8" />
-                                            <span class="text-[9px] sm:text-xs text-base-content/70 font-medium truncate max-w-[120px] sm:max-w-[200px]">{{ $pengaduan->user->name }}</span>
+                                            @if($pengaduan->user_id)
+                                                <x-user-avatar :user="$pengaduan->user" size="w-6 h-6 sm:w-8 sm:h-8" />
+                                                <span class="text-[9px] sm:text-xs text-base-content/70 font-medium truncate max-w-[120px] sm:max-w-[200px]">{{ $pengaduan->user->name }}</span>
+                                            @else
+                                                @php
+                                                    $guestParts = explode(' ', $pengaduan->guest_name ?? 'Guest');
+                                                    $guestInitials = collect($guestParts)->map(fn($part) => substr($part, 0, 1))->take(2)->join('');
+                                                @endphp
+                                                <x-user-avatar :initials="$guestInitials" size="w-6 h-6 sm:w-8 sm:h-8" />
+                                                <span class="text-[9px] sm:text-xs text-base-content/70 font-medium truncate max-w-[120px] sm:max-w-[200px]">{{ $pengaduan->guest_name ?? 'Guest' }}</span>
+                                            @endif
                                         @endif
                                     </div>
 
                                     <div class="relative z-20 flex items-center gap-3 sm:gap-4">
-                                        <button wire:click.stop="upvote({{ $pengaduan->id }})"
-                                            class="flex items-center gap-1.5 sm:gap-2 transition-all {{ $pengaduan->has_liked ? 'text-primary' : 'text-black hover:text-primary' }}">
-                                            <x-icon name="{{ $pengaduan->has_liked ? 's-hand-thumb-up' : 'o-hand-thumb-up' }}" class="w-5.5 h-5.5 sm:w-6 sm:h-6" />
+                                        <div class="flex items-center gap-1.5 sm:gap-2 text-black">
+                                            <x-icon name="o-hand-thumb-up" class="w-5.5 h-5.5 sm:w-6 sm:h-6" />
                                             <span class="text-xs sm:text-sm font-bold">{{ $pengaduan->dukungans_count }}</span>
-                                        </button>
-                                        
-                                        <button onclick="event.preventDefault(); event.stopPropagation(); nativeShare({{ json_encode('LAPORAN: ' . $pengaduan->judul) }}, {{ json_encode('📢 Bantu dukung laporan warga ini agar segera ditindaklanjuti melalui aplikasi Kembaran Ngadu.') }}, {{ json_encode(route('pengaduan.feed-detail', $pengaduan->kode_tracking)) }})"
+                                        </div>
+
+                                        <button onclick='event.preventDefault(); event.stopPropagation(); nativeShare(@js("LAPORAN: " . $pengaduan->judul), @js("📢 Bantu dukung laporan warga ini agar segera ditindaklanjuti melalui aplikasi Kembaran Ngadu."), @js(route("pengaduan.feed-detail", $pengaduan->kode_tracking)))'
                                             class="text-black hover:text-primary transition-colors p-1">
                                             <x-icon name="o-share" class="w-5 h-5 sm:w-5.5 sm:h-5.5" />
                                         </button>

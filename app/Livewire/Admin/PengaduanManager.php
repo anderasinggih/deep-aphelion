@@ -207,9 +207,10 @@ class PengaduanManager extends Component
                   ->orWhere('deskripsi', 'like', '%' . $this->search . '%')
                   ->orWhere('kode_tracking', 'like', '%' . $this->search . '%')
                   ->orWhere('lokasi_kejadian', 'like', '%' . $this->search . '%')
+                  ->orWhere('guest_name', 'like', '%' . $this->search . '%')
+                  ->orWhere('guest_wa', 'like', '%' . $this->search . '%')
                   ->orWhereHas('user', function ($uq) {
                       $uq->where('name', 'like', '%' . $this->search . '%')
-                        ->orWhere('nik', 'like', '%' . $this->search . '%')
                         ->orWhere('no_wa', 'like', '%' . $this->search . '%');
                   })
                   ->orWhereHas('kategori', function ($kq) {
@@ -250,10 +251,11 @@ class PengaduanManager extends Component
         foreach ($reports as $report) {
             $link = $report->generateWaLink();
             if ($link) {
+                $nama = $report->user ? $report->user->name : ($report->guest_name ?? 'Warga');
                 $this->waBlastQueue[] = [
                     'id' => $report->id,
                     'kode' => $report->kode_tracking,
-                    'nama' => $report->user->name ?? 'Warga',
+                    'nama' => $nama,
                     'link' => $link
                 ];
             }
@@ -337,15 +339,6 @@ class PengaduanManager extends Component
             $pengaduan->user->notify(new StatusUpdateNotification($pengaduan));
         }
 
-        // Kirim Email Update Status ke Pelapor
-        if ($pengaduan->user && $pengaduan->user->email) {
-            try {
-                \Illuminate\Support\Facades\Mail::to($pengaduan->user->email)->send(new \App\Mail\Pengaduan\StatusUpdate($pengaduan));
-            } catch (\Exception $e) {
-                \Log::error('Gagal mengirim email update status: ' . $e->getMessage());
-            }
-        }
-
         PengaduanHistory::create([
             'pengaduan_id' => $pengaduan->id,
             'user_id' => auth()->id(),
@@ -379,8 +372,10 @@ class PengaduanManager extends Component
                   ->orWhere('kode_tracking', 'like', '%' . $this->search . '%')
                   ->orWhere('lokasi_kejadian', 'like', '%' . $this->search . '%')
                   ->orWhereHas('user', function ($uq) {
+                  ->orWhere('guest_name', 'like', '%' . $this->search . '%')
+                  ->orWhere('guest_wa', 'like', '%' . $this->search . '%')
+                  ->orWhereHas('user', function ($uq) {
                       $uq->where('name', 'like', '%' . $this->search . '%')
-                        ->orWhere('nik', 'like', '%' . $this->search . '%')
                         ->orWhere('no_wa', 'like', '%' . $this->search . '%');
                   })
                   ->orWhereHas('kategori', function ($kq) {
@@ -423,7 +418,7 @@ class PengaduanManager extends Component
         foreach ($pengaduans as $rowIndex => $p) {
             $sheet->setCellValue([1, $rowIndex + 2], $p->kode_tracking);
             $sheet->setCellValue([2, $rowIndex + 2], $p->created_at->format('Y-m-d H:i'));
-            $sheet->setCellValue([3, $rowIndex + 2], $p->user->name ?? 'Anonim');
+            $sheet->setCellValue([3, $rowIndex + 2], $p->user ? $p->user->name : ($p->guest_name ?? 'Anonim'));
             $sheet->setCellValue([4, $rowIndex + 2], $p->judul);
             $sheet->setCellValue([5, $rowIndex + 2], $p->kategori->nama ?? '-');
             $sheet->setCellValue([6, $rowIndex + 2], $p->lokasi_kejadian);
@@ -519,8 +514,10 @@ class PengaduanManager extends Component
                   ->orWhere('kode_tracking', 'like', '%' . $this->search . '%')
                   ->orWhere('lokasi_kejadian', 'like', '%' . $this->search . '%')
                   ->orWhereHas('user', function ($uq) {
+                  ->orWhere('guest_name', 'like', '%' . $this->search . '%')
+                  ->orWhere('guest_wa', 'like', '%' . $this->search . '%')
+                  ->orWhereHas('user', function ($uq) {
                       $uq->where('name', 'like', '%' . $this->search . '%')
-                        ->orWhere('nik', 'like', '%' . $this->search . '%')
                         ->orWhere('no_wa', 'like', '%' . $this->search . '%');
                   })
                   ->orWhereHas('kategori', function ($kq) {

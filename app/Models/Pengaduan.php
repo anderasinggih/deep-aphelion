@@ -15,6 +15,8 @@ class Pengaduan extends Model
     protected $fillable = [
         'kode_tracking',
         'user_id',
+        'guest_name',
+        'guest_wa',
         'kategori_id',
         'judul',
         'deskripsi',
@@ -84,12 +86,15 @@ class Pengaduan extends Model
 
     public function generateWaLink($customMessage = null)
     {
-        if (!$this->user || !$this->user->no_wa) return null;
+        $name = $this->user ? $this->user->name : ($this->guest_name ?? 'Pelapor');
+        $rawWa = $this->user ? $this->user->no_wa : $this->guest_wa;
+        
+        if (!$rawWa) return null;
 
         $labelMap = ['menunggu' => 'Menunggu', 'diproses' => 'Sedang Diproses', 'selesai' => 'Selesai', 'ditolak' => 'Ditolak'];
         $statusLabel = $labelMap[$this->status] ?? $this->status;
         
-        $noWa = preg_replace('/[^0-9]/', '', $this->user->no_wa);
+        $noWa = preg_replace('/[^0-9]/', '', $rawWa);
         if (str_starts_with($noWa, '0')) {
             $noWa = '62' . substr($noWa, 1);
         }
@@ -97,9 +102,9 @@ class Pengaduan extends Model
         $linkDetail = route('pengaduan.feed-detail', $this->kode_tracking);
 
         if ($customMessage) {
-            $pesan = "Yth. {$this->user->name},\n\nLaporan Anda dengan kode {$this->kode_tracking} mengenai \"{$this->judul}\" telah diperbarui.\n\n> *Update Progres:* _{$customMessage}_";
+            $pesan = "Yth. {$name},\n\nLaporan Anda dengan kode {$this->kode_tracking} mengenai \"{$this->judul}\" telah diperbarui.\n\n> *Update Progres:* _{$customMessage}_";
         } else {
-            $pesan = "Yth. {$this->user->name},\n\nLaporan Anda dengan kode {$this->kode_tracking} mengenai \"{$this->judul}\" telah diperbarui.\n\n> *Status saat ini:* {$statusLabel}";
+            $pesan = "Yth. {$name},\n\nLaporan Anda dengan kode {$this->kode_tracking} mengenai \"{$this->judul}\" telah diperbarui.\n\n> *Status saat ini:* {$statusLabel}";
             
             if ($this->pesan_penutup) {
                 $pesan .= "\n\n*Catatan Admin:* _{$this->pesan_penutup}_";

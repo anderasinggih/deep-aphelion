@@ -10,8 +10,9 @@ class PrintController extends Controller
     {
         $pengaduan = \App\Models\Pengaduan::with(['user', 'kategori'])->findOrFail($id);
         
-        // Ensure only the owner or admin can print
-        if (auth()->user()->role !== 'admin' && auth()->id() !== $pengaduan->user_id) {
+        // Ensure only administrative roles or the owner can print resi
+        $isAdmin = in_array(auth()->user()->role, ['superadmin', 'admin', 'petugas']);
+        if (!$isAdmin && auth()->id() !== $pengaduan->user_id) {
             abort(403, 'Unauthorized action.');
         }
         $settings = \App\Models\Setting::whereIn('key', ['ttd_jabatan', 'ttd_nama', 'ttd_file'])->pluck('value', 'key');
@@ -26,8 +27,8 @@ class PrintController extends Controller
 
     public function laporan(Request $request)
     {
-        // Admin only
-        if (auth()->user()->role !== 'admin') {
+        // Administrative roles only
+        if (!in_array(auth()->user()->role, ['superadmin', 'admin', 'petugas'])) {
             abort(403, 'Unauthorized action.');
         }
 

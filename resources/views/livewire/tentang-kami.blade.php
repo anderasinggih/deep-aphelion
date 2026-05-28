@@ -1,24 +1,92 @@
-<div class="w-full max-w-7xl mx-auto px-1.5 lg:px-2 pt-8 sm:pt-12 pb-20">
-    <div class="text-base-content/80">
+<div class="w-full">
+    <style>
+        .banner-paksa-atas {
+            position: relative;
+            width: 100%;
+            margin-top: -5rem !important;
+        }
+        @media (min-width: 1024px) {
+            .banner-paksa-atas {
+                margin-top: -6.5rem !important;
+            }
+        }
+    </style>
 
-    {{-- Header --}}
-    <div class="text-center mb-8">
-        <div class="flex justify-center items-center gap-3 mb-5">
-            <img src="{{ $app_logo ? asset('storage/' . $app_logo) : asset('storage/assets/logobanyumas.png') }}" alt="Logo App" class="w-12 h-12 sm:w-20 sm:h-20 object-contain">
-            <div class="w-px h-10 sm:h-12 bg-base-300"></div>
-            <div class="bg-white rounded-xl p-1 w-12 h-12 sm:p-1.5 sm:w-20 sm:h-20 flex items-center justify-center shadow-md border border-base-200">
-                <img src="{{ $app_logo_sekunder ? asset('storage/' . $app_logo_sekunder) : asset('storage/assets/logokominfo.png') }}" alt="Logo Sekunder" class="w-full h-full object-contain">
-            </div>
-        </div>
-        <h1 class="text-4xl sm:text-5xl font-bold text-primary leading-tight px-4 tracking-tight">Kembaran Ngadu</h1>
-        <p class="text-xs sm:text-sm font-semibold text-base-content/50 mt-1">Sistem Informasi Pengaduan Masyarakat Kecamatan Kembaran</p>
+    {{-- Banner Slideshow --}}
+    <div x-data="{ 
+        currentSlide: 0, 
+        slides: {{ count($banners) }},
+        autoPlay: null,
+        init() { this.startAutoPlay(); },
+        startAutoPlay() {
+            if (this.slides > 1) {
+                this.autoPlay = setInterval(() => {
+                    this.currentSlide = (this.currentSlide + 1) % this.slides;
+                }, 6000);
+            }
+        },
+        stopAutoPlay() { if (this.autoPlay) clearInterval(this.autoPlay); },
+        goToSlide(index) {
+            this.currentSlide = index;
+            this.stopAutoPlay();
+            this.startAutoPlay();
+        }
+    }" 
+    class="overflow-hidden mb-8 banner-paksa-atas min-h-[400px] md:min-h-[500px] lg:min-h-[600px] flex items-center justify-center relative group">
         
-        <div class="mt-6 p-4 bg-base-200/40 rounded-xl border border-base-200 max-w-2xl mx-auto">
-            <p class="text-xs sm:text-sm text-base-content/70 leading-relaxed italic font-medium">
-                "Selamat datang di portal resmi Pengaduan Masyarakat Kecamatan Kembaran. Platform ini merupakan wujud komitmen kami untuk menghadirkan pelayanan publik yang transparan, cepat, dan terintegrasi."
+        @foreach($banners as $index => $banner)
+        <div x-show="currentSlide === {{ $index }}"
+             x-transition:enter="transition ease-out duration-1000"
+             x-transition:enter-start="opacity-0 scale-105"
+             x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-1000"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="absolute inset-0 z-0 bg-neutral"
+             @if($index > 0) style="display: none;" @endif>
+            <img src="{{ $banner }}" class="absolute inset-0 w-full h-full object-cover opacity-50" loading="{{ $index === 0 ? 'eager' : 'lazy' }}">
+            <div class="absolute inset-0 bg-gradient-to-b from-black/80 via-black/30 to-transparent"></div>
+        </div>
+        @endforeach
+
+        @if(count($banners) > 1)
+        <div class="absolute inset-y-0 left-4 z-20 flex items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:flex">
+            <button @click="goToSlide((currentSlide - 1 + slides) % slides)" class="p-3 rounded-full bg-black/20 backdrop-blur-md text-white hover:bg-white hover:text-primary transition-all">
+                <x-icon name="o-chevron-left" class="w-6 h-6" />
+            </button>
+        </div>
+        <div class="absolute inset-y-0 right-4 z-20 flex items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:flex">
+            <button @click="goToSlide((currentSlide + 1) % slides)" class="p-3 rounded-full bg-black/20 backdrop-blur-md text-white hover:bg-white hover:text-primary transition-all">
+                <x-icon name="o-chevron-right" class="w-6 h-6" />
+            </button>
+        </div>
+        @endif
+
+        <div class="relative z-10 flex flex-col items-center justify-center text-center pt-32 pb-24 md:pt-44 md:pb-32 lg:pt-52 lg:pb-40 px-6 max-w-7xl mx-auto w-full">
+            <div class="flex justify-center items-center gap-3 mb-6 drop-shadow-2xl">
+                <img src="{{ $app_logo ? asset('storage/' . $app_logo) : asset('storage/assets/logobanyumas.png') }}" class="w-16 md:w-24 h-auto object-contain" alt="Logo" />
+                <div class="w-px h-12 bg-white/30 backdrop-blur-sm"></div>
+                <div class="bg-white/90 backdrop-blur-md rounded-2xl p-2 w-16 h-16 md:w-24 md:h-24 flex items-center justify-center border border-white/20 shadow-xl">
+                    <img src="{{ $app_logo_sekunder ? asset('storage/' . $app_logo_sekunder) : asset('storage/assets/logokominfo.png') }}" class="w-full h-full object-contain" alt="Logo Sekunder" />
+                </div>
+            </div>
+
+            <h1 class="text-3xl md:text-5xl lg:text-6xl font-black text-white mb-2 tracking-tight drop-shadow-2xl">
+                Tentang Kami
+            </h1>
+            <p class="text-xs sm:text-base font-bold text-white/80 max-w-2xl drop-shadow-lg">
+                Portal Informasi & Komitmen Pelayanan Publik Kecamatan Kembaran
             </p>
         </div>
     </div>
+
+    <div class="w-full max-w-7xl mx-auto px-4 lg:px-2 pb-20 mt-4 sm:mt-0">
+        {{-- Welcome Note (Simplified) --}}
+        <div class="mt-6 p-4 bg-base-200/40 rounded-xl border border-base-200 max-w-2xl mx-auto text-center mb-8">
+            <p class="text-xs sm:text-sm text-base-content/70 leading-relaxed italic font-medium">
+                "Selamat datang di portal resmi Pengaduan Masyarakat Kecamatan Kembaran. Platform ini merupakan wujud komitmen kami untuk menghadirkan pelayanan publik yang transparan, cepat, dan terintegrasi demi kemajuan wilayah kita bersama."
+            </p>
+        </div>
 
     {{-- Public Statistics Section --}}
     <div class="grid grid-cols-3 gap-3 mb-8">
@@ -54,13 +122,13 @@
                     Sekilas Kecamatan Kembaran
                 </h2>
                 <p class="text-xs sm:text-sm text-base-content/70 leading-relaxed">
-                    Kecamatan Kembaran adalah bagian administratif Kabupaten Banyumas, Jawa Tengah. Dengan luas wilayah <span class="font-bold">26,64 km²</span>, menaungi <span class="font-bold">16 desa</span> dengan populasi mencapai <span class="font-bold">82.897 jiwa</span>.
+                    Kecamatan Kembaran adalah bagian administratif Kabupaten Banyumas, Jawa Tengah. Dengan luas wilayah <span class="font-bold">26,64 km&sup2;</span>, menaungi <span class="font-bold">16 desa</span> dengan populasi mencapai <span class="font-bold">82.897 jiwa</span>.
                 </p>
             </div>
             <div class="w-full md:w-56 shrink-0 grid grid-cols-2 gap-2">
                 <div class="p-3 bg-base-200/30 rounded-lg text-center border border-base-200/50">
                     <p class="text-[9px] font-bold text-base-content/30 mb-0.5">LUAS</p>
-                    <p class="text-sm font-bold text-primary">26,6 km²</p>
+                    <p class="text-sm font-bold text-primary">26,6 km&sup2;</p>
                 </div>
                 <div class="p-3 bg-base-200/30 rounded-lg text-center border border-base-200/50">
                     <p class="text-[9px] font-bold text-base-content/30 mb-0.5">POPULASI</p>
@@ -118,7 +186,7 @@
             </div>
             <div class="p-5 space-y-3 flex-1">
                 <div class="flex items-center justify-between p-3 bg-base-200/20 rounded-lg border border-base-200/50">
-                    <span class="text-xs font-medium text-base-content/70">Senin – Kamis</span>
+                    <span class="text-xs font-medium text-base-content/70">Senin - Kamis</span>
                     <span class="text-xs font-bold text-primary">{{ $instansi_jam_senkam }}</span>
                 </div>
                 <div class="flex items-center justify-between p-3 bg-base-200/20 rounded-lg border border-base-200/50">
@@ -126,7 +194,7 @@
                     <span class="text-xs font-bold text-primary">{{ $instansi_jam_jumat }}</span>
                 </div>
                 <div class="flex items-center justify-between p-3 bg-error/5 rounded-lg border border-error/10">
-                    <span class="text-xs font-medium text-error/70">Sabtu – Minggu</span>
+                    <span class="text-xs font-medium text-base-content/70">Sabtu - Minggu</span>
                     <span class="text-xs font-bold text-error">Libur</span>
                 </div>
             </div>
@@ -233,5 +301,5 @@
     </div>
 
     </div>
-
+</div>
 </div>

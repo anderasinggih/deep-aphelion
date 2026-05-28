@@ -240,12 +240,12 @@
                 <tbody class="divide-y divide-base-200">
                     @forelse($pengaduans as $index => $pengaduan)
                         <tr class="transition-colors cursor-pointer hover:bg-base-200/50 group select-none" 
-                            :class="selectedIds.includes(String({{ $pengaduan->id }})) ? 'bg-primary/10' : ''"
+                            :class="selectedIds.includes(String({{ $pengaduan->id }})) ? 'bg-blue-50' : ''"
                             wire:key="{{ $pengaduan->id }}"
-                            @click="bulkMode ? toggle({{ $pengaduan->id }}, {{ $index }}, $event) : $wire.goToDetail('{{ $pengaduan->kode_tracking }}')">
+                            @click="bulkMode ? toggle({{ $pengaduan->id }}, {{ $index }}, $event) : $wire.goToDetail(@js($pengaduan->kode_tracking))">
                             {{-- Checkbox --}}
                             @if($bulkMode)
-                            <td class="px-2 sm:px-3" @click.stop>
+                            <td class="px-2 sm:px-3" @click.stop="">
                                 <input type="checkbox" 
                                     class="checkbox checkbox-xs" 
                                     :checked="selectedIds.includes(String({{ $pengaduan->id }}))"
@@ -261,7 +261,7 @@
                                     </span>
                                     <div class="flex flex-col gap-0.5 mt-1 sm:hidden">
                                         <span class="text-[10px] font-medium text-base-content/80 flex items-center gap-1">
-                                            <x-icon name="o-user" class="w-3 h-3" /> {{ $pengaduan->user?->name ?? 'User Terhapus' }}
+                                            <x-icon name="o-user" class="w-3 h-3" /> {{ $pengaduan->user ? $pengaduan->user->name : ($pengaduan->guest_name ?? 'Guest') }}
                                         </span>
                                         <span class="text-[10px] text-base-content/50 italic flex items-center gap-1">
                                             <x-icon name="o-clock" class="w-3 h-3" /> {{
@@ -284,8 +284,8 @@
 
                             {{-- Pelapor --}}
                             <td class="hidden sm:table-cell py-2">
-                                <div class="text-[12px] font-bold">{{ $pengaduan->user?->name ?? 'User Terhapus' }}</div>
-                                <div class="text-[11px] text-base-content/50">{{ $pengaduan->user?->nik ?? '-' }}</div>
+                                <div class="text-[12px] font-bold">{{ $pengaduan->user ? $pengaduan->user->name : ($pengaduan->guest_name ?? 'Guest') }}</div>
+                                <div class="text-[11px] text-base-content/50">{{ $pengaduan->user ? 'Warga Terdaftar' : ($pengaduan->guest_wa ?? 'Guest') }}</div>
                             </td>
 
                             {{-- Kategori --}}
@@ -316,13 +316,12 @@
                             </td>
 
                             {{-- Aksi --}}
-                            <td class="px-3 py-2 text-right" wire:click.stop>
+                            <td class="px-3 py-2 text-right" @click.stop="">
                                 <x-dropdown class="dropdown-end sm:dropdown-left {{ $loop->remaining < 3 ? 'dropdown-top' : '' }}">
                                     <x-slot:trigger>
                                         <x-button icon="o-ellipsis-horizontal"
                                             class="text-white rounded-full shadow-sm btn-primary btn-xs hover:scale-105"
-                                            tooltip="Aksi Laporan"
-                                            onclick="document.querySelectorAll('details').forEach(d => { if(d !== this.closest('details')) d.removeAttribute('open') })" />
+                                            tooltip="Aksi Laporan" />
                                     </x-slot:trigger>
 
                                     <div class="my-0.5 opacity-50 divider mt-0 px-2"><span class="text-[9px] font-bold uppercase tracking-tighter">Update Progres</span></div>
@@ -364,7 +363,7 @@
                                     <x-menu-item title="Cetak Resi" icon="o-printer" class="!py-1 text-xs"
                                         link="{{ route('print.resi', $pengaduan->id) }}" external target="_blank" />
                                     
-                                    @if($pengaduan->user?->no_wa)
+                                    @if($pengaduan->user?->no_wa || $pengaduan->guest_wa)
                                     <x-menu-item title="WhatsApp" icon="o-chat-bubble-left-right" class="text-green-600 font-bold !py-1 text-xs"
                                         link="{{ $pengaduan->generateWaLink() }}" external target="_blank" />
                                     @endif
