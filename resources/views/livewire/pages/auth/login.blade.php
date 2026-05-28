@@ -100,12 +100,21 @@ new #[Layout('layouts.auth')] class extends Component
             </p>
         </div>
 
+        @if ($errors->any())
+            <x-alert icon="o-exclamation-triangle" class="mb-4 shadow-sm alert-error rounded-xl">
+                <span class="font-bold">Login Gagal:</span> {{ $errors->first() }}
+            </x-alert>
+        @endif
+
         <x-auth-session-status class="mb-4" :status="session('status')" />
 
         <form wire:submit="login" class="space-y-5">
             <div>
                 <x-input wire:model="form.email" id="email" label="Alamat email" placeholder="email@example.com"
                     type="email" required autofocus autocomplete="username" icon="o-envelope" />
+                @error('form.email')
+                    <span class="text-error text-xs font-bold mt-1 block">{{ $message }}</span>
+                @enderror
             </div>
 
             <div>
@@ -129,6 +138,9 @@ new #[Layout('layouts.auth')] class extends Component
                         <x-icon name="o-eye-slash" x-show="show" class="w-5 h-5" style="display: none;" />
                     </button>
                 </div>
+                @error('form.password')
+                    <span class="text-error text-xs font-bold mt-1 block">{{ $message }}</span>
+                @enderror
             </div>
 
             <div class="pt-2">
