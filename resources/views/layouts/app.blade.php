@@ -278,12 +278,16 @@
             const shareMessage = `Ayo dukung laporan warga ini agar segera ditindaklanjuti:\n\n*${title}*\n_${text}_\n\nLink Laporan:\n${url}`;
             
             // Set WhatsApp link
-            waBtn.onclick = () => {
+            waBtn.onclick = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`, '_blank');
             };
             
             // Set Copy link
-            copyBtn.onclick = () => {
+            copyBtn.onclick = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 navigator.clipboard.writeText(url).then(() => {
                     copyText.textContent = 'Tersalin!';
                     copyBtn.classList.remove('bg-base-200');
