@@ -49,6 +49,7 @@
             scroll-behavior: smooth;
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
+            background-color: #111111; /* Senadakan warna HTML terbawah agar sinkron dengan footer */
         }
         html::-webkit-scrollbar {
             display: none;
@@ -57,6 +58,14 @@
             touch-action: manipulation;
             width: 100%;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: #111111; /* Samakan warna background body terbawah dengan footer */
+        }
+        main {
+            flex-grow: 1; /* Mendorong footer agar berada paling bawah secara penuh */
+            background-color: #151b26; /* Pastikan warna background area konten utama tetap gelap base-200 asli */
+            width: 100%;
         }
         .toast {
             z-index: 2000 !important;
@@ -78,7 +87,7 @@
 
 </head>
 
-<body class="font-sans antialiased bg-base-200/50 min-h-screen">
+<body class="font-sans antialiased min-h-screen">
     {{-- Impersonation Banner --}}
     <livewire:impersonation-banner />
 
