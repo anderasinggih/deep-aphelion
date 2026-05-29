@@ -76,10 +76,6 @@
                                     class="{{ $this->pengaduan->prioritas == 'tinggi' ? 'badge-error' : ($this->pengaduan->prioritas == 'sedang' ? 'badge-info' : 'badge-success') }} font-black sm:shadow-sm text-[10px] sm:text-xs px-2 py-1 h-auto min-h-0" />
                             </div>
 
-                            <button onclick='nativeShare(@js("LAPORAN: " . $this->pengaduan->judul), @js("📢 Bantu dukung laporan warga ini agar segera ditindaklanjuti melalui aplikasi Kembaran Ngadu."), window.location.href)' 
-                                    class="btn btn-ghost btn-circle btn-sm text-base-content/60 hover:text-primary">
-                                <x-icon name="o-share" class="w-5 h-5" />
-                            </button>
                         </div>
 
                         <h1
