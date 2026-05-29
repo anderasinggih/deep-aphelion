@@ -264,15 +264,20 @@
             }); 
         }
         // Global Share Function
-        function nativeShare(title, text, url) {
-            openShareModal(title, text, url);
+        window.nativeShare = function(title, text, url) {
+            window.openShareModal(title, text, url);
         }
 
-        function openShareModal(title, text, url) {
+        window.openShareModal = function(title, text, url) {
             const modal = document.getElementById('global_share_modal');
             const waBtn = document.getElementById('share_wa_btn');
             const copyBtn = document.getElementById('share_copy_btn');
             const copyText = document.getElementById('share_copy_text');
+            
+            if (!modal) {
+                console.error("Modal global_share_modal tidak ditemukan di DOM!");
+                return;
+            }
             
             // Format WhatsApp template
             const shareMessage = `Ayo dukung laporan warga ini agar segera ditindaklanjuti:\n\n*${title}*\n_${text}_\n\nLink Laporan:\n${url}`;
@@ -297,10 +302,31 @@
                         copyBtn.classList.remove('bg-success', 'text-white');
                         copyBtn.classList.add('bg-base-200');
                     }, 2000);
+                }).catch(err => {
+                    // Fallback copy if navigator.clipboard is blocked by browser security
+                    const el = document.createElement('textarea');
+                    el.value = url;
+                    document.body.appendChild(el);
+                    el.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(el);
+                    
+                    copyText.textContent = 'Tersalin!';
+                    copyBtn.classList.remove('bg-base-200');
+                    copyBtn.classList.add('bg-success', 'text-white');
+                    setTimeout(() => {
+                        copyText.textContent = 'Salin Link';
+                        copyBtn.classList.remove('bg-success', 'text-white');
+                        copyBtn.classList.add('bg-base-200');
+                    }, 2000);
                 });
             };
             
-            modal.showModal();
+            if (typeof modal.showModal === 'function') {
+                modal.showModal();
+            } else {
+                modal.setAttribute('open', 'true');
+            }
         }
 
         // Scroll Restoration for Livewire Navigate
