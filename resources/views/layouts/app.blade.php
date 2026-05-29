@@ -381,31 +381,38 @@
     </script>
 
     {{-- Global Share Modal --}}
-    <dialog id="global_share_modal" class="modal modal-bottom sm:modal-middle">
-        <div class="modal-box bg-base-100 p-0 overflow-hidden border-t sm:border border-base-200">
-            <div class="p-6">
-                <div class="flex items-center justify-between mb-6">
-                    <h3 class="font-black text-xl">Bagikan Laporan</h3>
+    <dialog id="global_share_modal" class="modal modal-bottom sm:modal-middle max-h-screen">
+        <div class="modal-box bg-base-100 p-0 overflow-hidden border-t sm:border border-base-200 w-full h-full sm:h-auto max-w-full sm:max-w-md rounded-none sm:rounded-3xl flex flex-col justify-between">
+            <div>
+                {{-- Header Modal --}}
+                <div class="flex items-center justify-between p-6 border-b border-base-200/50">
+                    <h3 class="font-black text-2xl text-base-content">Bagikan Laporan</h3>
                     <form method="dialog">
-                        <button class="btn btn-md btn-circle btn-ghost w-10 h-10 flex items-center justify-center text-lg font-bold">✕</button>
+                        <button class="btn btn-lg btn-circle btn-ghost w-12 h-12 flex items-center justify-center text-2xl font-black text-base-content/70 hover:bg-base-200">✕</button>
                     </form>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <button id="share_wa_btn" class="btn btn-lg h-24 flex-col gap-2 bg-[#25D366] hover:bg-[#20bd5a] text-white border-none transition-all hover:scale-95">
-                        <x-icon name="o-chat-bubble-left-right" class="w-8 h-8" />
-                        <span class="text-xs font-bold">WhatsApp</span>
-                    </button>
+                {{-- Konten Utama --}}
+                <div class="p-6 space-y-6 flex-grow flex flex-col justify-center min-h-[50vh] sm:min-h-0">
+                    <p class="text-sm font-medium text-base-content/60 text-center sm:text-left mb-2">Pilih media untuk membagikan laporan ini:</p>
                     
-                    <button id="share_copy_btn" class="btn btn-lg h-24 flex-col gap-2 bg-base-200 hover:bg-base-300 border-none transition-all hover:scale-95">
-                        <x-icon name="o-link" class="w-8 h-8" />
-                        <span id="share_copy_text" class="text-xs font-bold">Salin Link</span>
-                    </button>
+                    <div class="grid grid-cols-1 gap-4">
+                        <button id="share_wa_btn" class="btn btn-lg h-24 flex items-center justify-center gap-4 bg-[#25D366] hover:bg-[#20bd5a] text-white border-none transition-all hover:scale-[0.98] rounded-2xl w-full shadow-lg">
+                            <x-icon name="o-chat-bubble-left-right" class="w-8 h-8 pointer-events-none" />
+                            <span class="text-lg font-black tracking-wide">Bagikan ke WhatsApp</span>
+                        </button>
+                        
+                        <button id="share_copy_btn" class="btn btn-lg h-24 flex items-center justify-center gap-4 bg-base-200 hover:bg-base-300 border-none transition-all hover:scale-[0.98] rounded-2xl w-full shadow-md text-base-content">
+                            <x-icon name="o-link" class="w-8 h-8 pointer-events-none" />
+                            <span id="share_copy_text" class="text-lg font-black tracking-wide">Salin Tautan</span>
+                        </button>
+                    </div>
                 </div>
             </div>
             
-            <div class="bg-base-100 p-4 text-center border-t border-base-200/50">
-                <p class="text-[10px] font-bold opacity-50">Kembaran Ngadu 2026</p>
+            {{-- Footer Modal --}}
+            <div class="bg-base-100 p-6 text-center border-t border-base-200/50">
+                <p class="text-xs font-black opacity-40 tracking-wider">Kembaran Ngadu 2026</p>
             </div>
         </div>
         <form method="dialog" class="modal-backdrop bg-black/40">
