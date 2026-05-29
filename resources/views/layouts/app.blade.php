@@ -414,24 +414,6 @@
                 }, 4000);
             });
         })();
-
-
-        function nativeShare(title, text, url) {
-            const shareContent = `${title}\n${text}\n${url}`;
-            if (navigator.share) {
-                navigator.share({
-                    title: title,
-                    text: text,
-                    url: url
-                }).catch(err => {
-                    console.log('Share failed or cancelled');
-                });
-            } else {
-                // Fallback: WhatsApp
-                const waUrl = `https://wa.me/?text=${encodeURIComponent(shareContent)}`;
-                window.open(waUrl, '_blank');
-            }
-        }
     </script>
     @stack('scripts')
 </body>
