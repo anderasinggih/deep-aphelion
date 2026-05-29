@@ -268,18 +268,18 @@
                         <div wire:key="grid-{{ $pengaduan->id }}" wire:ignore.self
                             class="relative group bg-base-100 rounded-2xl overflow-hidden border border-base-300 hover:shadow-xl transition-all duration-500 animate-in fade-in zoom-in-95">
                             
-                            {{-- Stretched Link for SPA Navigation --}}
-                            <a href="{{ route('pengaduan.feed-detail', $pengaduan->kode_tracking) }}" 
-                                wire:navigate.prefetch 
-                                class="absolute inset-0 z-[1]"></a>
-
-                            {{-- Image Container --}}
-                            @if($pengaduan->foto_bukti && count($pengaduan->foto_bukti) > 0)
-                            <div class="relative w-full overflow-hidden bg-base-200" style="aspect-ratio: 1/1;">
-                                <img src="{{ Storage::url($pengaduan->foto_bukti[0]) }}" alt="Bukti {{ $pengaduan->judul }}"
-                                    class="absolute inset-0 object-cover w-full h-full transition-transform duration-300 group-hover:scale-105" />
-
-                                <div class="absolute top-3 right-3 flex flex-col items-end gap-1.5">
+                            {{-- Image Container (Link to detail) --}}
+                            <a href="{{ route('pengaduan.feed-detail', $pengaduan->kode_tracking) }}" wire:navigate.prefetch class="block relative w-full overflow-hidden bg-base-200" style="aspect-ratio: 1/1;">
+                                @if($pengaduan->foto_bukti && count($pengaduan->foto_bukti) > 0)
+                                    <img src="{{ Storage::url($pengaduan->foto_bukti[0]) }}" alt="Bukti {{ $pengaduan->judul }}"
+                                        class="absolute inset-0 object-cover w-full h-full transition-transform duration-300 group-hover:scale-105" />
+                                @else
+                                    <div class="absolute inset-0 flex items-center justify-center opacity-20">
+                                        <x-icon name="o-camera" class="w-12 h-12 text-neutral-content" />
+                                    </div>
+                                @endif
+                                
+                                <div class="absolute top-3 right-3 flex flex-col items-end gap-1.5 z-20">
                                     <span class="px-3 py-1 text-[10px] font-bold rounded-full 
                                         {{ $pengaduan->status == 'menunggu' ? 'bg-warning text-warning-content' : '' }}
                                         {{ $pengaduan->status == 'diproses' ? 'bg-info text-info-content' : '' }}
@@ -293,56 +293,34 @@
                                         </span>
                                     @endif
                                 </div>
-                            </div>
-                            @else
-                            <div class="relative w-full overflow-hidden bg-neutral flex items-center justify-center group/placeholder" style="aspect-ratio: 1/1;">
-                                <div class="flex flex-col items-center justify-center opacity-20 group-hover/placeholder:scale-110 transition-transform duration-500">
-                                    <x-icon name="o-camera" class="w-12 h-12 text-neutral-content" />
-                                    <span class="text-[10px] font-bold mt-2 uppercase tracking-widest text-neutral-content">Tanpa Foto</span>
-                                </div>
-
-                                <div class="absolute top-3 right-3 flex flex-col items-end gap-1.5">
-                                    <span class="px-3 py-1 text-[10px] font-bold rounded-full 
-                                        {{ $pengaduan->status == 'menunggu' ? 'bg-warning text-warning-content' : '' }}
-                                        {{ $pengaduan->status == 'diproses' ? 'bg-info text-info-content' : '' }}
-                                        {{ $pengaduan->status == 'selesai' ? 'bg-success text-success-content' : '' }}
-                                        {{ $pengaduan->status == 'ditolak' ? 'bg-error text-error-content' : '' }} shadow-sm">
-                                        {{ ucfirst($pengaduan->status) }}
-                                    </span>
-                                    @if($pengaduan->dukungans_count >= 50)
-                                        <span class="px-2 py-0.5 text-[8px] font-black bg-error text-white rounded-md shadow-lg uppercase tracking-tighter flex items-center gap-1 animate-pulse border border-white/20">
-                                            <x-icon name="s-fire" class="w-2.5 h-2.5" /> Mendesak
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                            @endif
+                            </a>
 
                             <div class="flex flex-col flex-1 p-4 sm:p-5">
-                                <div class="flex items-center justify-between mb-3 text-xs font-medium text-base-content/60">
-                                    <span class="px-1.5 py-1 rounded-md bg-base-200 text-primary min-w-0"
-                                        title="{{ $pengaduan->kategori->nama }}">
-                                        <span class="truncate">{{ $pengaduan->kategori->nama }}</span>
-                                    </span>
+                                {{-- Link wrapper for title and description --}}
+                                <a href="{{ route('pengaduan.feed-detail', $pengaduan->kode_tracking) }}" wire:navigate.prefetch class="block flex-1 group">
+                                    <div class="flex items-center justify-between mb-3 text-xs font-medium text-base-content/60">
+                                        <span class="px-1.5 py-1 rounded-md bg-base-200 text-primary min-w-0" title="{{ $pengaduan->kategori->nama }}">
+                                            <span class="truncate">{{ $pengaduan->kategori->nama }}</span>
+                                        </span>
 
-                                    <span class="flex items-center gap-1 shrink-0 ml-2">
-                                        <x-icon name="o-clock" class="w-3.5 h-3.5" /> {{ $pengaduan->created_at->diffForHumans() }}
-                                    </span>
-                                </div>
+                                        <span class="flex items-center gap-1 shrink-0 ml-2">
+                                            <x-icon name="o-clock" class="w-3.5 h-3.5" /> {{ $pengaduan->created_at->diffForHumans() }}
+                                        </span>
+                                    </div>
 
-                                <h2 class="mb-1 text-sm font-bold leading-tight transition-colors sm:text-lg text-base-content group-hover:text-primary line-clamp-2">
-                                    {{ $pengaduan->judul }}
-                                </h2>
+                                    <h2 class="mb-1 text-sm font-bold leading-tight transition-colors sm:text-lg text-base-content group-hover:text-primary line-clamp-2">
+                                        {{ $pengaduan->judul }}
+                                    </h2>
 
-                                <div class="flex items-start gap-1 mb-3 text-xs text-base-content/50">
-                                    <x-icon name="o-map-pin" class="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-error/80" />
-                                    <span class="line-clamp-1">{{ $pengaduan->lokasi_kejadian ?? 'Lokasi via koordinat peta'
-                                        }}</span>
-                                </div>
+                                    <div class="flex items-start gap-1 mb-3 text-xs text-base-content/50">
+                                        <x-icon name="o-map-pin" class="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-error/80" />
+                                        <span class="line-clamp-1">{{ $pengaduan->lokasi_kejadian ?? 'Lokasi via koordinat peta' }}</span>
+                                    </div>
 
-                                <p class="flex-1 mb-4 text-sm leading-relaxed text-base-content/70 line-clamp-3">
-                                    {{ $pengaduan->deskripsi }}
-                                </p>
+                                    <p class="mb-4 text-sm leading-relaxed text-base-content/70 line-clamp-3">
+                                        {{ $pengaduan->deskripsi }}
+                                    </p>
+                                </a>
 
                                 <div class="flex items-center justify-between pt-4 mt-auto border-t border-base-200">
                                     <div class="flex items-center gap-2.5 text-sm font-medium text-base-content/80">
@@ -364,14 +342,14 @@
                                         @endif
                                     </div>
 
-                                    <div class="relative z-20 flex items-center gap-3">
-                                         <button wire:click.prevent="upvote({{ $pengaduan->id }})" wire:key="upvote-grid-{{ $pengaduan->id }}"
+                                    <div class="flex items-center gap-3">
+                                         <button type="button" wire:click.prevent="upvote({{ $pengaduan->id }})" wire:key="upvote-grid-{{ $pengaduan->id }}"
                                              class="flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95 {{ $pengaduan->has_liked ? 'text-primary' : 'text-black hover:text-primary' }}">
                                              <x-icon name="{{ $pengaduan->has_liked ? 's-hand-thumb-up' : 'o-hand-thumb-up' }}" class="w-6 h-6" />
                                              <span class="text-sm font-black">{{ $pengaduan->dukungans_count }}</span>
                                          </button>
 
-                                        <button onclick='event.preventDefault(); event.stopPropagation(); nativeShare(@js("LAPORAN: " . $pengaduan->judul), @js("📢 Bantu dukung laporan warga ini agar segera ditindaklanjuti melalui aplikasi Kembaran Ngadu."), @js(route("pengaduan.feed-detail", $pengaduan->kode_tracking)))'
+                                        <button type="button" onclick='nativeShare(@js("LAPORAN: " . $pengaduan->judul), @js("📢 Bantu dukung laporan warga ini agar segera ditindaklanjuti melalui aplikasi Kembaran Ngadu."), @js(route("pengaduan.feed-detail", $pengaduan->kode_tracking)))'
                                             class="p-2 transition-colors rounded-full hover:bg-base-200 text-black hover:text-primary">
                                             <x-icon name="o-share" class="w-5 h-5" />
                                         </button>
@@ -401,13 +379,8 @@
                         <div wire:key="list-{{ $pengaduan->id }}" wire:ignore.self
                             class="relative flex flex-row items-center gap-3 sm:gap-6 p-2 sm:p-4 border border-base-300 bg-base-100 rounded-xl sm:rounded-2xl hover:shadow-md hover:border-primary/20 transition-all group animate-in fade-in slide-in-from-bottom-2 duration-500">
                             
-                            {{-- Stretched Link for SPA Navigation --}}
-                            <a href="{{ route('pengaduan.feed-detail', $pengaduan->kode_tracking) }}" 
-                                wire:navigate.prefetch 
-                                class="absolute inset-0 z-[1]"></a>
-                            
-                            {{-- Larger 1:1 Square Image Container --}}
-                            <div class="w-24 sm:w-40 aspect-square shrink-0 bg-base-200 rounded-lg sm:rounded-xl overflow-hidden relative shadow-inner">
+                            {{-- Image Container (Link to detail) --}}
+                            <a href="{{ route('pengaduan.feed-detail', $pengaduan->kode_tracking) }}" wire:navigate.prefetch class="block w-24 sm:w-40 aspect-square shrink-0 bg-base-200 rounded-lg sm:rounded-xl overflow-hidden relative shadow-inner">
                                 @if($pengaduan->foto_bukti && count($pengaduan->foto_bukti) > 0)
                                     <img src="{{ Storage::url($pengaduan->foto_bukti[0]) }}" alt="Bukti" loading="lazy" decoding="async"
                                         class="absolute inset-0 object-cover w-full h-full transition-transform duration-500 group-hover:scale-110" />
@@ -416,58 +389,61 @@
                                         <x-icon name="o-camera" class="w-6 h-6 sm:w-10 sm:h-10" />
                                     </div>
                                 @endif
-                            </div>
+                            </a>
 
                             {{-- Content --}}
                             <div class="flex flex-col flex-1 min-w-0">
-                                <div class="flex items-center justify-between gap-2 mb-0.5 sm:mb-1">
-                                    <div class="flex items-center gap-1.5 sm:gap-2">
-                                        <span class="px-1.5 py-0.5 bg-base-200 text-primary text-[9px] sm:text-[11px] font-bold rounded sm:rounded-md truncate max-w-[150px] sm:max-w-[250px]">
-                                            {{ $pengaduan->kategori->nama }}
-                                        </span>
-                                        <span class="hidden xs:inline-block text-[9px] sm:text-[11px] text-base-content/40 font-medium">
-                                            {{ $pengaduan->created_at->diffForHumans() }}
-                                        </span>
+                                {{-- Link wrapper for text content --}}
+                                <a href="{{ route('pengaduan.feed-detail', $pengaduan->kode_tracking) }}" wire:navigate.prefetch class="block min-w-0 group/text">
+                                    <div class="flex items-center justify-between gap-2 mb-0.5 sm:mb-1">
+                                        <div class="flex items-center gap-1.5 sm:gap-2">
+                                            <span class="px-1.5 py-0.5 bg-base-200 text-primary text-[9px] sm:text-[11px] font-bold rounded sm:rounded-md truncate max-w-[150px] sm:max-w-[250px]">
+                                                {{ $pengaduan->kategori->nama }}
+                                            </span>
+                                            <span class="hidden xs:inline-block text-[9px] sm:text-[11px] text-base-content/40 font-medium">
+                                                {{ $pengaduan->created_at->diffForHumans() }}
+                                            </span>
+                                        </div>
+                                        
+                                        <div class="hidden sm:flex flex-col items-end gap-1.5">
+                                            <span class="px-2.5 py-1 text-[10px] font-bold rounded-full shadow-sm
+                                                {{ $pengaduan->status == 'menunggu' ? 'bg-warning text-warning-content' : '' }}
+                                                {{ $pengaduan->status == 'diproses' ? 'bg-info text-info-content' : '' }}
+                                                {{ $pengaduan->status == 'selesai' ? 'bg-success text-success-content' : '' }}
+                                                {{ $pengaduan->status == 'ditolak' ? 'bg-error text-error-content' : '' }}">
+                                                {{ ucfirst($pengaduan->status) }}
+                                            </span>
+                                            @if($pengaduan->dukungans_count >= 50)
+                                                <span class="px-2 py-0.5 text-[8px] font-black bg-error text-white rounded-md shadow-sm uppercase tracking-tighter flex items-center gap-1 border border-white/10">
+                                                    <x-icon name="s-fire" class="w-2.5 h-2.5" /> Suara Rakyat
+                                                </span>
+                                            @endif
+                                        </div>
                                     </div>
+
+                                    <h2 class="text-xs sm:text-lg font-bold text-base-content group-hover/text:text-primary transition-colors line-clamp-1 mb-0.5">
+                                        {{ $pengaduan->judul }}
+                                    </h2>
+
+                                    <div class="flex items-start gap-1 mb-1 sm:mb-2 text-[9px] sm:text-[11px] text-base-content/50">
+                                        <x-icon name="o-map-pin" class="w-2.5 h-2.5 mt-0.5 shrink-0 text-error/60" />
+                                        <span class="line-clamp-1">{{ $pengaduan->lokasi_kejadian ?? 'Lokasi tidak spesifik' }}</span>
+                                    </div>
+
+                                    <p class="hidden sm:block text-sm text-base-content/60 line-clamp-1 mb-3">
+                                        {{ $pengaduan->deskripsi }}
+                                    </p>
                                     
-                                    <div class="hidden sm:flex flex-col items-end gap-1.5">
-                                        <span class="px-2.5 py-1 text-[10px] font-bold rounded-full shadow-sm
+                                    <div class="sm:hidden mb-1.5">
+                                        <span class="px-2 py-0.5 text-[8px] font-bold rounded-full shadow-sm
                                             {{ $pengaduan->status == 'menunggu' ? 'bg-warning text-warning-content' : '' }}
                                             {{ $pengaduan->status == 'diproses' ? 'bg-info text-info-content' : '' }}
                                             {{ $pengaduan->status == 'selesai' ? 'bg-success text-success-content' : '' }}
                                             {{ $pengaduan->status == 'ditolak' ? 'bg-error text-error-content' : '' }}">
                                             {{ ucfirst($pengaduan->status) }}
                                         </span>
-                                        @if($pengaduan->dukungans_count >= 50)
-                                            <span class="px-2 py-0.5 text-[8px] font-black bg-error text-white rounded-md shadow-sm uppercase tracking-tighter flex items-center gap-1 border border-white/10">
-                                                <x-icon name="s-fire" class="w-2.5 h-2.5" /> Suara Rakyat
-                                            </span>
-                                        @endif
                                     </div>
-                                </div>
-
-                                <h2 class="text-xs sm:text-lg font-bold text-base-content group-hover:text-primary transition-colors line-clamp-1 mb-0.5">
-                                    {{ $pengaduan->judul }}
-                                </h2>
-
-                                <div class="flex items-start gap-1 mb-1 sm:mb-2 text-[9px] sm:text-[11px] text-base-content/50">
-                                    <x-icon name="o-map-pin" class="w-2.5 h-2.5 mt-0.5 shrink-0 text-error/60" />
-                                    <span class="line-clamp-1">{{ $pengaduan->lokasi_kejadian ?? 'Lokasi tidak spesifik' }}</span>
-                                </div>
-
-                                <p class="hidden sm:block text-sm text-base-content/60 line-clamp-1 mb-3">
-                                    {{ $pengaduan->deskripsi }}
-                                </p>
-                                
-                                <div class="sm:hidden mb-1.5">
-                                    <span class="px-2 py-0.5 text-[8px] font-bold rounded-full shadow-sm
-                                        {{ $pengaduan->status == 'menunggu' ? 'bg-warning text-warning-content' : '' }}
-                                        {{ $pengaduan->status == 'diproses' ? 'bg-info text-info-content' : '' }}
-                                        {{ $pengaduan->status == 'selesai' ? 'bg-success text-success-content' : '' }}
-                                        {{ $pengaduan->status == 'ditolak' ? 'bg-error text-error-content' : '' }}">
-                                        {{ ucfirst($pengaduan->status) }}
-                                    </span>
-                                </div>
+                                </a>
 
                                 <div class="flex items-center justify-between mt-auto">
                                     <div class="flex items-center gap-1.5 sm:gap-2">
@@ -489,14 +465,14 @@
                                         @endif
                                     </div>
 
-                                     <div class="relative z-20 flex items-center gap-3 sm:gap-4">
-                                         <button wire:click.prevent="upvote({{ $pengaduan->id }})" wire:key="upvote-list-{{ $pengaduan->id }}"
+                                     <div class="flex items-center gap-3 sm:gap-4">
+                                         <button type="button" wire:click.prevent="upvote({{ $pengaduan->id }})" wire:key="upvote-list-{{ $pengaduan->id }}"
                                              class="flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95 {{ $pengaduan->has_liked ? 'text-primary' : 'text-black hover:text-primary' }}">
                                              <x-icon name="{{ $pengaduan->has_liked ? 's-hand-thumb-up' : 'o-hand-thumb-up' }}" class="w-5.5 h-5.5 sm:w-6 sm:h-6" />
                                              <span class="text-xs sm:text-sm font-bold">{{ $pengaduan->dukungans_count }}</span>
                                          </button>
 
-                                        <button onclick='event.preventDefault(); event.stopPropagation(); nativeShare(@js("LAPORAN: " . $pengaduan->judul), @js("📢 Bantu dukung laporan warga ini agar segera ditindaklanjuti melalui aplikasi Kembaran Ngadu."), @js(route("pengaduan.feed-detail", $pengaduan->kode_tracking)))'
+                                        <button type="button" onclick='nativeShare(@js("LAPORAN: " . $pengaduan->judul), @js("📢 Bantu dukung laporan warga ini agar segera ditindaklanjuti melalui aplikasi Kembaran Ngadu."), @js(route("pengaduan.feed-detail", $pengaduan->kode_tracking)))'
                                             class="text-black hover:text-primary transition-colors p-1">
                                             <x-icon name="o-share" class="w-5 h-5 sm:w-5.5 sm:h-5.5" />
                                         </button>
