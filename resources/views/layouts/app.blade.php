@@ -265,6 +265,7 @@
         }
         // Global Share Function
         window.nativeShare = function(title, text, url) {
+            alert("DEBUG: Tombol Share Diklik!\nTitle: " + title + "\nText: " + text + "\nURL: " + url);
             window.openShareModal(title, text, url);
         }
 
