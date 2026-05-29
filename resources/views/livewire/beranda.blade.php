@@ -349,9 +349,10 @@
                                              <span class="text-sm font-black">{{ $pengaduan->dukungans_count }}</span>
                                          </button>
 
-                                        <button type="button" onclick='nativeShare(@js("LAPORAN: " . $pengaduan->judul), @js("📢 Bantu dukung laporan warga ini agar segera ditindaklanjuti melalui aplikasi Kembaran Ngadu."), @js(route("pengaduan.feed-detail", $pengaduan->kode_tracking)))'
-                                            class="p-2 transition-colors rounded-full hover:bg-base-200 text-black hover:text-primary">
-                                            <x-icon name="o-share" class="w-5 h-5" />
+                                        <!-- TOMBOL SHARE BARU GRID -->
+                                        <button type="button" onclick="nativeShare('LAPORAN: {{ addslashes($pengaduan->judul) }}', '📢 Bantu dukung laporan warga ini agar segera ditindaklanjuti melalui aplikasi Kembaran Ngadu.', '{{ route('pengaduan.feed-detail', $pengaduan->kode_tracking) }}')"
+                                            class="p-2 transition-colors rounded-full hover:bg-base-200 text-black hover:text-primary z-30">
+                                            <x-icon name="o-share" class="w-5 h-5 pointer-events-none" />
                                         </button>
                                     </div>
                                 </div>
@@ -472,9 +473,10 @@
                                              <span class="text-xs sm:text-sm font-bold">{{ $pengaduan->dukungans_count }}</span>
                                          </button>
 
-                                        <button type="button" onclick='nativeShare(@js("LAPORAN: " . $pengaduan->judul), @js("📢 Bantu dukung laporan warga ini agar segera ditindaklanjuti melalui aplikasi Kembaran Ngadu."), @js(route("pengaduan.feed-detail", $pengaduan->kode_tracking)))'
-                                            class="text-black hover:text-primary transition-colors p-1">
-                                            <x-icon name="o-share" class="w-5 h-5 sm:w-5.5 sm:h-5.5" />
+                                        <!-- TOMBOL SHARE BARU LIST -->
+                                        <button type="button" onclick="nativeShare('LAPORAN: {{ addslashes($pengaduan->judul) }}', '📢 Bantu dukung laporan warga ini agar segera ditindaklanjuti melalui aplikasi Kembaran Ngadu.', '{{ route('pengaduan.feed-detail', $pengaduan->kode_tracking) }}')"
+                                            class="text-black hover:text-primary transition-colors p-1 z-30">
+                                            <x-icon name="o-share" class="w-5 h-5 sm:w-5.5 sm:h-5.5 pointer-events-none" />
                                         </button>
                                     </div>
                                 </div>
