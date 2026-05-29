@@ -95,21 +95,21 @@
                 <x-icon name="o-inbox-stack" class="w-4 h-4 text-primary" />
             </div>
             <p class="text-lg sm:text-2xl font-bold text-primary leading-tight">{{ $this->formatNumber($stats['total']) }}</p>
-            <p class="text-[9px] font-semibold text-base-content/40 mt-1">Total Laporan</p>
+            <p class="text-xs font-semibold text-base-content/40 mt-1">Total Laporan</p>
         </div>
         <div class="bg-base-100 border border-base-200 p-3 rounded-xl text-center shadow-sm">
             <div class="w-7 h-7 bg-success/10 rounded-lg flex items-center justify-center mx-auto mb-2">
                 <x-icon name="o-check-badge" class="w-4 h-4 text-success" />
             </div>
             <p class="text-lg sm:text-2xl font-bold text-success leading-tight">{{ $this->formatNumber($stats['selesai']) }}</p>
-            <p class="text-[9px] font-semibold text-base-content/40 mt-1">Laporan Selesai</p>
+            <p class="text-xs font-semibold text-base-content/40 mt-1">Laporan Selesai</p>
         </div>
         <div class="bg-base-100 border border-base-200 p-3 rounded-xl text-center shadow-sm">
             <div class="w-7 h-7 bg-warning/10 rounded-lg flex items-center justify-center mx-auto mb-2">
                 <x-icon name="o-star" class="w-4 h-4 text-warning" />
             </div>
             <p class="text-lg sm:text-2xl font-bold text-warning leading-tight">{{ number_format($stats['rating'], 1, ',', '.') }}</p>
-            <p class="text-[9px] font-semibold text-base-content/40 mt-1">Rating IKM</p>
+            <p class="text-xs font-semibold text-base-content/40 mt-1">Rating IKM</p>
         </div>
     </div>
 
@@ -127,11 +127,11 @@
             </div>
             <div class="w-full md:w-56 shrink-0 grid grid-cols-2 gap-2">
                 <div class="p-3 bg-base-200/30 rounded-lg text-center border border-base-200/50">
-                    <p class="text-[9px] font-bold text-base-content/30 mb-0.5">LUAS</p>
+                    <p class="text-xs font-bold text-base-content/40 mb-0.5">LUAS</p>
                     <p class="text-sm font-bold text-primary">26,6 km&sup2;</p>
                 </div>
                 <div class="p-3 bg-base-200/30 rounded-lg text-center border border-base-200/50">
-                    <p class="text-[9px] font-bold text-base-content/30 mb-0.5">POPULASI</p>
+                    <p class="text-xs font-bold text-base-content/40 mb-0.5">POPULASI</p>
                     <p class="text-sm font-bold text-primary">82 Ribu+</p>
                 </div>
             </div>
@@ -149,29 +149,29 @@
                 <div class="flex items-start gap-3">
                     <x-icon name="o-identification" class="w-4 h-4 text-primary shrink-0 mt-0.5" />
                     <div>
-                        <p class="text-[9px] font-bold text-base-content/30 mb-0.5 uppercase">Nama Instansi</p>
+                        <p class="text-xs font-bold text-base-content/40 mb-0.5 uppercase">Nama Instansi</p>
                         <p class="font-semibold text-base-content">{{ $instansi_nama }}</p>
                     </div>
                 </div>
                 <div class="flex items-start gap-3">
                     <x-icon name="o-map-pin" class="w-4 h-4 text-primary shrink-0 mt-0.5" />
                     <div>
-                        <p class="text-[9px] font-bold text-base-content/30 mb-0.5 uppercase">Alamat</p>
+                        <p class="text-xs font-bold text-base-content/40 mb-0.5 uppercase">Alamat</p>
                         <p class="font-semibold text-base-content">{{ $instansi_alamat }}</p>
-                        <p class="text-[10px] text-base-content/50">Kabupaten Banyumas, Jawa Tengah 53182</p>
+                        <p class="text-xs text-base-content/50">Kabupaten Banyumas, Jawa Tengah 53182</p>
                     </div>
                 </div>
                 <div class="flex items-start gap-3">
                     <x-icon name="o-phone" class="w-4 h-4 text-primary shrink-0 mt-0.5" />
                     <div>
-                        <p class="text-[9px] font-bold text-base-content/30 mb-0.5 uppercase">Telepon</p>
+                        <p class="text-xs font-bold text-base-content/40 mb-0.5 uppercase">Telepon</p>
                         <p class="font-semibold text-base-content">{{ $instansi_telepon }}</p>
                     </div>
                 </div>
                 <div class="flex items-start gap-3">
                     <x-icon name="o-envelope" class="w-4 h-4 text-primary shrink-0 mt-0.5" />
                     <div>
-                        <p class="text-[9px] font-bold text-base-content/30 mb-0.5 uppercase">Email</p>
+                        <p class="text-xs font-bold text-base-content/40 mb-0.5 uppercase">Email</p>
                         <p class="font-semibold text-base-content break-all">{{ $instansi_email }}</p>
                     </div>
                 </div>
@@ -215,7 +215,7 @@
                     <div class="w-8 h-8 rounded-lg bg-success text-white flex items-center justify-center shrink-0 font-bold text-sm z-10">1</div>
                     <div>
                         <p class="font-bold text-sm text-base-content">Kirim Laporan</p>
-                        <p class="text-xs sm:text-[13px] text-base-content/60 leading-relaxed">Warga mengirimkan laporan keluhan atau aspirasi disertai bukti foto/dokumen pendukung.</p>
+                        <p class="text-xs sm:text-sm text-base-content/60 leading-relaxed">Warga mengirimkan laporan keluhan atau aspirasi disertai bukti foto/dokumen pendukung.</p>
                     </div>
                 </div>
                 <div class="flex gap-4 items-start relative">
@@ -223,7 +223,7 @@
                     <div class="w-8 h-8 rounded-lg bg-success text-white flex items-center justify-center shrink-0 font-bold text-sm z-10">2</div>
                     <div>
                         <p class="font-bold text-sm text-base-content">Verifikasi Admin</p>
-                        <p class="text-xs sm:text-[13px] text-base-content/60 leading-relaxed">Admin sistem memverifikasi keabsahan laporan dan mendisposisikan ke instansi/desa terkait.</p>
+                        <p class="text-xs sm:text-sm text-base-content/60 leading-relaxed">Admin sistem memverifikasi keabsahan laporan dan mendisposisikan ke instansi/desa terkait.</p>
                     </div>
                 </div>
                 <div class="flex gap-4 items-start relative">
@@ -231,14 +231,14 @@
                     <div class="w-8 h-8 rounded-lg bg-success text-white flex items-center justify-center shrink-0 font-bold text-sm z-10">3</div>
                     <div>
                         <p class="font-bold text-sm text-base-content">Tindak Lanjut</p>
-                        <p class="text-xs sm:text-[13px] text-base-content/60 leading-relaxed">Petugas lapangan melakukan penanganan dan penyelesaian masalah secara langsung di lokasi.</p>
+                        <p class="text-xs sm:text-sm text-base-content/60 leading-relaxed">Petugas lapangan melakukan penanganan dan penyelesaian masalah secara langsung di lokasi.</p>
                     </div>
                 </div>
                 <div class="flex gap-4 items-start">
                     <div class="w-8 h-8 rounded-lg bg-success text-white flex items-center justify-center shrink-0 font-bold text-sm z-10">4</div>
                     <div>
                         <p class="font-bold text-sm text-base-content">Selesai</p>
-                        <p class="text-xs sm:text-[13px] text-base-content/60 leading-relaxed">Laporan dinyatakan selesai, dan bukti penanganan diunggah kembali untuk transparansi.</p>
+                        <p class="text-xs sm:text-sm text-base-content/60 leading-relaxed">Laporan dinyatakan selesai, dan bukti penanganan diunggah kembali untuk transparansi.</p>
                     </div>
                 </div>
             </div>
@@ -255,28 +255,28 @@
                     <div class="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0"></div>
                     <div>
                         <p class="font-bold text-sm text-base-content">Undang-Undang No. 25 Tahun 2009</p>
-                        <p class="text-[10px] text-base-content/50 font-bold tracking-wider">TENTANG PELAYANAN PUBLIK</p>
+                        <p class="text-xs text-base-content/50 font-bold tracking-wider">TENTANG PELAYANAN PUBLIK</p>
                     </div>
                 </div>
                 <div class="flex gap-4 items-start border-b border-base-200 pb-4">
                     <div class="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0"></div>
                     <div>
                         <p class="font-bold text-sm text-base-content">Undang-Undang No. 14 Tahun 2008</p>
-                        <p class="text-[10px] text-base-content/50 font-bold tracking-wider">KETERBUKAAN INFORMASI PUBLIK</p>
+                        <p class="text-xs text-base-content/50 font-bold tracking-wider">KETERBUKAAN INFORMASI PUBLIK</p>
                     </div>
                 </div>
                 <div class="flex gap-4 items-start border-b border-base-200 pb-4">
                     <div class="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0"></div>
                     <div>
                         <p class="font-bold text-sm text-base-content">PP No. 96 Tahun 2012</p>
-                        <p class="text-[10px] text-base-content/50 font-bold tracking-wider">PELAKSANAAN UU PELAYANAN PUBLIK</p>
+                        <p class="text-xs text-base-content/50 font-bold tracking-wider">PELAKSANAAN UU PELAYANAN PUBLIK</p>
                     </div>
                 </div>
                 <div class="flex gap-4 items-start">
                     <div class="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0"></div>
                     <div>
                         <p class="font-bold text-sm text-base-content">Permenpan-RB No. 24 Tahun 2014</p>
-                        <p class="text-[10px] text-base-content/50 font-bold tracking-wider">PEDOMAN LAYANAN PENGADUAN</p>
+                        <p class="text-xs text-base-content/50 font-bold tracking-wider">PEDOMAN LAYANAN PENGADUAN</p>
                     </div>
                 </div>
             </div>
