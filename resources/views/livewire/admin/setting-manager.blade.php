@@ -443,10 +443,23 @@
             @endif
 
             <x-slot:actions>
-                @if(!in_array($activeTab, ['email', 'sistem']))
-                    <x-button label="Simpan Pengaturan" type="submit" icon="o-check-circle" class="btn-primary text-white"
-                        spinner="saveSettings" />
-                @endif
+                <div class="flex flex-col gap-3 w-full sm:w-auto items-end">
+                    @if(!in_array($activeTab, ['email', 'sistem']))
+                        <x-button label="Simpan Pengaturan" type="submit" icon="o-check-circle" class="btn-primary text-white"
+                            spinner="saveSettings" />
+                    @endif
+                    
+                    @if ($errors->any())
+                        <div class="p-4 bg-error/10 border border-error/20 rounded-xl text-error text-xs text-left w-full max-w-md">
+                            <p class="font-bold mb-1">Gagal menyimpan! Periksa kembali kolom berikut:</p>
+                            <ul class="list-disc pl-4 space-y-0.5">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                </div>
             </x-slot:actions>
         </x-form>
     </div>
