@@ -387,7 +387,7 @@
                 <div class="flex items-center justify-between mb-6">
                     <h3 class="font-black text-xl">Bagikan Laporan</h3>
                     <form method="dialog">
-                        <button class="btn btn-sm btn-circle btn-ghost">✕</button>
+                        <button class="btn btn-md btn-circle btn-ghost w-10 h-10 flex items-center justify-center text-lg font-bold">✕</button>
                     </form>
                 </div>
 
@@ -404,7 +404,7 @@
                 </div>
             </div>
             
-            <div class="bg-base-200/50 p-4 text-center">
+            <div class="bg-base-100 p-4 text-center border-t border-base-200/50">
                 <p class="text-[10px] font-bold opacity-50">Kembaran Ngadu 2026</p>
             </div>
         </div>
