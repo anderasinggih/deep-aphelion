@@ -64,7 +64,7 @@
         }
         main {
             flex-grow: 1; /* Mendorong footer agar berada paling bawah secara penuh */
-            background-color: #151b26; /* Pastikan warna background area konten utama tetap gelap base-200 asli */
+            background-color: #f8fafc; /* Mengubah warna background area konten utama menjadi putih terang/soft gray */
             width: 100%;
         }
         .toast {
