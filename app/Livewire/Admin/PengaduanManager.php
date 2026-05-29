@@ -311,6 +311,7 @@ class PengaduanManager extends Component
         if ($this->update_foto) {
             $manager = new ImageManager(new Driver());
             $image = $manager->read($this->update_foto->getRealPath());
+            $image->orient();
             
             // Resize to 1200px max width while maintaining aspect ratio
             $image->scale(width: 1200);
