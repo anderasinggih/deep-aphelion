@@ -49,6 +49,7 @@
             scroll-behavior: smooth;
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
+            background-color: #111111; /* Cocokkan warna overscroll dengan warna footer */
         }
         html::-webkit-scrollbar {
             display: none;
@@ -57,7 +58,13 @@
             touch-action: manipulation;
             width: 100%;
             min-height: 100vh;
-            padding-top: env(safe-area-inset-top, 0px);
+            display: flex;
+            flex-direction: column;
+            background-color: #111111; /* Default background agar overscroll atas-bawah senada */
+        }
+        main {
+            background-color: #1a202c; /* Menggunakan base background aslinya untuk area konten utama saja */
+            flex-grow: 1;
         }
         .toast {
             z-index: 2000 !important;
@@ -67,19 +74,21 @@
         }
         .sticky-nav {
             position: sticky;
-            top: calc(0.5rem + env(safe-area-inset-top, 0px));
+            top: 0;
+            padding-top: calc(0.5rem + env(safe-area-inset-top, 0px));
             z-index: 1000;
+            background: linear-gradient(to bottom, #1a202c 70%, transparent); /* Fading atas sewarna area main */
         }
         @media (min-width: 1024px) {
             .sticky-nav {
-                top: 1.5rem; /* Lebih kebawah sedikit di desktop */
+                padding-top: 1.5rem; /* Lebih kebawah sedikit di desktop */
             }
         }
     </style>
 
 </head>
 
-<body class="font-sans antialiased bg-base-200/50 min-h-screen">
+<body class="font-sans antialiased min-h-screen">
     {{-- Impersonation Banner --}}
     <livewire:impersonation-banner />
 
