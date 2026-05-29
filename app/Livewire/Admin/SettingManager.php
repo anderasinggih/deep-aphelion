@@ -267,181 +267,166 @@ class SettingManager extends Component
             return;
         }
 
-        $rules = [
-            'sop_waktu_pemrosesan' => 'required|string',
-            'sop_jam_operasional' => 'required|string',
-            'sop_dasar_hukum' => 'required|string',
-            'sop_tindak_lanjut' => 'required|string',
-            'pengumuman_aktif' => 'boolean',
-            'pengumuman_isi' => 'nullable|string|max:1000',
-            'pengumuman_tipe' => 'required|in:info,success,warning,error',
-            'anti_spam_aktif' => 'boolean',
-            'anti_spam_limit' => 'required|integer|min:1|max:100',
-            'media_cleanup_aktif' => 'boolean',
-            'media_cleanup_bulan' => 'required|integer|min:1|max:120',
-            'ttd_jabatan' => 'required|string|max:100',
-            'ttd_nama' => 'required|string|max:100',
-            'ttd_file' => 'nullable|image|max:2048',
-            'instansi_nama' => 'required|string|max:255',
-            'instansi_alamat' => 'required|string|max:500',
-            'instansi_telepon' => 'required|string|max:50',
-            'instansi_email' => 'required|email|max:100',
-            'instansi_jam_senkam' => 'required|string|max:100',
-            'instansi_jam_jumat' => 'required|string|max:100',
-            'instansi_jam_sabtu' => 'required|string|max:100',
-            'app_logo' => 'nullable|image|max:2048',
-            'app_logo_sekunder' => 'nullable|image|max:2048',
-            'app_banner_1' => 'nullable|image|max:5120',
-            'app_banner_2' => 'nullable|image|max:5120',
-            'app_banner_3' => 'nullable|image|max:5120',
-            'mail_host' => 'nullable|string|max:255',
-            'mail_port' => 'nullable|integer',
-            'mail_username' => 'nullable|string|max:255',
-            'mail_password' => 'nullable|string|max:255',
-            'mail_encryption' => 'nullable|string|max:10',
-            'mail_from_name' => 'nullable|string|max:255',
-            'notif_email_penerima' => 'nullable|string|max:1000',
-            'whatsapp_admin' => 'required|numeric|digits_between:10,15',
+        // Validate & save only the fields relevant to the active tab
+        $tabRules = [
+            'umum' => [
+                'sop_waktu_pemrosesan' => 'required|string',
+                'sop_jam_operasional' => 'required|string',
+                'sop_dasar_hukum' => 'required|string',
+                'sop_tindak_lanjut' => 'required|string',
+                'pengumuman_aktif' => 'boolean',
+                'pengumuman_isi' => 'nullable|string|max:1000',
+                'pengumuman_tipe' => 'required|in:info,success,warning,error',
+                'anti_spam_aktif' => 'boolean',
+                'anti_spam_limit' => 'required|integer|min:1|max:100',
+                'media_cleanup_aktif' => 'boolean',
+                'media_cleanup_bulan' => 'required|integer|min:1|max:120',
+                'whatsapp_admin' => 'nullable|string|max:20',
+            ],
+            'ttd' => [
+                'ttd_jabatan' => 'required|string|max:100',
+                'ttd_nama' => 'required|string|max:100',
+                'ttd_file' => 'nullable|image|max:2048',
+            ],
+            'konten' => [
+                'instansi_nama' => 'required|string|max:255',
+                'instansi_alamat' => 'required|string|max:500',
+                'instansi_telepon' => 'required|string|max:50',
+                'instansi_email' => 'required|email|max:100',
+                'instansi_jam_senkam' => 'required|string|max:100',
+                'instansi_jam_jumat' => 'required|string|max:100',
+                'instansi_jam_sabtu' => 'required|string|max:100',
+            ],
+            'aset' => [
+                'app_logo' => 'nullable|image|max:2048',
+                'app_logo_sekunder' => 'nullable|image|max:2048',
+                'app_banner_1' => 'nullable|image|max:5120',
+                'app_banner_2' => 'nullable|image|max:5120',
+                'app_banner_3' => 'nullable|image|max:5120',
+            ],
+            'email' => [
+                'mail_host' => 'nullable|string|max:255',
+                'mail_port' => 'nullable|integer',
+                'mail_username' => 'nullable|string|max:255',
+                'mail_password' => 'nullable|string|max:255',
+                'mail_encryption' => 'nullable|string|max:10',
+                'mail_from_name' => 'nullable|string|max:255',
+                'notif_email_penerima' => 'nullable|string|max:1000',
+            ],
+            'sistem' => [],
         ];
 
+        $rules = $tabRules[$this->activeTab] ?? [];
+
         try {
-            $this->validate($rules);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            \Log::error('Validation failed on SettingManager: ' . json_encode($e->validator->errors()->messages()));
-            $failedFields = array_keys($e->validator->failed());
-            if (!empty($failedFields)) {
-                $firstFailed = $failedFields[0];
-                $tabMapping = [
-                    'sop_waktu_pemrosesan' => 'umum',
-                    'sop_jam_operasional' => 'umum',
-                    'sop_dasar_hukum' => 'umum',
-                    'sop_tindak_lanjut' => 'umum',
-                    'pengumuman_aktif' => 'umum',
-                    'pengumuman_isi' => 'umum',
-                    'pengumuman_tipe' => 'umum',
-                    'anti_spam_aktif' => 'umum',
-                    'anti_spam_limit' => 'umum',
-                    'media_cleanup_aktif' => 'umum',
-                    'media_cleanup_bulan' => 'umum',
-                    'whatsapp_admin' => 'umum',
-                    
-                    'ttd_jabatan' => 'ttd',
-                    'ttd_nama' => 'ttd',
-                    'ttd_file' => 'ttd',
-                    
-                    'instansi_nama' => 'konten',
-                    'instansi_alamat' => 'konten',
-                    'instansi_telepon' => 'konten',
-                    'instansi_email' => 'konten',
-                    'instansi_jam_senkam' => 'konten',
-                    'instansi_jam_jumat' => 'konten',
-                    'instansi_jam_sabtu' => 'konten',
-                    
-                    'app_logo' => 'aset',
-                    'app_logo_sekunder' => 'aset',
-                    'app_banner_1' => 'aset',
-                    'app_banner_2' => 'aset',
-                    'app_banner_3' => 'aset',
-                    
-                    'mail_host' => 'email',
-                    'mail_port' => 'email',
-                    'mail_username' => 'email',
-                    'mail_password' => 'email',
-                    'mail_encryption' => 'email',
-                    'mail_from_name' => 'email',
-                ];
-                
-                if (isset($tabMapping[$firstFailed])) {
-                    $this->activeTab = $tabMapping[$firstFailed];
-                }
+            if (!empty($rules)) {
+                $this->validate($rules);
             }
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Validation failed on SettingManager (tab: ' . $this->activeTab . '): ' . json_encode($e->validator->errors()->messages()));
             throw $e;
         }
 
-        $this->updateSetting('sop_waktu_pemrosesan', $this->sop_waktu_pemrosesan);
-        $this->updateSetting('sop_jam_operasional', $this->sop_jam_operasional);
-        $this->updateSetting('sop_dasar_hukum', $this->sop_dasar_hukum);
-        $this->updateSetting('sop_tindak_lanjut', $this->sop_tindak_lanjut);
-        $this->updateSetting('pengumuman_aktif', $this->pengumuman_aktif);
-        $this->updateSetting('pengumuman_isi', $this->pengumuman_isi);
-        $this->updateSetting('pengumuman_tipe', $this->pengumuman_tipe);
-        $this->updateSetting('anti_spam_aktif', $this->anti_spam_aktif);
-        $this->updateSetting('anti_spam_limit', $this->anti_spam_limit);
-        $this->updateSetting('media_cleanup_aktif', $this->media_cleanup_aktif);
-        $this->updateSetting('media_cleanup_bulan', $this->media_cleanup_bulan);
-        $this->updateSetting('ttd_jabatan', $this->ttd_jabatan);
-        $this->updateSetting('ttd_nama', $this->ttd_nama);
-        $this->updateSetting('instansi_nama', $this->instansi_nama);
-        $this->updateSetting('instansi_alamat', $this->instansi_alamat);
-        $this->updateSetting('instansi_telepon', $this->instansi_telepon);
-        $this->updateSetting('instansi_email', $this->instansi_email);
-        $this->updateSetting('instansi_jam_senkam', $this->instansi_jam_senkam);
-        $this->updateSetting('instansi_jam_jumat', $this->instansi_jam_jumat);
-        $this->updateSetting('instansi_jam_sabtu', $this->instansi_jam_sabtu);
-        $this->updateSetting('mail_host', $this->mail_host);
-        $this->updateSetting('mail_port', $this->mail_port);
-        $this->updateSetting('mail_username', $this->mail_username);
-        $this->updateSetting('mail_password', $this->mail_password);
-        $this->updateSetting('mail_encryption', $this->mail_encryption);
-        $this->updateSetting('whatsapp_admin', $this->whatsapp_admin);
-
-        // Update .env file for mail settings ONLY if email tab was unlocked
-        if ($this->unlock_email) {
-            $this->updateEnv([
-                'MAIL_HOST' => $this->mail_host,
-                'MAIL_PORT' => $this->mail_port,
-                'MAIL_USERNAME' => $this->mail_username,
-                'MAIL_PASSWORD' => $this->mail_password,
-                'MAIL_ENCRYPTION' => $this->mail_encryption,
-                'MAIL_FROM_ADDRESS' => $this->mail_username, 
-                'MAIL_FROM_NAME' => $this->mail_from_name,
-            ]);
+        // Save fields for the active tab
+        if ($this->activeTab === 'umum') {
+            $this->updateSetting('sop_waktu_pemrosesan', $this->sop_waktu_pemrosesan);
+            $this->updateSetting('sop_jam_operasional', $this->sop_jam_operasional);
+            $this->updateSetting('sop_dasar_hukum', $this->sop_dasar_hukum);
+            $this->updateSetting('sop_tindak_lanjut', $this->sop_tindak_lanjut);
+            $this->updateSetting('pengumuman_aktif', $this->pengumuman_aktif);
+            $this->updateSetting('pengumuman_isi', $this->pengumuman_isi);
+            $this->updateSetting('pengumuman_tipe', $this->pengumuman_tipe);
+            $this->updateSetting('anti_spam_aktif', $this->anti_spam_aktif);
+            $this->updateSetting('anti_spam_limit', $this->anti_spam_limit);
+            $this->updateSetting('media_cleanup_aktif', $this->media_cleanup_aktif);
+            $this->updateSetting('media_cleanup_bulan', $this->media_cleanup_bulan);
+            $this->updateSetting('whatsapp_admin', $this->whatsapp_admin);
         }
 
-        if ($this->ttd_file) {
+        if ($this->activeTab === 'ttd') {
+            $this->updateSetting('ttd_jabatan', $this->ttd_jabatan);
+            $this->updateSetting('ttd_nama', $this->ttd_nama);
+        }
+
+        if ($this->activeTab === 'konten') {
+            $this->updateSetting('instansi_nama', $this->instansi_nama);
+            $this->updateSetting('instansi_alamat', $this->instansi_alamat);
+            $this->updateSetting('instansi_telepon', $this->instansi_telepon);
+            $this->updateSetting('instansi_email', $this->instansi_email);
+            $this->updateSetting('instansi_jam_senkam', $this->instansi_jam_senkam);
+            $this->updateSetting('instansi_jam_jumat', $this->instansi_jam_jumat);
+            $this->updateSetting('instansi_jam_sabtu', $this->instansi_jam_sabtu);
+        }
+
+        if ($this->activeTab === 'email') {
+            $this->updateSetting('mail_host', $this->mail_host);
+            $this->updateSetting('mail_port', $this->mail_port);
+            $this->updateSetting('mail_username', $this->mail_username);
+            $this->updateSetting('mail_password', $this->mail_password);
+            $this->updateSetting('mail_encryption', $this->mail_encryption);
+            $this->updateSetting('notif_email_penerima', $this->notif_email_penerima);
+            $this->updateSetting('whatsapp_admin', $this->whatsapp_admin);
+
+            // Update .env file for mail settings ONLY if email tab was unlocked
+            if ($this->unlock_email) {
+                $this->updateEnv([
+                    'MAIL_HOST' => $this->mail_host,
+                    'MAIL_PORT' => $this->mail_port,
+                    'MAIL_USERNAME' => $this->mail_username,
+                    'MAIL_PASSWORD' => $this->mail_password,
+                    'MAIL_ENCRYPTION' => $this->mail_encryption,
+                    'MAIL_FROM_ADDRESS' => $this->mail_username,
+                    'MAIL_FROM_NAME' => $this->mail_from_name,
+                ]);
+            }
+        }
+
+        if ($this->activeTab === 'ttd' && $this->ttd_file) {
             $path = $this->ttd_file->store('assets', 'public');
             $this->updateSetting('ttd_file', $path);
             $this->existing_ttd_file = $path;
             $this->ttd_file = null;
         }
 
-        if ($this->app_logo) {
-            $path = $this->app_logo->store('assets', 'public');
-            $this->updateSetting('app_logo', $path);
-            $this->existing_app_logo = $path;
-            $this->app_logo = null;
-        }
+        if ($this->activeTab === 'aset') {
+            if ($this->app_logo) {
+                $path = $this->app_logo->store('assets', 'public');
+                $this->updateSetting('app_logo', $path);
+                $this->existing_app_logo = $path;
+                $this->app_logo = null;
+            }
 
-        if ($this->app_logo_sekunder) {
-            $path = $this->app_logo_sekunder->store('assets', 'public');
-            $this->updateSetting('app_logo_sekunder', $path);
-            $this->existing_app_logo_sekunder = $path;
-            $this->app_logo_sekunder = null;
-        }
+            if ($this->app_logo_sekunder) {
+                $path = $this->app_logo_sekunder->store('assets', 'public');
+                $this->updateSetting('app_logo_sekunder', $path);
+                $this->existing_app_logo_sekunder = $path;
+                $this->app_logo_sekunder = null;
+            }
 
-        if ($this->app_banner_1) {
-            $path = $this->app_banner_1->store('assets', 'public');
-            $this->updateSetting('app_banner_1', $path);
-            $this->existing_app_banner_1 = $path;
-            $this->app_banner_1 = null;
-        }
+            if ($this->app_banner_1) {
+                $path = $this->app_banner_1->store('assets', 'public');
+                $this->updateSetting('app_banner_1', $path);
+                $this->existing_app_banner_1 = $path;
+                $this->app_banner_1 = null;
+            }
 
-        if ($this->app_banner_2) {
-            $path = $this->app_banner_2->store('assets', 'public');
-            $this->updateSetting('app_banner_2', $path);
-            $this->existing_app_banner_2 = $path;
-            $this->app_banner_2 = null;
-        }
+            if ($this->app_banner_2) {
+                $path = $this->app_banner_2->store('assets', 'public');
+                $this->updateSetting('app_banner_2', $path);
+                $this->existing_app_banner_2 = $path;
+                $this->app_banner_2 = null;
+            }
 
-        if ($this->app_banner_3) {
-            $path = $this->app_banner_3->store('assets', 'public');
-            $this->updateSetting('app_banner_3', $path);
-            $this->existing_app_banner_3 = $path;
-            $this->app_banner_3 = null;
+            if ($this->app_banner_3) {
+                $path = $this->app_banner_3->store('assets', 'public');
+                $this->updateSetting('app_banner_3', $path);
+                $this->existing_app_banner_3 = $path;
+                $this->app_banner_3 = null;
+            }
         }
 
         session()->flash('success', 'Pengaturan berhasil disimpan.');
-        
+
         // Reset save confirmation and lock again for safety
         $this->saveConfirmText = '';
         $this->showSaveEmailModal = false;
