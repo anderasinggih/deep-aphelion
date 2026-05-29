@@ -204,6 +204,7 @@ class PengaduanForm extends Component
                 if (count($paths) >= 4) break;
 
                 $image = $manager->read($foto->getRealPath());
+                $image->orient();
                 $image->scale(width: 600);
                 
                 $filename = 'pengaduans/' . $foto->hashName();

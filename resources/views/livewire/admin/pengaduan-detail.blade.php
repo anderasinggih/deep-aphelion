@@ -55,7 +55,10 @@
                 link="{{ route('print.resi', $this->pengaduan->id) }}" external target="_blank" />
             <div class="my-0.5 opacity-30 divider mt-0"></div>
             <x-menu-item title="Bagikan Laporan" icon="o-share" class="!py-1 text-xs"
-                onclick="nativeShare({{ json_encode('LAPORAN: ' . $this->pengaduan->judul) }}, {{ json_encode('📢 Bantu dukung laporan warga ini agar segera ditindaklanjuti melalui aplikasi Kembaran Ngadu.') }}, {{ json_encode(route('pengaduan.feed-detail', $this->pengaduan->kode_tracking)) }})" />
+                data-title="LAPORAN: {{ $this->pengaduan->judul }}"
+                data-text="📢 Bantu dukung laporan warga ini agar segera ditindaklanjuti melalui aplikasi Kembaran Ngadu."
+                data-url="{{ route('pengaduan.feed-detail', $this->pengaduan->kode_tracking) }}"
+                onclick="nativeShare(this.getAttribute('data-title'), this.getAttribute('data-text'), this.getAttribute('data-url'))" />
         </x-dropdown>
     </div>
 
