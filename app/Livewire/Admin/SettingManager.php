@@ -267,7 +267,7 @@ class SettingManager extends Component
             return;
         }
 
-        $this->validate([
+        $rules = [
             'sop_waktu_pemrosesan' => 'required|string',
             'sop_jam_operasional' => 'required|string',
             'sop_dasar_hukum' => 'required|string',
@@ -302,7 +302,60 @@ class SettingManager extends Component
             'mail_from_name' => 'nullable|string|max:255',
             'notif_email_penerima' => 'nullable|string|max:1000',
             'whatsapp_admin' => 'required|numeric|digits_between:10,15',
-        ]);
+        ];
+
+        try {
+            $this->validate($rules);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $failedFields = array_keys($e->validator->failed());
+            if (!empty($failedFields)) {
+                $firstFailed = $failedFields[0];
+                $tabMapping = [
+                    'sop_waktu_pemrosesan' => 'umum',
+                    'sop_jam_operasional' => 'umum',
+                    'sop_dasar_hukum' => 'umum',
+                    'sop_tindak_lanjut' => 'umum',
+                    'pengumuman_aktif' => 'umum',
+                    'pengumuman_isi' => 'umum',
+                    'pengumuman_tipe' => 'umum',
+                    'anti_spam_aktif' => 'umum',
+                    'anti_spam_limit' => 'umum',
+                    'media_cleanup_aktif' => 'umum',
+                    'media_cleanup_bulan' => 'umum',
+                    'whatsapp_admin' => 'umum',
+                    
+                    'ttd_jabatan' => 'ttd',
+                    'ttd_nama' => 'ttd',
+                    'ttd_file' => 'ttd',
+                    
+                    'instansi_nama' => 'konten',
+                    'instansi_alamat' => 'konten',
+                    'instansi_telepon' => 'konten',
+                    'instansi_email' => 'konten',
+                    'instansi_jam_senkam' => 'konten',
+                    'instansi_jam_jumat' => 'konten',
+                    'instansi_jam_sabtu' => 'konten',
+                    
+                    'app_logo' => 'aset',
+                    'app_logo_sekunder' => 'aset',
+                    'app_banner_1' => 'aset',
+                    'app_banner_2' => 'aset',
+                    'app_banner_3' => 'aset',
+                    
+                    'mail_host' => 'email',
+                    'mail_port' => 'email',
+                    'mail_username' => 'email',
+                    'mail_password' => 'email',
+                    'mail_encryption' => 'email',
+                    'mail_from_name' => 'email',
+                ];
+                
+                if (isset($tabMapping[$firstFailed])) {
+                    $this->activeTab = $tabMapping[$firstFailed];
+                }
+            }
+            throw $e;
+        }
 
         $this->updateSetting('sop_waktu_pemrosesan', $this->sop_waktu_pemrosesan);
         $this->updateSetting('sop_jam_operasional', $this->sop_jam_operasional);
