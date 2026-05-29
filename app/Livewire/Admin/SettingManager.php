@@ -307,6 +307,7 @@ class SettingManager extends Component
         try {
             $this->validate($rules);
         } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Validation failed on SettingManager: ' . json_encode($e->validator->errors()->messages()));
             $failedFields = array_keys($e->validator->failed());
             if (!empty($failedFields)) {
                 $firstFailed = $failedFields[0];

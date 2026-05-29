@@ -383,6 +383,12 @@
             isFormSubmitting = true;
         });
 
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('button[type="submit"]') || e.target.closest('input[type="submit"]')) {
+                isFormSubmitting = true;
+            }
+        });
+
         document.addEventListener('livewire:init', () => {
             // Livewire progress bar is already hidden via CSS
             
