@@ -265,43 +265,33 @@
         }
         // Global Share Function
         function nativeShare(title, text, url) {
-            // Check if native share is available (usually requires HTTPS)
-            if (navigator.share) {
-                navigator.share({
-                    title: title,
-                    text: text,
-                    url: url
-                })
-                .catch((error) => {
-                    if (error.name !== 'AbortError') {
-                        openShareModal(title, text, url);
-                    }
-                });
-            } else {
-                // Fallback to custom modal instead of direct WA
-                openShareModal(title, text, url);
-            }
+            openShareModal(title, text, url);
         }
 
         function openShareModal(title, text, url) {
             const modal = document.getElementById('global_share_modal');
             const waBtn = document.getElementById('share_wa_btn');
             const copyBtn = document.getElementById('share_copy_btn');
+            const copyText = document.getElementById('share_copy_text');
+            
+            // Format WhatsApp template
+            const shareMessage = `Ayo dukung laporan warga ini agar segera ditindaklanjuti:\n\n*${title}*\n_${text}_\n\nLink Laporan:\n${url}`;
             
             // Set WhatsApp link
             waBtn.onclick = () => {
-                window.open(`https://wa.me/?text=${encodeURIComponent(title + ' ' + url)}`, '_blank');
+                window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`, '_blank');
             };
             
             // Set Copy link
             copyBtn.onclick = () => {
                 navigator.clipboard.writeText(url).then(() => {
-                    const originalText = copyBtn.innerHTML;
-                    copyBtn.innerHTML = `<x-icon name="o-check" class="w-5 h-5" /> Tersalin!`;
-                    copyBtn.classList.add('btn-success');
+                    copyText.textContent = 'Tersalin!';
+                    copyBtn.classList.remove('bg-base-200');
+                    copyBtn.classList.add('bg-success', 'text-white');
                     setTimeout(() => {
-                        copyBtn.innerHTML = originalText;
-                        copyBtn.classList.remove('btn-success');
+                        copyText.textContent = 'Salin Link';
+                        copyBtn.classList.remove('bg-success', 'text-white');
+                        copyBtn.classList.add('bg-base-200');
                     }, 2000);
                 });
             };
@@ -371,7 +361,7 @@
                     
                     <button id="share_copy_btn" class="btn btn-lg h-24 flex-col gap-2 bg-base-200 hover:bg-base-300 border-none transition-all hover:scale-95">
                         <x-icon name="o-link" class="w-8 h-8" />
-                        <span class="text-xs font-bold uppercase tracking-wider">Salin Link</span>
+                        <span id="share_copy_text" class="text-xs font-bold uppercase tracking-wider">Salin Link</span>
                     </button>
                 </div>
             </div>
