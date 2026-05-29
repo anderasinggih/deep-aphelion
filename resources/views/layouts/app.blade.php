@@ -377,20 +377,29 @@
 
     @livewireScripts
     <script>
+        let isFormSubmitting = false;
+        
+        document.addEventListener('submit', () => {
+            isFormSubmitting = true;
+        });
+
         document.addEventListener('livewire:init', () => {
             // Livewire progress bar is already hidden via CSS
             
-            // Auto scroll ke input yang error saat validasi gagal
+            // Auto scroll ke input yang error hanya jika tombol kirim ditekan (validasi gagal)
             Livewire.hook('commit', ({ component, succeed, fail }) => {
                 succeed(({ snapshot, effect }) => {
-                    setTimeout(() => {
-                        const firstError = document.querySelector('.text-error, .invalid-feedback, .has-error, [class*="text-red-"], [class*="text-error"]');
-                        if (firstError) {
-                            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            const input = firstError.closest('.form-control, div')?.querySelector('input, textarea, select');
-                            if (input) input.focus();
-                        }
-                    }, 100);
+                    if (isFormSubmitting) {
+                        isFormSubmitting = false;
+                        setTimeout(() => {
+                            const firstError = document.querySelector('.text-error, .invalid-feedback, .has-error, [class*="text-red-"], [class*="text-error"]');
+                            if (firstError) {
+                                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                const input = firstError.closest('.form-control, div')?.querySelector('input, textarea, select');
+                                if (input) input.focus();
+                            }
+                        }, 100);
+                    }
                 });
             });
         });
