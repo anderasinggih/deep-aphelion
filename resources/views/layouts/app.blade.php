@@ -265,7 +265,6 @@
         }
         // Global Share Function
         window.nativeShare = function(title, text, url) {
-            alert("DEBUG: Tombol Share Diklik!\nTitle: " + title + "\nText: " + text + "\nURL: " + url);
             window.openShareModal(title, text, url);
         }
 
@@ -281,7 +280,7 @@
             }
             
             // Format WhatsApp template
-            const shareMessage = `Ayo dukung laporan warga ini agar segera ditindaklanjuti:\n\n*${title}*\n_${text}_\n\nLink Laporan:\n${url}`;
+            const shareMessage = `Ayo dukung laporan ini agar segera ditindaklanjuti:\n\n*${title}*\n_${text}_\n\nLink Laporan:\n${url}\n\nKembaran Ngadu 2026`;
             
             // Set WhatsApp link
             waBtn.onclick = (e) => {
@@ -387,18 +386,18 @@
                 <div class="grid grid-cols-2 gap-4">
                     <button id="share_wa_btn" class="btn btn-lg h-24 flex-col gap-2 bg-[#25D366] hover:bg-[#20bd5a] text-white border-none transition-all hover:scale-95">
                         <x-icon name="o-chat-bubble-left-right" class="w-8 h-8" />
-                        <span class="text-xs font-bold uppercase tracking-wider">WhatsApp</span>
+                        <span class="text-xs font-bold">WhatsApp</span>
                     </button>
                     
                     <button id="share_copy_btn" class="btn btn-lg h-24 flex-col gap-2 bg-base-200 hover:bg-base-300 border-none transition-all hover:scale-95">
                         <x-icon name="o-link" class="w-8 h-8" />
-                        <span id="share_copy_text" class="text-xs font-bold uppercase tracking-wider">Salin Link</span>
+                        <span id="share_copy_text" class="text-xs font-bold">Salin Link</span>
                     </button>
                 </div>
             </div>
             
             <div class="bg-base-200/50 p-4 text-center">
-                <p class="text-[10px] uppercase tracking-[0.2em] font-bold opacity-40">Bantu suarakan aspirasi warga</p>
+                <p class="text-[10px] font-bold opacity-50">Kembaran Ngadu 2026</p>
             </div>
         </div>
         <form method="dialog" class="modal-backdrop bg-black/40">
