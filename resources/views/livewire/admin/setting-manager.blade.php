@@ -15,28 +15,28 @@
 
     {{-- Chip Navigation --}}
     <div class="flex flex-wrap items-center gap-2 mb-6">
-        <button wire:click="setTab('umum')" 
+        <button type="button" wire:click="setTab('umum')" 
             class="btn btn-sm rounded-full px-5 transition-all {{ $activeTab === 'umum' ? 'btn-primary text-white shadow-md' : 'btn-ghost bg-base-200/50 hover:bg-base-200' }}">
             <x-icon name="o-cog-6-tooth" class="w-4 h-4" /> Umum
         </button>
-        <button wire:click="setTab('ttd')" 
+        <button type="button" wire:click="setTab('ttd')" 
             class="btn btn-sm rounded-full px-5 transition-all {{ $activeTab === 'ttd' ? 'btn-primary text-white shadow-md' : 'btn-ghost bg-base-200/50 hover:bg-base-200' }}">
             <x-icon name="o-pencil-square" class="w-4 h-4" /> Tanda Tangan
         </button>
-        <button wire:click="setTab('konten')" 
+        <button type="button" wire:click="setTab('konten')" 
             class="btn btn-sm rounded-full px-5 transition-all {{ $activeTab === 'konten' ? 'btn-primary text-white shadow-md' : 'btn-ghost bg-base-200/50 hover:bg-base-200' }}">
             <x-icon name="o-document-text" class="w-4 h-4" /> Konten Web
         </button>
-        <button wire:click="setTab('aset')" 
+        <button type="button" wire:click="setTab('aset')" 
             class="btn btn-sm rounded-full px-5 transition-all {{ $activeTab === 'aset' ? 'btn-primary text-white shadow-md' : 'btn-ghost bg-base-200/50 hover:bg-base-200' }}">
             <x-icon name="o-photo" class="w-4 h-4" /> Aset Visual
         </button>
         @if(auth()->user()->role === 'superadmin')
-        <button wire:click="setTab('email')" 
+        <button type="button" wire:click="setTab('email')" 
             class="btn btn-sm rounded-full px-5 transition-all {{ $activeTab === 'email' ? 'btn-primary text-white shadow-md' : 'btn-ghost bg-base-200/50 hover:bg-base-200' }}">
             <x-icon name="o-envelope" class="w-4 h-4" /> Email SMTP
         </button>
-        <button wire:click="setTab('sistem')" 
+        <button type="button" wire:click="setTab('sistem')" 
             class="btn btn-sm rounded-full px-5 transition-all {{ $activeTab === 'sistem' ? 'btn-primary text-white shadow-md' : 'btn-ghost bg-base-200/50 hover:bg-base-200' }}">
             <x-icon name="o-cpu-chip" class="w-4 h-4" /> Sistem & Logs
         </button>
