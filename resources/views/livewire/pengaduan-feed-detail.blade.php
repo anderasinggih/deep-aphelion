@@ -76,6 +76,12 @@
                                     class="{{ $this->pengaduan->prioritas == 'tinggi' ? 'badge-error' : ($this->pengaduan->prioritas == 'sedang' ? 'badge-info' : 'badge-success') }} font-black sm:shadow-sm text-[10px] sm:text-xs px-2 py-1 h-auto min-h-0" />
                             </div>
 
+                            {{-- Tombol Share --}}
+                            <button type="button"
+                                onclick="nativeShare('LAPORAN: {{ addslashes($this->pengaduan->judul) }}', '📢 Bantu dukung laporan warga ini agar segera ditindaklanjuti melalui aplikasi Kembaran Ngadu.', window.location.href)"
+                                class="p-2 transition-colors rounded-full hover:bg-base-200 text-base-content/60 hover:text-primary">
+                                <x-icon name="o-share" class="w-5 h-5 pointer-events-none" />
+                            </button>
                         </div>
 
                         <h1

@@ -49,7 +49,7 @@
             scroll-behavior: smooth;
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
-            background-color: #111111; /* Senadakan warna HTML terbawah agar sinkron dengan footer */
+            background-color: #f8fafc; /* Default putih; beranda akan override via JS */
         }
         html::-webkit-scrollbar {
             display: none;
@@ -60,11 +60,15 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            background-color: #111111; /* Samakan warna background body terbawah dengan footer */
+            background-color: #f8fafc; /* Default putih untuk semua halaman */
+        }
+        /* Khusus beranda: body dan overscroll gelap (sinkron dengan footer dark) */
+        body.page-beranda {
+            background-color: #111111;
         }
         main {
             flex-grow: 1; /* Mendorong footer agar berada paling bawah secara penuh */
-            background-color: #f8fafc; /* Mengubah warna background area konten utama menjadi putih terang/soft gray */
+            background-color: #f8fafc; /* Warna putih area konten utama */
             width: 100%;
         }
         .toast {
@@ -87,7 +91,7 @@
 
 </head>
 
-<body class="font-sans antialiased min-h-screen">
+<body class="font-sans antialiased min-h-screen{{ request()->routeIs('beranda') ? ' page-beranda' : '' }}">
     {{-- Impersonation Banner --}}
     <livewire:impersonation-banner />
 
