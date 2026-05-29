@@ -271,7 +271,7 @@
                             {{-- Stretched Link for SPA Navigation --}}
                             <a href="{{ route('pengaduan.feed-detail', $pengaduan->kode_tracking) }}" 
                                 wire:navigate.prefetch 
-                                class="absolute inset-0 z-10"></a>
+                                class="absolute inset-0 z-[1]"></a>
 
                             {{-- Image Container --}}
                             @if($pengaduan->foto_bukti && count($pengaduan->foto_bukti) > 0)
@@ -404,7 +404,7 @@
                             {{-- Stretched Link for SPA Navigation --}}
                             <a href="{{ route('pengaduan.feed-detail', $pengaduan->kode_tracking) }}" 
                                 wire:navigate.prefetch 
-                                class="absolute inset-0 z-10"></a>
+                                class="absolute inset-0 z-[1]"></a>
                             
                             {{-- Larger 1:1 Square Image Container --}}
                             <div class="w-24 sm:w-40 aspect-square shrink-0 bg-base-200 rounded-lg sm:rounded-xl overflow-hidden relative shadow-inner">
