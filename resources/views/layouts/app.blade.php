@@ -91,7 +91,7 @@
 
 </head>
 
-<body class="font-sans antialiased min-h-screen{{ request()->routeIs('beranda') ? ' page-beranda' : '' }}">
+<body class="font-sans antialiased min-h-screen{{ request()->routeIs('beranda', 'tentang-kami') ? ' page-beranda' : '' }}">
     {{-- Impersonation Banner --}}
     <livewire:impersonation-banner />
 
