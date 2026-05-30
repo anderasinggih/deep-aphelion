@@ -78,6 +78,10 @@ class UserManager extends Component
     public function edit($id)
     {
         $user = User::findOrFail($id);
+        if ($user->role === 'superadmin' && auth()->user()->role !== 'superadmin') {
+            session()->flash('error', 'Anda tidak memiliki hak akses untuk mengedit akun Superadmin.');
+            return;
+        }
         $this->userId = $user->id;
         $this->name = $user->name;
         $this->no_wa = $user->no_wa;
@@ -108,6 +112,10 @@ class UserManager extends Component
         $this->validate($rules);
 
         $user = User::findOrFail($this->userId);
+        if ($user->role === 'superadmin' && auth()->user()->role !== 'superadmin') {
+            session()->flash('error', 'Anda tidak memiliki hak akses untuk mengubah data akun Superadmin.');
+            return;
+        }
 
         $updateData = [
             'name' => strtoupper($this->name),
@@ -134,6 +142,10 @@ class UserManager extends Component
         }
 
         $user = User::findOrFail($id);
+        if ($user->role === 'superadmin' && auth()->user()->role !== 'superadmin') {
+            session()->flash('error', 'Anda tidak memiliki hak akses untuk menghapus akun Superadmin.');
+            return;
+        }
         $user->delete();
         session()->flash('success', 'Pengguna berhasil dihapus.');
     }
@@ -171,6 +183,10 @@ class UserManager extends Component
     public function restore($id)
     {
         $user = User::withTrashed()->findOrFail($id);
+        if ($user->role === 'superadmin' && auth()->user()->role !== 'superadmin') {
+            session()->flash('error', 'Anda tidak memiliki hak akses untuk memulihkan akun Superadmin.');
+            return;
+        }
         $user->restore();
         session()->flash('success', 'Akun pengguna berhasil dipulihkan.');
     }
@@ -178,6 +194,10 @@ class UserManager extends Component
     public function verifyEmail($id)
     {
         $user = User::findOrFail($id);
+        if ($user->role === 'superadmin' && auth()->user()->role !== 'superadmin') {
+            session()->flash('error', 'Anda tidak memiliki hak akses untuk memverifikasi akun Superadmin.');
+            return;
+        }
         $user->markEmailAsVerified();
         session()->flash('success', 'Email pengguna berhasil diverifikasi manual.');
     }

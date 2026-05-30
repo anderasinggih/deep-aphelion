@@ -71,39 +71,45 @@
                         <td class="text-right whitespace-nowrap">
                             <div class="flex items-center justify-end gap-1 md:gap-2">
                                     @if($user->trashed())
-                                        <x-button icon="o-arrow-path"
-                                            class="rounded-lg btn-xs md:btn-sm btn-outline btn-success"
-                                            tooltip="Pulihkan Akun" wire:click="restore({{ $user->id }})"
-                                            wire:confirm="Pulihkan akun ini? Pengguna akan bisa masuk kembali." />
+                                        @if(auth()->user()->role === 'superadmin' || $user->role !== 'superadmin')
+                                            <x-button icon="o-arrow-path"
+                                                class="rounded-lg btn-xs md:btn-sm btn-outline btn-success"
+                                                tooltip="Pulihkan Akun" wire:click="restore({{ $user->id }})"
+                                                wire:confirm="Pulihkan akun ini? Pengguna akan bisa masuk kembali." />
+                                        @endif
                                     @else
-                                        @if(!$user->hasVerifiedEmail() && $user->email)
+                                        @if(!$user->hasVerifiedEmail() && $user->email && (auth()->user()->role === 'superadmin' || $user->role !== 'superadmin'))
                                             <x-button icon="o-check-badge"
                                                 class="rounded-lg btn-xs md:btn-sm btn-ghost text-success hover:bg-success/10"
                                                 tooltip="Bypass Verifikasi" wire:click="verifyEmail({{ $user->id }})"
                                                 wire:confirm="Verifikasi email akun ini secara manual?" />
                                         @endif
 
-                                        <x-button icon="o-pencil-square"
-                                            class="rounded-lg btn-xs md:btn-sm btn-ghost text-warning hover:bg-warning/10"
-                                            tooltip="Edit Pengguna" wire:click="edit({{ $user->id }})" />
+                                        @if(auth()->user()->role === 'superadmin' || $user->role !== 'superadmin')
+                                            <x-button icon="o-pencil-square"
+                                                class="rounded-lg btn-xs md:btn-sm btn-ghost text-warning hover:bg-warning/10"
+                                                tooltip="Edit Pengguna" wire:click="edit({{ $user->id }})" />
+                                        @endif
 
                                         @if($user->id !== auth()->id())
-                                            <x-dropdown>
-                                                <x-slot:trigger>
-                                                    <x-button icon="o-ellipsis-vertical" class="btn-ghost btn-xs" />
-                                                </x-slot:trigger>
-                                                <x-menu-item title="Hapus Pengguna" icon="o-trash" class="text-error"
-                                                    wire:click="delete({{ $user->id }})"
-                                                    wire:confirm="Yakin ingin menghapus pengguna ini? Semua data terkait (termasuk laporan jika ada) tetap aman tersimpan namun akun tidak bisa masuk." />
-                                                @if(auth()->user()->role === 'superadmin')
-                                                    <div class="my-1 opacity-20 divider"></div>
-                                                    <x-menu-item title="Login Sebagai" icon="o-finger-print" class="text-primary font-bold py-2"
-                                                        wire:click="impersonate({{ $user->id }})" wire:confirm="Anda akan masuk ke akun ini. Anda dapat kembali ke akun Admin melalui banner di bagian atas layar. Lanjutkan?" />
-                                                    <div class="my-1 opacity-20 divider"></div>
-                                                    <x-menu-item title="Hapus Permanen" icon="o-trash" class="text-error font-black py-2"
-                                                        wire:click="forceDelete({{ $user->id }})" wire:confirm="PERINGATAN: Akun ini akan dihapus permanen dari sistem. Tindakan ini tidak dapat dibatalkan. Lanjutkan?" />
-                                                @endif
-                                            </x-dropdown>
+                                            @if(auth()->user()->role === 'superadmin' || $user->role !== 'superadmin')
+                                                <x-dropdown>
+                                                    <x-slot:trigger>
+                                                        <x-button icon="o-ellipsis-vertical" class="btn-ghost btn-xs" />
+                                                    </x-slot:trigger>
+                                                    <x-menu-item title="Hapus Pengguna" icon="o-trash" class="text-error"
+                                                        wire:click="delete({{ $user->id }})"
+                                                        wire:confirm="Yakin ingin menghapus pengguna ini? Semua data terkait (termasuk laporan jika ada) tetap aman tersimpan namun akun tidak bisa masuk." />
+                                                    @if(auth()->user()->role === 'superadmin')
+                                                        <div class="my-1 opacity-20 divider"></div>
+                                                        <x-menu-item title="Login Sebagai" icon="o-finger-print" class="text-primary font-bold py-2"
+                                                            wire:click="impersonate({{ $user->id }})" wire:confirm="Anda akan masuk ke akun ini. Anda dapat kembali ke akun Admin melalui banner di bagian atas layar. Lanjutkan?" />
+                                                        <div class="my-1 opacity-20 divider"></div>
+                                                        <x-menu-item title="Hapus Permanen" icon="o-trash" class="text-error font-black py-2"
+                                                            wire:click="forceDelete({{ $user->id }})" wire:confirm="PERINGATAN: Akun ini akan dihapus permanen dari sistem. Tindakan ini tidak dapat dibatalkan. Lanjutkan?" />
+                                                    @endif
+                                                </x-dropdown>
+                                            @endif
                                         @else
                                             <span class="text-[10px] font-bold text-primary px-2 opacity-50 italic">Akun Anda</span>
                                         @endif
