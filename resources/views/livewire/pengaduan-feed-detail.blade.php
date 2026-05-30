@@ -4,7 +4,7 @@
              @if($shouldShowFeedback)
                  setTimeout(() => {
                      $wire.set('showFeedbackForm', true);
-                 }, 10000);
+                 }, 15000);
              @endif
          }
      }">
@@ -309,7 +309,7 @@
 
                             {{-- Feedback Section --}}
                             <div class="mt-6 pt-6 border-t border-success/20">
-                                @if($showFeedbackForm)
+                                @if($shouldShowFeedback)
                                     <div class="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-warning/5 border border-dashed border-warning/30 rounded-xl">
                                         <div class="flex items-center gap-3">
                                             <div class="w-10 h-10 rounded-full bg-warning/20 text-warning flex items-center justify-center shrink-0">
