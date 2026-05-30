@@ -93,8 +93,18 @@
 
         {{-- Content --}}
         <div class="relative z-10 flex flex-col items-center justify-center text-center pt-32 pb-24 md:pt-44 md:pb-32 lg:pt-52 lg:pb-40 px-6 max-w-7xl mx-auto w-full">
-            <img src="{{ isset($settings['app_logo']) ? asset('storage/' . $settings['app_logo']) : asset('storage/assets/logobanyumas.png') }}"
-                class="w-16 md:w-28 lg:w-32 h-auto mb-6 drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]" alt="Logo" />
+            {{-- Logo Row --}}
+            <div class="flex items-center justify-center gap-4 mb-6">
+                {{-- Logo Utama --}}
+                <img src="{{ isset($settings['app_logo']) ? asset('storage/' . $settings['app_logo']) : asset('storage/assets/logobanyumas.png') }}"
+                    class="w-16 md:w-24 lg:w-28 h-auto drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]" alt="Logo Utama" />
+                
+                {{-- Logo Pendamping --}}
+                <div class="bg-white rounded-2xl p-2 w-16 h-16 md:w-24 md:h-24 flex items-center justify-center shadow-lg overflow-hidden shrink-0 drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]">
+                    <img src="{{ isset($settings['app_logo_sekunder']) ? asset('storage/' . $settings['app_logo_sekunder']) : asset('storage/assets/logokominfo.png') }}"
+                        class="w-full h-full object-contain" alt="Logo Pendamping" />
+                </div>
+            </div>
 
             <h1 class="text-3xl md:text-6xl lg:text-7xl font-semibold text-white mb-4 tracking-tight drop-shadow-2xl">
                 Selamat Datang
