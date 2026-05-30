@@ -35,8 +35,14 @@ class PengaduanFeedDetail extends Component
         $this->rating_fasilitas = $this->pengaduan->rating_fasilitas ?? 5;
         $this->rating_komentar = $this->pengaduan->rating_komentar ?? '';
         
-        // Show form if status is selesai and user is the reporter and rating is still null
-        if ($this->pengaduan->status === 'selesai' && auth()->id() === $this->pengaduan->user_id && is_null($this->pengaduan->rating) && auth()->user()?->role === 'warga') {
+        // Show form if status is selesai and (logged in user is the owner OR it is a guest report) and rating is still null
+        $isOwner = auth()->check() ? (auth()->id() === $this->pengaduan->user_id && auth()->user()?->role === 'warga') : (is_null($this->pengaduan->user_id));
+        
+        // Cek juga jika IP ini sudah pernah memberi feedback untuk aduan ini
+        $ip = request()->ip();
+        $hasSubmitted = \Illuminate\Support\Facades\Cache::has('feedback_submitted_' . $this->pengaduan->id . '_' . $ip);
+
+        if ($this->pengaduan->status === 'selesai' && $isOwner && is_null($this->pengaduan->rating) && !$hasSubmitted) {
             $this->showFeedbackForm = true;
         }
     }
@@ -51,9 +57,25 @@ class PengaduanFeedDetail extends Component
     }
 
     public function submitFeedback()
-
     {
-        if (auth()->id() !== $this->pengaduan->user_id || auth()->user()?->role !== 'warga') return;
+        $isOwner = auth()->check() ? (auth()->id() === $this->pengaduan->user_id && auth()->user()?->role === 'warga') : (is_null($this->pengaduan->user_id));
+
+        if (!$isOwner) {
+            session()->flash('error', 'Anda tidak memiliki hak akses untuk memberikan penilaian.');
+            return;
+        }
+
+        if (!is_null($this->pengaduan->rating)) {
+            session()->flash('error', 'Laporan ini sudah diberi penilaian.');
+            return;
+        }
+
+        $ip = request()->ip();
+        $cacheKey = 'feedback_submitted_' . $this->pengaduan->id . '_' . $ip;
+        if (\Illuminate\Support\Facades\Cache::has($cacheKey)) {
+            session()->flash('error', 'IP Anda sudah mengirimkan feedback untuk aduan ini.');
+            return;
+        }
 
         $this->validate([
             'rating_pelayanan' => 'required|integer|min:1|max:5',
@@ -74,6 +96,9 @@ class PengaduanFeedDetail extends Component
             'rating_fasilitas' => $this->rating_fasilitas,
             'rating_komentar' => $this->rating_komentar,
         ]);
+
+        // Simpan cache agar IP ini tidak bisa submit lagi untuk aduan ini (selamanya / 1 tahun)
+        \Illuminate\Support\Facades\Cache::put($cacheKey, true, now()->addYear());
 
         $this->showFeedbackForm = false;
         
