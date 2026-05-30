@@ -61,10 +61,10 @@ class LaporanManager extends Component
             'diproses' => (clone $query)->where('status', 'diproses')->count(),
             'selesai' => (clone $query)->where('status', 'selesai')->count(),
             'ditolak' => (clone $query)->where('status', 'ditolak')->count(),
-            'rata_rating' => (clone $query)->whereNotNull('rating')->avg('rating') ?: 0,
+            'rata_rating' => \App\Models\PengaduanRating::whereBetween('created_at', [$start, $end])->avg('rating') ?: 0,
         ];
 
-        $ratingDistribution = (clone $query)->whereNotNull('rating')
+        $ratingDistribution = \App\Models\PengaduanRating::whereBetween('created_at', [$start, $end])
             ->select('rating', DB::raw('count(*) as total'))
             ->groupBy('rating')
             ->pluck('total', 'rating')
