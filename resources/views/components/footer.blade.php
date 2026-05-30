@@ -6,8 +6,11 @@
             {{-- Kiri: Logo + Info --}}
             <div class="flex flex-col items-center md:items-start gap-5 max-w-md">
                 <div class="flex items-center gap-4">
-                    {{-- Logo Banyumas --}}
-                    <img src="{{ asset('storage/assets/logobanyumas.png') }}" alt="Logo Kabupaten Banyumas"
+                    {{-- Logo App / Banyumas --}}
+                    @php
+                        $appLogo = \App\Models\Setting::get('app_logo');
+                    @endphp
+                    <img src="{{ $appLogo ? asset('storage/' . $appLogo) : asset('storage/assets/logobanyumas.png') }}" alt="Logo Kabupaten Banyumas"
                         class="w-14 h-14 object-contain drop-shadow-md">
 
                     {{-- Logo Kominfo --}}
