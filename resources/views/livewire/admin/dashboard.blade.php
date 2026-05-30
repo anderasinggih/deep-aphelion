@@ -321,11 +321,15 @@
                     @forelse($recentFeedbacks ?? [] as $fb)
                     <li class="p-4 sm:p-5 transition-colors hover:bg-base-200/30">
                         <div class="flex items-start gap-4">
-                            <x-user-avatar :user="$fb->user" size="w-10 h-10" />
+                            @if($fb->user)
+                                <x-user-avatar :user="$fb->user" size="w-10 h-10" />
+                            @else
+                                <x-user-avatar initials="W" size="w-10 h-10" />
+                            @endif
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center justify-between gap-2 mb-1">
-                                    <h4 class="text-sm font-bold text-base-content truncate">{{ $fb->user->name ?? 'Anonim' }}</h4>
-                                    <span class="text-[10px] text-base-content/40 font-semibold">{{ $fb->updated_at->diffForHumans() }}</span>
+                                    <h4 class="text-sm font-bold text-base-content truncate">{{ $fb->user ? $fb->user->name : 'Warga (Guest)' }}</h4>
+                                    <span class="text-[10px] text-base-content/40 font-semibold">{{ $fb->created_at->diffForHumans() }}</span>
                                 </div>
                                 <div class="flex items-center gap-0.5 mb-2">
                                     @foreach(range(1, 5) as $i)
@@ -335,9 +339,11 @@
                                 <p class="text-xs text-base-content/80 font-medium leading-relaxed line-clamp-2">
                                     "{{ $fb->rating_komentar ?: 'Memberikan rating tanpa komentar.' }}"
                                 </p>
-                                <a href="{{ route('admin.pengaduan.detail', $fb->kode_tracking) }}" wire:navigate class="mt-2 inline-block text-[10px] font-black text-primary hover:underline uppercase tracking-tighter">
-                                    Lihat Laporan: {{ $fb->kode_tracking }}
+                                @if($fb->pengaduan)
+                                <a href="{{ route('admin.pengaduan.detail', $fb->pengaduan->kode_tracking) }}" wire:navigate class="mt-2 inline-block text-[10px] font-black text-primary hover:underline uppercase tracking-tighter">
+                                    Lihat Laporan: {{ $fb->pengaduan->kode_tracking }}
                                 </a>
+                                @endif
                             </div>
                         </div>
                     </li>

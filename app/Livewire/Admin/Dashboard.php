@@ -97,14 +97,12 @@ class Dashboard extends Component
         $laporanTerbaru = Pengaduan::with('user', 'kategori')->latest()->take(5)->get();
 
         // 6. Feedback & Rating Analysis
-        $recentFeedbacks = Pengaduan::with('user')
-            ->whereNotNull('rating')
-            ->orderBy('updated_at', 'desc')
+        $recentFeedbacks = \App\Models\PengaduanRating::with(['user', 'pengaduan'])
+            ->orderBy('created_at', 'desc')
             ->take(5)
             ->get();
 
-        $ratingDistribution = Pengaduan::whereNotNull('rating')
-            ->select('rating', DB::raw('count(*) as total'))
+        $ratingDistribution = \App\Models\PengaduanRating::select('rating', DB::raw('count(*) as total'))
             ->groupBy('rating')
             ->pluck('total', 'rating')
             ->toArray();
