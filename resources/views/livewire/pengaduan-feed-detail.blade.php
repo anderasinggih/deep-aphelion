@@ -1,4 +1,13 @@
-<div class="w-full max-w-7xl mx-auto px-1.5 lg:px-2 py-4 sm:py-8 text-base-content">
+<div class="w-full max-w-7xl mx-auto px-1.5 lg:px-2 py-4 sm:py-8 text-base-content"
+     x-data="{
+         init() {
+             @if($shouldShowFeedback)
+                 setTimeout(() => {
+                     $wire.set('showFeedbackForm', true);
+                 }, 10000);
+             @endif
+         }
+     }">
     @push('meta')
         <meta property="og:title" content="{{ $this->pengaduan->judul }} | Kembaran Ngadu" />
         <meta property="og:description" content="{{ Str::limit($this->pengaduan->deskripsi, 150) }}" />
@@ -507,7 +516,7 @@
     </x-modal>
 
     {{-- Modal Rating --}}
-    <x-modal wire:model="showFeedbackForm" title="Beri Penilaian Pelayanan" separator class="backdrop-blur">
+    <x-modal wire:model="showFeedbackForm" title="Beri Penilaian Pelayanan" separator class="backdrop-blur z-[2000]" box-class="mt-16 sm:mt-0">
         <form wire:submit="submitFeedback" class="space-y-6">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                  {{-- Pertanyaan 1 --}}
@@ -515,59 +524,59 @@
                      <label class="text-[11px] font-black uppercase text-base-content/60 block tracking-wider">1. Persyaratan & Prosedur</label>
                      <div class="rating rating-md">
                          @foreach(range(1, 5) as $i)
-                             <input type="radio" wire:model="rating_pelayanan" value="{{ $i }}"
+                             <input type="radio" name="rating_pelayanan" wire:model="rating_pelayanan" value="{{ $i }}"
                                  class="mask mask-star-2 bg-warning" {{ $rating_pelayanan == $i ? 'checked' : '' }} />
                          @endforeach
                      </div>
                  </div>
-
+ 
                  {{-- Pertanyaan 2 --}}
                  <div class="space-y-2">
                      <label class="text-[11px] font-black uppercase text-base-content/60 block tracking-wider">2. Kecepatan Respon</label>
                      <div class="rating rating-md">
                          @foreach(range(1, 5) as $i)
-                             <input type="radio" wire:model="rating_respon" value="{{ $i }}"
+                             <input type="radio" name="rating_respon" wire:model="rating_respon" value="{{ $i }}"
                                  class="mask mask-star-2 bg-warning" {{ $rating_respon == $i ? 'checked' : '' }} />
                          @endforeach
                      </div>
                  </div>
-
+ 
                  {{-- Pertanyaan 3 --}}
                  <div class="space-y-2">
                      <label class="text-[11px] font-black uppercase text-base-content/60 block tracking-wider">3. Kompetensi Petugas</label>
                      <div class="rating rating-md">
                          @foreach(range(1, 5) as $i)
-                             <input type="radio" wire:model="rating_kompetensi" value="{{ $i }}"
+                             <input type="radio" name="rating_kompetensi" wire:model="rating_kompetensi" value="{{ $i }}"
                                  class="mask mask-star-2 bg-warning" {{ $rating_kompetensi == $i ? 'checked' : '' }} />
                          @endforeach
                      </div>
                  </div>
-
+ 
                  {{-- Pertanyaan 4 --}}
                  <div class="space-y-2">
                      <label class="text-[11px] font-black uppercase text-base-content/60 block tracking-wider">4. Hasil & Fasilitas</label>
                      <div class="rating rating-md">
                          @foreach(range(1, 5) as $i)
-                             <input type="radio" wire:model="rating_fasilitas" value="{{ $i }}"
+                             <input type="radio" name="rating_fasilitas" wire:model="rating_fasilitas" value="{{ $i }}"
                                  class="mask mask-star-2 bg-warning" {{ $rating_fasilitas == $i ? 'checked' : '' }} />
                          @endforeach
                      </div>
                  </div>
             </div>
-
-            <div class="space-y-2">
-                <label class="text-[11px] font-black uppercase text-base-content/60 block tracking-wider">Saran & Kritik</label>
-                <x-textarea wire:model="rating_komentar"
-                    placeholder="Ceritakan pengalaman Anda (Maks. 200 karakter)..." rows="3"
-                    maxlength="200"
-                    class="bg-base-100 border-base-200 focus:border-success/50" />
-            </div>
-
-            <x-slot:actions>
-                <x-button label="Batal" @click="$wire.showFeedbackForm = false" class="btn-ghost" />
-                <x-button label="Kirim Penilaian" type="submit"
-                    class="btn-success text-white font-black rounded-xl shadow-md" spinner="submitFeedback" />
-            </x-slot:actions>
+ 
+             <div class="space-y-2">
+                 <label class="text-[11px] font-black uppercase text-base-content/60 block tracking-wider">Saran & Kritik</label>
+                 <x-textarea wire:model="rating_komentar"
+                     placeholder="Ceritakan pengalaman Anda (Maks. 200 karakter)..." rows="3"
+                     maxlength="200"
+                     class="bg-base-100 border-base-200 focus:border-success/50" />
+             </div>
+ 
+             <div class="flex justify-end gap-2 pt-4 border-t border-base-200">
+                 <x-button label="Batal" @click="$wire.showFeedbackForm = false" type="button" class="btn-ghost" />
+                 <x-button label="Kirim Penilaian" type="submit"
+                     class="btn-success text-white font-black rounded-xl shadow-md" spinner="submitFeedback" />
+             </div>
         </form>
     </x-modal>
 </div>

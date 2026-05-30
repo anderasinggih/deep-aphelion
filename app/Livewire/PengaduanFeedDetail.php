@@ -15,6 +15,7 @@ class PengaduanFeedDetail extends Component
     public $rating_fasilitas = 5;
     public $rating_komentar = '';
     public $showFeedbackForm = false;
+    public $shouldShowFeedback = false;
 
     public function mount($kode_tracking)
     {
@@ -43,7 +44,7 @@ class PengaduanFeedDetail extends Component
         $hasSubmitted = \Illuminate\Support\Facades\Cache::has('feedback_submitted_' . $this->pengaduan->id . '_' . $ip);
 
         if ($this->pengaduan->status === 'selesai' && $isOwner && is_null($this->pengaduan->rating) && !$hasSubmitted) {
-            $this->showFeedbackForm = true;
+            $this->shouldShowFeedback = true;
         }
     }
 
