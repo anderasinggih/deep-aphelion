@@ -156,7 +156,7 @@
                                       if (compressedFiles.length >= 4) break;
                                       
                                       try {
-                                          const compressed = await this.compressImage(files[i], 800, 0.3);
+                                          const compressed = await this.compressImage(files[i], 600, 0.3);
                                           compressedFiles.push(compressed);
                                       } catch (e) {
                                           console.error('Gagal mengompres gambar:', e);
@@ -169,7 +169,7 @@
                                       () => { uploading = false; alert('Gagal mengunggah foto.'); }
                                   );
                               },
-                              compressImage(file, maxWidth = 800, quality = 0.3) {
+                              compressImage(file, maxWidth = 600, quality = 0.3) {
                                   return new Promise((resolve) => {
                                       const reader = new FileReader();
                                       reader.readAsDataURL(file);
