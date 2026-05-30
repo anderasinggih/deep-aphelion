@@ -9,7 +9,7 @@
         </div>
 
         {{-- Aksi Status Admin (Dropdown) - Sequential Flow --}}
-        <x-dropdown class="dropdown-end">
+        <x-dropdown class="dropdown-end z-[50]">
             <x-slot:trigger>
                 <x-button icon="o-ellipsis-vertical"
                     class="btn-primary btn-outline shadow-sm rounded-xl shrink-0 btn-sm sm:btn-md" label="Update Status" />
@@ -355,12 +355,12 @@
 
             {{-- Mini Map Card --}}
             @if($this->pengaduan->latitude && $this->pengaduan->longitude)
-            <div class="bg-base-100 rounded-2xl shadow-sm border border-base-200 overflow-hidden">
+            <div class="bg-base-100 rounded-2xl shadow-sm border border-base-200 overflow-hidden relative z-0">
                 <div class="px-2 py-3 bg-base-200/30 border-b border-base-200 flex items-center gap-2">
                     <x-icon name="o-map-pin" class="w-3.5 h-3.5 text-error" />
                     <h2 class="font-bold text-base-content/80 text-[10px]">Peta Lokasi Kejadian</h2>
                 </div>
-                <div id="admin-mini-map" style="height: 200px; width: 100%;"></div>
+                <div id="admin-mini-map" style="height: 200px; width: 100%;" class="relative z-0"></div>
                 <div class="px-3 py-2 text-[10px] text-base-content/50 font-mono border-t border-base-200">
                     {{ $this->pengaduan->latitude }}, {{ $this->pengaduan->longitude }}
                     <a href="https://maps.google.com/?q={{ $this->pengaduan->latitude }},{{ $this->pengaduan->longitude }}" target="_blank" class="ml-2 text-primary font-bold hover:underline">Buka Maps ↗</a>
