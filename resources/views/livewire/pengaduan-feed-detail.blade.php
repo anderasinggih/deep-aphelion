@@ -3,7 +3,9 @@
          init() {
              @if($shouldShowFeedback)
                  setTimeout(() => {
-                     $wire.set('showFeedbackForm', true);
+                     if ($wire.get('shouldShowFeedback')) {
+                         $wire.set('showFeedbackForm', true);
+                     }
                  }, 15000);
              @endif
          }
