@@ -326,8 +326,8 @@
                                     </div>
                                 @elseif($this->pengaduan->ratings->count() > 0)
                                     <div
-                                        class="flex flex-col gap-4 bg-success/5 rounded-xl p-4 sm:p-5 border border-success/20">
-                                        <div class="flex items-center justify-between border-b border-success/15 pb-3">
+                                        class="flex flex-col gap-3 bg-success/5 rounded-xl p-3 sm:p-4 border border-success/20">
+                                        <div class="flex items-center justify-between border-b border-success/15 pb-2">
                                             <div>
                                                 <h4 class="text-sm font-black text-success">Penilaian Layanan Warga</h4>
                                                 <p class="text-[10px] text-base-content/60 font-semibold uppercase tracking-wider mt-0.5">Rata-rata dari {{ $this->pengaduan->ratings->count() }} Penilaian</p>
@@ -343,7 +343,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-1">
+                                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-0.5">
                                             <div class="flex flex-col">
                                                 <span class="text-[9px] font-black uppercase text-success/60 mb-1">Prosedur</span>
                                                 <div class="flex items-center gap-0.5">
@@ -387,11 +387,12 @@
                                         @endphp
 
                                         @if($comments->count() > 0)
-                                            <div class="pt-3 border-t border-success/15 mt-1">
+                                            <div class="pt-2 border-t border-success/15 mt-0.5" x-data="{ page: 1, perPage: 3, total: {{ $comments->count() }} }">
                                                 <span class="text-[10px] font-black uppercase text-base-content/40 block mb-2">Saran & Kritik Warga ({{ $comments->count() }})</span>
-                                                <div class="space-y-2 max-h-[220px] overflow-y-auto pr-1.5 custom-scrollbar">
+                                                <div class="space-y-1.5">
                                                     @foreach($comments->sortByDesc('created_at') as $c)
-                                                        <div class="p-2.5 bg-base-100/70 border border-base-200 rounded-lg">
+                                                        <div x-show="{{ $loop->index }} >= (page - 1) * perPage && {{ $loop->index }} < page * perPage"
+                                                             class="p-2 bg-base-100/70 border border-base-200 rounded-lg">
                                                             <div class="flex items-center justify-between gap-2 mb-1">
                                                                 <span class="text-[10px] font-bold text-base-content/70">
                                                                     {{ $c->user ? $c->user->name : 'Warga (Guest)' }}
@@ -404,9 +405,22 @@
                                                         </div>
                                                     @endforeach
                                                 </div>
+                                                
+                                                {{-- Pagination Controls --}}
+                                                <div class="flex justify-between items-center mt-3 pt-2 border-t border-base-200 text-xs" x-show="total > perPage">
+                                                    <button type="button" @click="if(page > 1) page--" :disabled="page === 1" class="btn btn-xs btn-outline rounded-lg" :class="page === 1 ? 'opacity-50 cursor-not-allowed' : ''">
+                                                        ❮ Prev
+                                                    </button>
+                                                    <span class="text-[10px] font-bold text-base-content/60">
+                                                        Halaman <span x-text="page"></span> dari <span x-text="Math.ceil(total / perPage)"></span>
+                                                    </span>
+                                                    <button type="button" @click="if(page < Math.ceil(total / perPage)) page++" :disabled="page === Math.ceil(total / perPage)" class="btn btn-xs btn-outline rounded-lg" :class="page === Math.ceil(total / perPage) ? 'opacity-50 cursor-not-allowed' : ''">
+                                                        Next ❯
+                                                    </button>
+                                                </div>
                                             </div>
                                         @else
-                                            <p class="text-xs font-semibold text-success/60 italic border-t border-success/15 pt-3">Terima kasih atas penilaian Anda!</p>
+                                            <p class="text-xs font-semibold text-success/60 italic border-t border-success/15 pt-2">Terima kasih atas penilaian Anda!</p>
                                         @endif
                                     </div>
                                 @endif
