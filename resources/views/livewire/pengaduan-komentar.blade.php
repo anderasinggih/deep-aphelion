@@ -9,7 +9,7 @@
     </div>
 
     {{-- Form Input Utama --}}
-    <div class="flex gap-2 items-start bg-base-200/30 p-2 rounded-xl ">
+    <div class="flex gap-2 items-start bg-base-200/60 border border-base-300/70 p-3 rounded-xl shadow-inner">
         @auth
         <x-user-avatar :user="auth()->user()" size="w-8 h-8" />
         @else
@@ -18,7 +18,7 @@
         <div class="flex-1 min-w-0">
             <x-form wire:submit="postComment" class="flex flex-col gap-2">
                 <x-textarea wire:model="komentar" placeholder="Tulis komentar..." rows="1"
-                    class="!min-h-[35px] text-sm bg-base-100 border-none focus:ring-1 focus:ring-primary rounded-lg" />
+                    class="!min-h-[35px] text-sm bg-base-100 border border-base-300 focus:ring-1 focus:ring-primary rounded-lg" />
                 <div class="flex justify-end">
                     <x-button type="submit" label="Kirim" class="btn-primary btn-xs p-4 rounded-md"
                         spinner="postComment" />
@@ -41,7 +41,7 @@
             {{-- Bubble Konten --}}
             <div class="flex-1 min-w-0">
                 <div
-                    class="bg-base-200/50 rounded-2xl rounded-tl-none px-3 py-2 inline-block max-w-full group relative">
+                    class="bg-base-200/80 border border-base-300/80 rounded-2xl rounded-tl-none px-3.5 py-2.5 inline-block max-w-full group relative shadow-sm">
                     <div class="flex items-center gap-1.5 mb-1">
                         @if($comment->user)
                             <span class="font-bold text-[13px] line-clamp-1 max-w-[120px]">{{ $comment->user->name }}</span>
@@ -86,7 +86,7 @@
 
                 {{-- Balasan (Replies) --}}
                 @if($comment->replies->count() > 0)
-                <div class="mt-3 ml-2 pl-4 border-l-2 border-base-200 space-y-3">
+                <div class="mt-3 ml-2 pl-4 border-l-2 border-base-200/80 space-y-3">
                     @foreach($comment->replies as $reply)
                     <div class="flex gap-2">
                         @if($reply->user)
@@ -94,7 +94,7 @@
                         @else
                             <x-user-avatar initials="W" size="w-6 h-6" class="mt-0.5 shrink-0" />
                         @endif
-                        <div class="bg-base-100  rounded-xl px-2.5 py-1.5 inline-block max-w-full">
+                        <div class="bg-base-200/50 border border-base-300/60 rounded-xl px-2.5 py-1.5 inline-block max-w-full">
                             <div class="flex items-center gap-1.5 mb-0.5">
                                 @if($reply->user)
                                     <span class="font-bold text-[11px] line-clamp-1 max-w-[100px]">{{ $reply->user->name }}</span>
