@@ -87,6 +87,12 @@
                 top: 1.5rem; /* Lebih kebawah sedikit di desktop */
             }
         }
+        /* Fallback styling jika Leaflet CSS gagal diload dari CDN */
+        #map, #admin-mini-map, .leaflet-container {
+            position: relative !important;
+            overflow: hidden !important;
+            background-color: #e5e7eb !important;
+        }
     </style>
 
 </head>
