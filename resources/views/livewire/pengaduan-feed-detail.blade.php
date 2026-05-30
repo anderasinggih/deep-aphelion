@@ -391,22 +391,23 @@
                 <div class="px-3 py-4 sm:p-5">
 
                     @if($this->pengaduan->histories->count() > 0)
-                        <div class="space-y-3">
+                        <div class="relative pl-6 space-y-6 before:absolute before:inset-y-2 before:left-[11px] before:w-[2px] before:bg-base-300">
                             @foreach($this->pengaduan->histories->sortByDesc('created_at') as $index => $history)
                                 @php
                                     $isLatest = $index === 0;
                                     $bgMap = [
-                                        'menunggu' => 'bg-warning/10 border-warning/30',
-                                        'diproses' => 'bg-info/10 border-info/30',
-                                        'selesai' => 'bg-success/10 border-success/30',
-                                        'ditolak' => 'bg-error/10 border-error/30',
+                                        'menunggu' => 'bg-warning/10 border-warning/20',
+                                        'diproses' => 'bg-info/10 border-info/20',
+                                        'selesai' => 'bg-success/10 border-success/20',
+                                        'ditolak' => 'bg-error/10 border-error/20',
                                     ];
-                                    $dotMap = [
-                                        'menunggu' => 'bg-warning',
-                                        'diproses' => 'bg-info',
-                                        'selesai' => 'bg-success',
-                                        'ditolak' => 'bg-error',
-                                    ];
+                                    $borderColor = match($history->status_baru) {
+                                        'menunggu' => 'border-warning',
+                                        'diproses' => 'border-info',
+                                        'selesai' => 'border-success',
+                                        'ditolak' => 'border-error',
+                                        default => 'border-base-300'
+                                    };
                                     $textMap = [
                                         'menunggu' => 'text-warning',
                                         'diproses' => 'text-info',
@@ -420,62 +421,61 @@
                                         'ditolak' => 'Ditolak',
                                     ];
                                     $cardBg = $bgMap[$history->status_baru] ?? 'bg-base-200/50 border-base-300';
-                                    $dot = $dotMap[$history->status_baru] ?? 'bg-base-300';
                                     $textColor = $textMap[$history->status_baru] ?? 'text-base-content';
                                     $label = $labelMap[$history->status_baru] ?? ucfirst($history->status_baru);
                                 @endphp
 
-                                <div
-                                    class="rounded-xl border p-3 {{ $cardBg }} {{ $isLatest ? 'ring-1 ring-current/20' : 'opacity-80' }}">
-                                    <div class="flex items-start justify-between gap-2 mb-1.5">
-                                        <div class="flex items-center gap-2">
-                                            <div class="w-2 h-2 rounded-full {{ $dot }} shrink-0 mt-0.5"></div>
-                                            <span class="font-black text-[11px] sm:text-xs {{ $textColor }}">{{ $label }}</span>
-                                            @if($isLatest)
-                                                <span
-                                                    class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-base-100/80 text-base-content/60">Terbaru</span>
-                                            @endif
+                                <div class="relative z-10 pl-2">
+                                    {{-- Checkpoint Dot --}}
+                                    <div class="absolute -left-[20px] top-1.5 w-4 h-4 rounded-full bg-base-100 border-[3px] {{ $borderColor }} flex items-center justify-center"></div>
+
+                                    {{-- Card Content --}}
+                                    <div class="rounded-xl border p-3 {{ $cardBg }} {{ $isLatest ? 'ring-1 ring-current/10 shadow-sm' : 'opacity-85' }}">
+                                        <div class="flex items-start justify-between gap-2 mb-1.5">
+                                            <div class="flex items-center gap-1.5">
+                                                <span class="font-black text-[11px] sm:text-xs {{ $textColor }} uppercase">{{ $label }}</span>
+                                                @if($isLatest)
+                                                    <span class="text-[8px] font-bold px-1.5 py-0.5 rounded-full bg-base-100/80 text-base-content/60 border border-base-200">Terbaru</span>
+                                                @endif
+                                            </div>
+                                            <span class="text-[9px] sm:text-[10px] text-base-content/40 font-semibold shrink-0">{{ $history->created_at->diffForHumans() }}</span>
                                         </div>
-                                        <span
-                                            class="text-[9px] sm:text-[10px] text-base-content/40 font-semibold shrink-0">{{ $history->created_at->diffForHumans() }}</span>
+
+                                        @if($history->user)
+                                            <div class="text-[10px] text-base-content/50 mb-1.5 flex items-center gap-1">
+                                                <x-icon name="o-user" class="w-3 h-3" />
+                                                {{ $history->user->name }}
+                                                <span class="px-1 py-0.5 rounded text-[8px] font-black bg-base-100/60 uppercase">{{ $history->user->role }}</span>
+                                            </div>
+                                        @endif
+
+                                        @if($history->keterangan_admin)
+                                            <p class="text-[11px] sm:text-xs leading-relaxed text-base-content/80 italic mt-2 pl-2 border-l-2 border-current/30 break-words overflow-hidden">
+                                                "{!! \App\Models\Pengaduan::formatMessageWithLinks($history->keterangan_admin, false) !!}"
+                                            </p>
+                                        @endif
+
+                                        @if($history->foto_bukti)
+                                            <div class="mt-2 cursor-zoom-in" wire:click="openPreview('{{ Storage::url($history->foto_bukti) }}')">
+                                                <img src="{{ Storage::url($history->foto_bukti) }}" alt="Foto Bukti"
+                                                    class="w-full h-28 object-cover rounded-lg border border-base-200 shadow-sm hover:brightness-105 transition">
+                                                <p class="text-[9px] text-base-content/40 mt-1 text-center">Ketuk untuk perbesar</p>
+                                            </div>
+                                        @endif
                                     </div>
-
-                                    @if($history->user)
-                                        <div class="text-[10px] text-base-content/50 mb-1.5 flex items-center gap-1">
-                                            <x-icon name="o-user" class="w-3 h-3" />
-                                            {{ $history->user->name }}
-                                            <span
-                                                class="px-1 py-0.5 rounded text-[9px] font-black bg-base-100/60">{{ ucfirst($history->user->role) }}</span>
-                                        </div>
-                                    @endif
-
-                                    @if($history->keterangan_admin)
-                                        <p
-                                            class="text-[11px] sm:text-xs leading-relaxed text-base-content/80 italic mt-2 pl-2 border-l-2 border-current/30 break-words overflow-hidden">
-                                            "{!! \App\Models\Pengaduan::formatMessageWithLinks($history->keterangan_admin, false) !!}"
-                                        </p>
-                                    @endif
-
-                                    @if($history->foto_bukti)
-                                        <div class="mt-2 cursor-zoom-in"
-                                            wire:click="openPreview('{{ Storage::url($history->foto_bukti) }}')">
-                                            <img src="{{ Storage::url($history->foto_bukti) }}" alt="Foto Bukti"
-                                                class="w-full h-28 object-cover rounded-lg border border-base-200 shadow-sm hover:brightness-105 transition">
-                                            <p class="text-[9px] text-base-content/40 mt-1 text-center">Ketuk untuk perbesar</p>
-                                        </div>
-                                    @endif
                                 </div>
-
                             @endforeach
 
                             {{-- Base: Laporan Dibuat --}}
-                            <div class="rounded-xl border border-base-200 p-3 bg-base-200/30 opacity-60">
-                                <div class="flex items-center gap-2 mb-0.5">
-                                    <div class="w-2 h-2 rounded-full bg-base-400 shrink-0"></div>
-                                    <span class="font-black text-[11px] text-base-content/60">Laporan Dikirim</span>
-                                </div>
-                                <div class="text-[10px] text-base-content/40 font-semibold">
-                                    {{ $this->pengaduan->created_at->isoFormat('D MMMM YYYY, HH:mm') }} WIB
+                            <div class="relative z-10 pl-2">
+                                <div class="absolute -left-[20px] top-1.5 w-4 h-4 rounded-full bg-base-100 border-[3px] border-base-400 flex items-center justify-center"></div>
+                                <div class="rounded-xl border border-base-200 p-3 bg-base-200/30 opacity-70">
+                                    <div class="flex items-center gap-2 mb-0.5">
+                                        <span class="font-black text-[11px] text-base-content/60">Laporan Dikirim</span>
+                                    </div>
+                                    <div class="text-[10px] text-base-content/40 font-semibold">
+                                        {{ $this->pengaduan->created_at->isoFormat('D MMMM YYYY, HH:mm') }} WIB
+                                    </div>
                                 </div>
                             </div>
                         </div>
