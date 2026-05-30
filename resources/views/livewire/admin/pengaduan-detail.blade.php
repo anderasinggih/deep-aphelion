@@ -506,7 +506,100 @@
     <!-- Modal Update Status -->
     <x-modal wire:model="updateModal" :title="$update_status === 'diproses' && $this->pengaduan->status === 'diproses' ? 'Tambah Update Progres' : 'Perbarui Status Laporan'" subtitle="Tambahkan catatan dan foto dokumentasi (opsional) untuk update ini.">
         <x-form wire:submit="saveStatusUpdate">
-            <x-file label="Foto Dokumentasi (Opsional)" wire:model="update_foto" accept="image/*" :required="$update_status === 'selesai'" :hint="$update_status === 'selesai' ? 'Wajib menyertakan foto hasil pekerjaan untuk status Selesai.' : 'Lampirkan foto pendukung bila ada.'" />
+            <div x-data="{
+                uploading: false,
+                async handleFileSelect(event) {
+                    const files = event.target.files;
+                    if (!files.length) return;
+
+                    this.uploading = true;
+                    try {
+                        const compressed = await this.compressImage(files[0], 500, 0.12);
+                        @this.upload('update_foto', compressed, 
+                            () => { this.uploading = false; }, 
+                            () => { this.uploading = false; alert('Gagal mengunggah foto.'); }
+                        );
+                    } catch (e) {
+                        console.error('Gagal mengompres gambar:', e);
+                        @this.upload('update_foto', files[0], 
+                            () => { this.uploading = false; }, 
+                            () => { this.uploading = false; alert('Gagal mengunggah foto.'); }
+                        );
+                    }
+                },
+                compressImage(file, maxWidth = 500, quality = 0.12) {
+                    return new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.readAsDataURL(file);
+                        reader.onload = (event) => {
+                            const img = new Image();
+                            img.src = event.target.result;
+                            img.onload = () => {
+                                const canvas = document.createElement('canvas');
+                                let width = img.width;
+                                let height = img.height;
+
+                                if (width > maxWidth) {
+                                    height = Math.round((height * maxWidth) / width);
+                                    width = maxWidth;
+                                }
+
+                                canvas.width = width;
+                                canvas.height = height;
+
+                                const ctx = canvas.getContext('2d');
+                                ctx.drawImage(img, 0, 0, width, height);
+
+                                canvas.toBlob((blob) => {
+                                    if (blob) {
+                                        const compressedFile = new File([blob], file.name.substring(0, file.name.lastIndexOf('.')) + '.jpg', {
+                                            type: 'image/jpeg',
+                                            lastModified: Date.now(),
+                                        });
+                                        resolve(compressedFile);
+                                    } else {
+                                        resolve(file);
+                                    }
+                                }, 'image/jpeg', quality);
+                            };
+                            img.onerror = () => resolve(file);
+                        };
+                        reader.onerror = () => resolve(file);
+                    });
+                }
+            }" class="space-y-2">
+                <label class="label pb-0">
+                    <span class="label-text font-bold text-base-content/80">
+                        Foto Dokumentasi ({{ $update_status === 'selesai' ? 'Wajib' : 'Opsional' }})
+                    </span>
+                </label>
+                
+                <div class="flex items-center gap-3">
+                    <input type="file" id="update_foto_input" @change="handleFileSelect" accept="image/*" class="hidden" x-ref="fileInput">
+                    <button type="button" @click="$refs.fileInput.click()" 
+                            class="btn btn-outline btn-sm rounded-xl border-base-300">
+                        <x-icon name="o-camera" class="w-4 h-4 mr-1" />
+                        Pilih Foto
+                    </button>
+                    <span class="text-xs text-base-content/60" x-show="!uploading">
+                        @if($update_foto)
+                            Foto terpilih
+                        @else
+                            Belum ada foto
+                        @endif
+                    </span>
+                </div>
+
+                <div x-show="uploading" class="mt-2">
+                    <progress class="progress progress-primary w-full h-1" value="100" max="100"></progress>
+                    <span class="text-[10px] font-bold text-primary animate-pulse">Sedang mengunggah & mengompres...</span>
+                </div>
+                
+                <p class="text-[10px] text-base-content/50">
+                    {{ $update_status === 'selesai' ? 'Wajib menyertakan foto hasil pekerjaan untuk status Selesai.' : 'Lampirkan foto pendukung bila ada.' }}
+                </p>
+            </div>
+            
             @if ($update_foto)
             <div class="mt-2 text-center border border-dashed rounded-lg p-2 bg-base-100">
                 <img src="{{ $update_foto->temporaryUrl() }}" class="rounded shadow w-48 mx-auto mt-1 border border-base-300">

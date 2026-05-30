@@ -140,11 +140,12 @@ class PengaduanDetail extends Component
             $image = $manager->read($this->update_foto->getRealPath());
             $image->orient();
             
-            // Resize to 1200px max width while maintaining aspect ratio
-            $image->scale(width: 1200);
+            if ($image->width() > 500) {
+                $image->scale(width: 500);
+            }
             
             $filename = 'bukti_selesai/' . $this->update_foto->hashName();
-            $encoded = $image->toJpeg(60); // Compress to 60% quality
+            $encoded = $image->toJpeg(50);
             
             Storage::disk('public')->put($filename, (string) $encoded);
             $path = $filename;
