@@ -1,10 +1,10 @@
 <div class="w-full max-w-7xl mx-auto px-0 sm:px-1.5 lg:px-2 pt-4 sm:pt-8" x-data="{ uploading: false }">
     {{-- Global Loading Overlay --}}
-    <div wire:loading.flex wire:target="save" class="fixed inset-0 z-[9999] hidden items-center justify-center bg-slate-900/40 backdrop-blur-sm">
-        <div class="flex flex-col items-center bg-base-100 p-8 rounded-3xl shadow-2xl border border-base-200">
-            <span class="loading loading-spinner loading-lg text-primary mb-4"></span>
-            <p class="text-lg font-black text-primary animate-pulse">Sedang Mengirim Laporan...</p>
-            <p class="text-xs text-base-content/50 mt-1">Mohon tunggu sebentar, jangan tutup halaman ini.</p>
+    <div wire:loading.flex wire:target="save" class="fixed inset-0 z-[9999] hidden items-center justify-center bg-black/60 backdrop-blur-sm">
+        <div class="flex flex-col items-center bg-white text-slate-900 p-6 rounded-2xl shadow-2xl border border-slate-200 w-11/12 max-w-xs text-center">
+            <span class="loading loading-spinner loading-lg text-[#0085ff] mb-4"></span>
+            <p class="text-base font-black text-[#0085ff] animate-pulse">Sedang Mengirim Laporan...</p>
+            <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Mohon tunggu sebentar, jangan tutup atau refresh halaman ini.</p>
         </div>
     </div>
 
@@ -361,14 +361,21 @@
                       </div>
                       <x-button label="Batal" link="{{ route('beranda') }}" class="rounded-xl btn-ghost hover:bg-base-200 w-full sm:w-auto font-bold" />
                       <x-button 
-                          ::label="uploading ? 'Mengunggah Foto...' : '{{ $isEdit ? 'Simpan Perubahan' : 'Kirim Laporan' }}'" 
                           type="submit"
-                          ::icon="uploading ? 'o-arrow-path' : '{{ $isEdit ? 'o-check-circle' : 'o-paper-airplane' }}'"
                           class="text-white border-none shadow-sm rounded-xl btn-primary bg-primary hover:bg-primary/90 px-8 w-full sm:w-auto font-bold"
                           wire:loading.attr="disabled"
                           wire:loading.class="opacity-50"
                           ::disabled="uploading"
-                          spinner="save" />
+                          spinner="save">
+                          <span x-show="uploading" class="flex items-center gap-1">
+                              <x-icon name="o-arrow-path" class="w-4 h-4 animate-spin" />
+                              Mengunggah Foto...
+                          </span>
+                          <span x-show="!uploading" class="flex items-center gap-1.5">
+                              <x-icon name="{{ $isEdit ? 'o-check-circle' : 'o-paper-airplane' }}" class="w-4 h-4" />
+                              {{ $isEdit ? 'Simpan Perubahan' : 'Kirim Laporan' }}
+                          </span>
+                      </x-button>
                  </div>
              </x-slot:actions>
          </x-form>
