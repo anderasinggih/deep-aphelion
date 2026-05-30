@@ -90,23 +90,23 @@
 
     {{-- Public Statistics Section --}}
     <div class="grid grid-cols-3 gap-3 mb-8">
-        <div class="bg-base-100 border border-base-200 p-3 rounded-xl text-center shadow-sm">
-            <div class="w-7 h-7 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-2">
-                <x-icon name="o-inbox-stack" class="w-4 h-4 text-primary" />
+        <div class="bg-base-100 border border-base-200 p-3 md:p-6 rounded-xl text-center shadow-sm">
+            <div class="w-7 h-7 md:w-12 md:h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-2">
+                <x-icon name="o-inbox-stack" class="w-4 h-4 md:w-6 md:h-6 text-primary" />
             </div>
             <p class="text-lg sm:text-2xl font-bold text-primary leading-tight">{{ $this->formatNumber($stats['total']) }}</p>
             <p class="text-xs font-semibold text-base-content/40 mt-1">Total Laporan</p>
         </div>
-        <div class="bg-base-100 border border-base-200 p-3 rounded-xl text-center shadow-sm">
-            <div class="w-7 h-7 bg-success/10 rounded-lg flex items-center justify-center mx-auto mb-2">
-                <x-icon name="o-check-badge" class="w-4 h-4 text-success" />
+        <div class="bg-base-100 border border-base-200 p-3 md:p-6 rounded-xl text-center shadow-sm">
+            <div class="w-7 h-7 md:w-12 md:h-12 bg-success/10 rounded-lg flex items-center justify-center mx-auto mb-2">
+                <x-icon name="o-check-badge" class="w-4 h-4 md:w-6 md:h-6 text-success" />
             </div>
             <p class="text-lg sm:text-2xl font-bold text-success leading-tight">{{ $this->formatNumber($stats['selesai']) }}</p>
             <p class="text-xs font-semibold text-base-content/40 mt-1">Laporan Selesai</p>
         </div>
-        <div class="bg-base-100 border border-base-200 p-3 rounded-xl text-center shadow-sm">
-            <div class="w-7 h-7 bg-warning/10 rounded-lg flex items-center justify-center mx-auto mb-2">
-                <x-icon name="o-star" class="w-4 h-4 text-warning" />
+        <div class="bg-base-100 border border-base-200 p-3 md:p-6 rounded-xl text-center shadow-sm">
+            <div class="w-7 h-7 md:w-12 md:h-12 bg-warning/10 rounded-lg flex items-center justify-center mx-auto mb-2">
+                <x-icon name="o-star" class="w-4 h-4 md:w-6 md:h-6 text-warning" />
             </div>
             <p class="text-lg sm:text-2xl font-bold text-warning leading-tight">{{ number_format($stats['rating'], 1, ',', '.') }}</p>
             <p class="text-xs font-semibold text-base-content/40 mt-1">Rating IKM</p>
