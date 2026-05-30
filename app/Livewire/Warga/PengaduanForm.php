@@ -219,10 +219,12 @@ class PengaduanForm extends Component
 
                 $image = $manager->read($foto->getRealPath());
                 $image->orient();
-                $image->scale(width: 1000);
+                if ($image->width() > 500) {
+                    $image->scale(width: 500);
+                }
                 
                 $filename = 'pengaduans/' . $foto->hashName();
-                $encoded = $image->toJpeg(60);
+                $encoded = $image->toJpeg(50);
                 
                 Storage::disk('public')->put($filename, (string) $encoded);
                 $paths[] = $filename;

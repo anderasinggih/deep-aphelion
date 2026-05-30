@@ -54,45 +54,47 @@
                 
                 {{-- Kolom Kiri: Inti Laporan --}}
                 <div class="space-y-8">
-                    <x-input label="Judul Laporan" wire:model.live.debounce.500ms="judul"
+                    <x-input label="Judul Laporan" wire:model.blur="judul"
                          placeholder="Contoh: Jalan berlubang parah di Jl. Merdeka" required icon="o-pencil" maxlength="100"
                          wire:key="input-judul" />
                     
                     @if(!auth()->check())
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        <x-input label="Nama Pelapor" wire:model.live.debounce.500ms="guest_name"
+                        <x-input label="Nama Pelapor" wire:model.blur="guest_name"
                             placeholder="Nama Lengkap / Samaran Anda" required icon="o-user" maxlength="100"
                             wire:key="input-guest-name" />
                         
-                        <x-input label="Nomor WhatsApp (Aktif)" wire:model.live.debounce.500ms="guest_wa"
+                        <x-input label="Nomor WhatsApp (Aktif)" wire:model.blur="guest_wa"
                             placeholder="Contoh: 081234567890" required icon="o-phone" maxlength="15"
                             wire:key="input-guest-wa" />
                     </div>
                     @endif
                      
-                     @if(count($similarPengaduans) > 0 && !$isEdit)
-                     <div class="p-4 -mt-4 bg-primary/5 border border-primary/10 rounded-xl animate-in fade-in slide-in-from-top-2 duration-300">
-                         <div class="flex items-center gap-2 mb-3 text-xs font-bold text-primary">
-                             <x-icon name="o-light-bulb" class="w-4 h-4" />
-                             LAPORAN SERUPA DITEMUKAN
+                     <div wire:key="similar-reports-box">
+                         @if(count($similarPengaduans) > 0 && !$isEdit)
+                         <div class="p-4 -mt-4 bg-primary/5 border border-primary/10 rounded-xl animate-in fade-in slide-in-from-top-2 duration-300">
+                             <div class="flex items-center gap-2 mb-3 text-xs font-bold text-primary">
+                                 <x-icon name="o-light-bulb" class="w-4 h-4" />
+                                 LAPORAN SERUPA DITEMUKAN
+                             </div>
+                             <p class="text-[11px] text-base-content/60 mb-3 leading-relaxed">
+                                 Mungkin masalah ini sudah dilaporkan oleh warga lain. Anda bisa mendukung (upvote) laporan yang sudah ada agar lebih cepat ditindaklanjuti.
+                             </p>
+                             <div class="space-y-2 max-h-[250px] overflow-y-auto pr-2 custom-scrollbar">
+                                 @foreach($similarPengaduans as $similar)
+                                 <a href="{{ route('pengaduan.feed-detail', $similar['kode_tracking']) }}" target="_blank" 
+                                     class="flex items-center justify-between p-2.5 bg-base-100 border border-base-200 rounded-lg hover:border-primary transition-colors group">
+                                     <div class="flex flex-col min-w-0">
+                                         <span class="text-xs font-bold truncate text-base-content group-hover:text-primary">{{ $similar['judul'] }}</span>
+                                         <span class="text-[10px] text-base-content/40">{{ $similar['kode_tracking'] }} • {{ ucfirst($similar['status']) }}</span>
+                                     </div>
+                                     <x-icon name="o-arrow-top-right-on-square" class="w-4 h-4 text-base-content/30 group-hover:text-primary" />
+                                 </a>
+                                 @endforeach
+                             </div>
                          </div>
-                         <p class="text-[11px] text-base-content/60 mb-3 leading-relaxed">
-                             Mungkin masalah ini sudah dilaporkan oleh warga lain. Anda bisa mendukung (upvote) laporan yang sudah ada agar lebih cepat ditindaklanjuti.
-                         </p>
-                         <div class="space-y-2 max-h-[250px] overflow-y-auto pr-2 custom-scrollbar">
-                             @foreach($similarPengaduans as $similar)
-                             <a href="{{ route('pengaduan.feed-detail', $similar['kode_tracking']) }}" target="_blank" 
-                                 class="flex items-center justify-between p-2.5 bg-base-100 border border-base-200 rounded-lg hover:border-primary transition-colors group">
-                                 <div class="flex flex-col min-w-0">
-                                     <span class="text-xs font-bold truncate text-base-content group-hover:text-primary">{{ $similar['judul'] }}</span>
-                                     <span class="text-[10px] text-base-content/40">{{ $similar['kode_tracking'] }} • {{ ucfirst($similar['status']) }}</span>
-                                 </div>
-                                 <x-icon name="o-arrow-top-right-on-square" class="w-4 h-4 text-base-content/30 group-hover:text-primary" />
-                             </a>
-                             @endforeach
-                         </div>
+                         @endif
                      </div>
-                     @endif
                      
                      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                          <x-select
@@ -129,13 +131,13 @@
                      </div>
  
                      <x-textarea
-                         label="Deskripsi Lengkap" wire:model.live.debounce.250ms="deskripsi"
+                         label="Deskripsi Lengkap" wire:model.blur="deskripsi"
                          placeholder="Jelaskan kondisi secara detail (kapan, apa yang terjadi, dan dampaknya)..."
                          rows="4" required maxlength="2000"
                          wire:key="input-deskripsi" />
  
                      <x-textarea
-                         label="Harapan Pelapor (Opsional)" wire:model.live.debounce.250ms="harapan_pelapor"
+                         label="Harapan Pelapor (Opsional)" wire:model.blur="harapan_pelapor"
                          placeholder="Tuliskan solusi atau bantuan yang Anda harapkan dari pihak berwenang..."
                          rows="2" maxlength="500"
                          wire:key="input-harapan" />
@@ -148,28 +150,28 @@
                               async handleFileSelect(event) {
                                   const files = event.target.files;
                                   if (!files.length) return;
-
+ 
                                   uploading = true;
                                   const compressedFiles = [];
-
+ 
                                   for (let i = 0; i < files.length; i++) {
                                       if (compressedFiles.length >= 4) break;
                                       
                                       try {
-                                          const compressed = await this.compressImage(files[i], 600, 0.3);
+                                          const compressed = await this.compressImage(files[i], 500, 0.12);
                                           compressedFiles.push(compressed);
                                       } catch (e) {
                                           console.error('Gagal mengompres gambar:', e);
                                           compressedFiles.push(files[i]);
                                       }
                                   }
-
+ 
                                   @this.uploadMultiple('foto_bukti', compressedFiles, 
                                       () => { uploading = false; }, 
                                       () => { uploading = false; alert('Gagal mengunggah foto.'); }
                                   );
                               },
-                              compressImage(file, maxWidth = 600, quality = 0.3) {
+                              compressImage(file, maxWidth = 500, quality = 0.12) {
                                   return new Promise((resolve) => {
                                       const reader = new FileReader();
                                       reader.readAsDataURL(file);
@@ -180,18 +182,18 @@
                                               const canvas = document.createElement('canvas');
                                               let width = img.width;
                                               let height = img.height;
-
+ 
                                               if (width > maxWidth) {
                                                   height = Math.round((height * maxWidth) / width);
                                                   width = maxWidth;
                                               }
-
+ 
                                               canvas.width = width;
                                               canvas.height = height;
-
+ 
                                               const ctx = canvas.getContext('2d');
                                               ctx.drawImage(img, 0, 0, width, height);
-
+ 
                                               canvas.toBlob((blob) => {
                                                   if (blob) {
                                                       const compressedFile = new File([blob], file.name.substring(0, file.name.lastIndexOf('.')) + '.jpg', {
