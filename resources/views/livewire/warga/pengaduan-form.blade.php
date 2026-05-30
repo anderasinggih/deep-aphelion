@@ -1,4 +1,4 @@
-<div class="w-full max-w-7xl mx-auto px-0 sm:px-1.5 lg:px-2 pt-4 sm:pt-8">
+<div class="w-full max-w-7xl mx-auto px-0 sm:px-1.5 lg:px-2 pt-4 sm:pt-8" x-data="{ uploading: false }">
     {{-- Global Loading Overlay --}}
     <div wire:loading.flex wire:target="save" class="fixed inset-0 z-[9999] hidden items-center justify-center bg-slate-900/40 backdrop-blur-sm">
         <div class="flex flex-col items-center bg-base-100 p-8 rounded-3xl shadow-2xl border border-base-200">
@@ -144,8 +144,7 @@
                          <label class="label pb-0">
                              <span class="label-text font-bold text-base-content/80">Foto Bukti (Maksimal 4)</span>
                          </label>
-                         <div x-data="{ uploading: false }" 
-                              x-on:livewire-upload-start="uploading = true"
+                         <div x-on:livewire-upload-start="uploading = true"
                               x-on:livewire-upload-finish="uploading = false"
                               x-on:livewire-upload-error="uploading = false"
                               class="relative">
@@ -199,6 +198,14 @@
                                                      <span class="text-[10px] opacity-40">Memproses...</span>
                                                  </div>
                                              @endif
+                                             
+                                             {{-- Tombol Hapus Foto Baru --}}
+                                             <button type="button" wire:click="removeFoto({{ $index }})" 
+                                                     class="absolute top-3 left-3 bg-error/90 hover:bg-error text-white rounded-full w-7 h-7 flex items-center justify-center shadow-lg z-20 transition-all hover:scale-110"
+                                                     title="Hapus Foto">
+                                                 <x-icon name="o-x-mark" class="w-4 h-4" />
+                                             </button>
+                                             
                                              <div class="absolute top-3 right-3 bg-primary text-white text-[9px] px-2 py-0.5 rounded-full font-bold shadow-lg z-10">
                                                  Baru
                                              </div>
@@ -211,6 +218,14 @@
                                      @foreach($old_foto_bukti as $index => $foto)
                                          <div class="carousel-item relative w-full snap-start flex justify-center items-center bg-base-300" style="aspect-ratio: 3/4;">
                                              <img src="{{ asset('storage/' . $foto) }}" class="absolute inset-0 w-full h-full object-cover opacity-80" />
+                                             
+                                             {{-- Tombol Hapus Foto Lama --}}
+                                             <button type="button" wire:click="removeOldFoto({{ $index }})" 
+                                                     class="absolute top-3 left-3 bg-error/90 hover:bg-error text-white rounded-full w-7 h-7 flex items-center justify-center shadow-lg z-20 transition-all hover:scale-110"
+                                                     title="Hapus Foto">
+                                                 <x-icon name="o-x-mark" class="w-4 h-4" />
+                                             </button>
+                                             
                                              <div class="absolute top-3 right-3 bg-base-100 text-base-content text-[9px] px-2 py-0.5 rounded-full font-bold shadow-lg border border-base-300 z-10">
                                                  Lama
                                              </div>
@@ -338,13 +353,22 @@
  
              <x-slot:actions>
                  <div class="flex flex-col sm:flex-row items-center justify-end w-full gap-3 mt-2">
-                     <x-button label="Batal" link="{{ route('beranda') }}" class="rounded-xl btn-ghost hover:bg-base-200 w-full sm:w-auto font-bold" />
-                     <x-button label="{{ $isEdit ? 'Simpan Perubahan' : 'Kirim Laporan' }}" type="submit"
-                         icon="{{ $isEdit ? 'o-check-circle' : 'o-paper-airplane' }}"
-                         class="text-white border-none shadow-sm rounded-xl btn-primary bg-primary hover:bg-primary/90 px-8 w-full sm:w-auto font-bold"
-                         wire:loading.attr="disabled"
-                         wire:loading.class="opacity-50"
-                         spinner="save" />
+                      <div x-show="uploading" class="w-full sm:w-auto text-right mb-2 sm:mb-0 mr-0 sm:mr-3">
+                          <span class="text-xs text-error font-bold animate-pulse flex items-center justify-center sm:justify-end gap-1">
+                              <x-icon name="o-arrow-path" class="w-3.5 h-3.5 animate-spin" />
+                              Foto sedang diunggah, harap tunggu...
+                          </span>
+                      </div>
+                      <x-button label="Batal" link="{{ route('beranda') }}" class="rounded-xl btn-ghost hover:bg-base-200 w-full sm:w-auto font-bold" />
+                      <x-button 
+                          ::label="uploading ? 'Mengunggah Foto...' : '{{ $isEdit ? 'Simpan Perubahan' : 'Kirim Laporan' }}'" 
+                          type="submit"
+                          ::icon="uploading ? 'o-arrow-path' : '{{ $isEdit ? 'o-check-circle' : 'o-paper-airplane' }}'"
+                          class="text-white border-none shadow-sm rounded-xl btn-primary bg-primary hover:bg-primary/90 px-8 w-full sm:w-auto font-bold"
+                          wire:loading.attr="disabled"
+                          wire:loading.class="opacity-50"
+                          ::disabled="uploading"
+                          spinner="save" />
                  </div>
              </x-slot:actions>
          </x-form>

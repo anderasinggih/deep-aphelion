@@ -174,6 +174,20 @@ class PengaduanForm extends Component
         }
     }
 
+    public function removeFoto($index)
+    {
+        if (isset($this->foto_bukti[$index])) {
+            array_splice($this->foto_bukti, $index, 1);
+        }
+    }
+
+    public function removeOldFoto($index)
+    {
+        if (isset($this->old_foto_bukti[$index])) {
+            array_splice($this->old_foto_bukti, $index, 1);
+        }
+    }
+
     public function save()
     {
         $this->validate();
