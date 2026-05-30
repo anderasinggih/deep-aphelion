@@ -144,12 +144,74 @@
                          <label class="label pb-0">
                              <span class="label-text font-bold text-base-content/80">Foto Bukti (Maksimal 4)</span>
                          </label>
-                         <div x-on:livewire-upload-start="uploading = true"
-                              x-on:livewire-upload-finish="uploading = false"
-                              x-on:livewire-upload-error="uploading = false"
-                              class="relative">
+                         <div x-data="{
+                              async handleFileSelect(event) {
+                                  const files = event.target.files;
+                                  if (!files.length) return;
+
+                                  uploading = true;
+                                  const compressedFiles = [];
+
+                                  for (let i = 0; i < files.length; i++) {
+                                      if (compressedFiles.length >= 4) break;
+                                      
+                                      try {
+                                          const compressed = await this.compressImage(files[i], 1000, 0.6);
+                                          compressedFiles.push(compressed);
+                                      } catch (e) {
+                                          console.error('Gagal mengompres gambar:', e);
+                                          compressedFiles.push(files[i]);
+                                      }
+                                  }
+
+                                  @this.uploadMultiple('foto_bukti', compressedFiles, 
+                                      () => { uploading = false; }, 
+                                      () => { uploading = false; alert('Gagal mengunggah foto.'); }
+                                  );
+                              },
+                              compressImage(file, maxWidth = 1000, quality = 0.6) {
+                                  return new Promise((resolve) => {
+                                      const reader = new FileReader();
+                                      reader.readAsDataURL(file);
+                                      reader.onload = (event) => {
+                                          const img = new Image();
+                                          img.src = event.target.result;
+                                          img.onload = () => {
+                                              const canvas = document.createElement('canvas');
+                                              let width = img.width;
+                                              let height = img.height;
+
+                                              if (width > maxWidth) {
+                                                  height = Math.round((height * maxWidth) / width);
+                                                  width = maxWidth;
+                                              }
+
+                                              canvas.width = width;
+                                              canvas.height = height;
+
+                                              const ctx = canvas.getContext('2d');
+                                              ctx.drawImage(img, 0, 0, width, height);
+
+                                              canvas.toBlob((blob) => {
+                                                  if (blob) {
+                                                      const compressedFile = new File([blob], file.name.substring(0, file.name.lastIndexOf('.')) + '.jpg', {
+                                                          type: 'image/jpeg',
+                                                          lastModified: Date.now(),
+                                                      });
+                                                      resolve(compressedFile);
+                                                  } else {
+                                                      resolve(file);
+                                                  }
+                                              }, 'image/jpeg', quality);
+                                          };
+                                          img.onerror = () => resolve(file);
+                                      };
+                                      reader.onerror = () => resolve(file);
+                                  });
+                              }
+                          }" class="relative">
                              
-                             <input type="file" id="foto_bukti" wire:model="foto_bukti" multiple accept="image/*" class="hidden" x-ref="fileInput">
+                             <input type="file" id="foto_bukti" @change="handleFileSelect" multiple accept="image/*" class="hidden" x-ref="fileInput">
                              
                              <div class="flex items-center gap-3">
                                  <button type="button" @click="$refs.fileInput.click()" 
