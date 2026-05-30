@@ -322,16 +322,32 @@
                                         </div>
                                         <x-button label="Beri Penilaian" class="btn-warning btn-sm text-white font-black rounded-lg w-full sm:w-auto" @click="$wire.showFeedbackForm = true" />
                                     </div>
-                                @elseif($this->pengaduan->rating)
+                                @elseif($this->pengaduan->ratings->count() > 0)
                                     <div
-                                        class="flex flex-col gap-4 bg-success/10 rounded-xl p-4 sm:p-5 border border-success/20">
-                                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                                        class="flex flex-col gap-4 bg-success/5 rounded-xl p-4 sm:p-5 border border-success/20">
+                                        <div class="flex items-center justify-between border-b border-success/15 pb-3">
+                                            <div>
+                                                <h4 class="text-sm font-black text-success">Penilaian Layanan Warga</h4>
+                                                <p class="text-[10px] text-base-content/60 font-semibold uppercase tracking-wider mt-0.5">Rata-rata dari {{ $this->pengaduan->ratings->count() }} Penilaian</p>
+                                            </div>
+                                            <div class="flex items-center gap-1 bg-success/10 px-3 py-1 rounded-full border border-success/20">
+                                                <span class="text-sm font-black text-success">{{ number_format($this->pengaduan->ratings->avg('rating'), 1) }}</span>
+                                                <div class="flex items-center gap-0.5">
+                                                    @foreach(range(1, 5) as $i)
+                                                        <x-icon name="o-star"
+                                                            class="w-3.5 h-3.5 {{ $i <= round($this->pengaduan->ratings->avg('rating')) ? 'text-warning fill-warning' : 'text-base-300' }}" />
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-1">
                                             <div class="flex flex-col">
                                                 <span class="text-[9px] font-black uppercase text-success/60 mb-1">Prosedur</span>
                                                 <div class="flex items-center gap-0.5">
                                                     @foreach(range(1, 5) as $i)
                                                         <x-icon name="o-star"
-                                                            class="w-3 h-3 {{ $i <= $this->pengaduan->rating_pelayanan ? 'text-warning fill-warning' : 'text-base-300' }}" />
+                                                            class="w-3 h-3 {{ $i <= round($this->pengaduan->ratings->avg('rating_pelayanan')) ? 'text-warning fill-warning' : 'text-base-300' }}" />
                                                     @endforeach
                                                 </div>
                                             </div>
@@ -340,7 +356,7 @@
                                                 <div class="flex items-center gap-0.5">
                                                     @foreach(range(1, 5) as $i)
                                                         <x-icon name="o-star"
-                                                            class="w-3 h-3 {{ $i <= $this->pengaduan->rating_respon ? 'text-warning fill-warning' : 'text-base-300' }}" />
+                                                            class="w-3 h-3 {{ $i <= round($this->pengaduan->ratings->avg('rating_respon')) ? 'text-warning fill-warning' : 'text-base-300' }}" />
                                                     @endforeach
                                                 </div>
                                             </div>
@@ -349,7 +365,7 @@
                                                 <div class="flex items-center gap-0.5">
                                                     @foreach(range(1, 5) as $i)
                                                         <x-icon name="o-star"
-                                                            class="w-3 h-3 {{ $i <= $this->pengaduan->rating_kompetensi ? 'text-warning fill-warning' : 'text-base-300' }}" />
+                                                            class="w-3 h-3 {{ $i <= round($this->pengaduan->ratings->avg('rating_kompetensi')) ? 'text-warning fill-warning' : 'text-base-300' }}" />
                                                     @endforeach
                                                 </div>
                                             </div>
@@ -358,20 +374,37 @@
                                                 <div class="flex items-center gap-0.5">
                                                     @foreach(range(1, 5) as $i)
                                                         <x-icon name="o-star"
-                                                            class="w-3 h-3 {{ $i <= $this->pengaduan->rating_fasilitas ? 'text-warning fill-warning' : 'text-base-300' }}" />
+                                                            class="w-3 h-3 {{ $i <= round($this->pengaduan->ratings->avg('rating_fasilitas')) ? 'text-warning fill-warning' : 'text-base-300' }}" />
                                                     @endforeach
                                                 </div>
                                             </div>
                                         </div>
                                         
-                                        @if($this->pengaduan->rating_komentar)
-                                            <div class="pt-3 border-t border-success/10">
-                                                <p class="text-xs italic text-base-content/70 font-medium leading-relaxed">
-                                                    "{{ $this->pengaduan->rating_komentar }}"
-                                                </p>
+                                        @php
+                                            $comments = $this->pengaduan->ratings->whereNotNull('rating_komentar')->filter(fn($r) => trim($r->rating_komentar) !== '');
+                                        @endphp
+
+                                        @if($comments->count() > 0)
+                                            <div class="pt-3 border-t border-success/15 mt-1">
+                                                <span class="text-[10px] font-black uppercase text-base-content/40 block mb-2">Saran & Kritik Warga ({{ $comments->count() }})</span>
+                                                <div class="space-y-2 max-h-[220px] overflow-y-auto pr-1.5 custom-scrollbar">
+                                                    @foreach($comments->sortByDesc('created_at') as $c)
+                                                        <div class="p-2.5 bg-base-100/70 border border-base-200 rounded-lg">
+                                                            <div class="flex items-center justify-between gap-2 mb-1">
+                                                                <span class="text-[10px] font-bold text-base-content/70">
+                                                                    {{ $c->user ? $c->user->name : 'Warga (Guest)' }}
+                                                                </span>
+                                                                <span class="text-[9px] text-base-content/40 font-semibold">{{ $c->created_at->diffForHumans() }}</span>
+                                                            </div>
+                                                            <p class="text-xs text-base-content/85 italic leading-relaxed">
+                                                                "{{ $c->rating_komentar }}"
+                                                            </p>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
                                             </div>
                                         @else
-                                            <p class="text-xs font-bold text-success/70 italic border-t border-success/10 pt-3">Terima kasih atas penilaian Anda!</p>
+                                            <p class="text-xs font-semibold text-success/60 italic border-t border-success/15 pt-3">Terima kasih atas penilaian Anda!</p>
                                         @endif
                                     </div>
                                 @endif

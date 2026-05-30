@@ -84,6 +84,11 @@ class Pengaduan extends Model
         return $this->hasMany(Pengaduan::class, 'linked_id');
     }
 
+    public function ratings()
+    {
+        return $this->hasMany(PengaduanRating::class);
+    }
+
     public function generateWaLink($customMessage = null)
     {
         $name = $this->user ? $this->user->name : ($this->guest_name ?? 'Pelapor');

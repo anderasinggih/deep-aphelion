@@ -36,14 +36,17 @@ class PengaduanFeedDetail extends Component
         $this->rating_fasilitas = $this->pengaduan->rating_fasilitas ?? 5;
         $this->rating_komentar = $this->pengaduan->rating_komentar ?? '';
         
-        // Show form if status is selesai and (logged in user is the owner OR it is a guest report) and rating is still null
-        $isOwner = auth()->check() ? (auth()->id() === $this->pengaduan->user_id && auth()->user()?->role === 'warga') : (is_null($this->pengaduan->user_id));
-        
-        // Cek juga jika IP ini sudah pernah memberi feedback untuk aduan ini
-        $ip = request()->ip();
-        $hasSubmitted = \Illuminate\Support\Facades\Cache::has('feedback_submitted_' . $this->pengaduan->id . '_' . $ip);
+        // Eager load ratings
+        $this->pengaduan->load('ratings.user');
 
-        if ($this->pengaduan->status === 'selesai' && $isOwner && is_null($this->pengaduan->rating) && !$hasSubmitted) {
+        $ip = request()->ip();
+        $userId = auth()->id();
+        
+        $hasRated = $this->pengaduan->ratings->contains(function($r) use ($ip, $userId) {
+            return $r->ip_address === $ip || ($userId && $r->user_id === $userId);
+        });
+
+        if ($this->pengaduan->status === 'selesai' && !$hasRated) {
             $this->shouldShowFeedback = true;
         }
     }
@@ -59,22 +62,18 @@ class PengaduanFeedDetail extends Component
 
     public function submitFeedback()
     {
-        $isOwner = auth()->check() ? (auth()->id() === $this->pengaduan->user_id && auth()->user()?->role === 'warga') : (is_null($this->pengaduan->user_id));
-
-        if (!$isOwner) {
-            session()->flash('error', 'Anda tidak memiliki hak akses untuk memberikan penilaian.');
-            return;
-        }
-
-        if (!is_null($this->pengaduan->rating)) {
-            session()->flash('error', 'Laporan ini sudah diberi penilaian.');
-            return;
-        }
-
         $ip = request()->ip();
-        $cacheKey = 'feedback_submitted_' . $this->pengaduan->id . '_' . $ip;
-        if (\Illuminate\Support\Facades\Cache::has($cacheKey)) {
-            session()->flash('error', 'IP Anda sudah mengirimkan feedback untuk aduan ini.');
+        $userId = auth()->id();
+
+        $hasRated = $this->pengaduan->ratings()->where(function($query) use ($ip, $userId) {
+            $query->where('ip_address', $ip);
+            if ($userId) {
+                $query->orWhere('user_id', $userId);
+            }
+        })->exists();
+
+        if ($hasRated) {
+            session()->flash('error', 'Anda atau IP Anda sudah mengirimkan feedback untuk aduan ini.');
             return;
         }
 
@@ -86,23 +85,38 @@ class PengaduanFeedDetail extends Component
             'rating_komentar' => 'nullable|string|max:200',
         ]);
 
-        // Calculate average for the main rating column
         $averageRating = round(($this->rating_pelayanan + $this->rating_respon + $this->rating_kompetensi + $this->rating_fasilitas) / 4);
 
-        $this->pengaduan->update([
-            'rating' => $averageRating,
+        $this->pengaduan->ratings()->create([
+            'user_id' => $userId,
+            'ip_address' => $ip,
             'rating_pelayanan' => $this->rating_pelayanan,
             'rating_respon' => $this->rating_respon,
             'rating_kompetensi' => $this->rating_kompetensi,
             'rating_fasilitas' => $this->rating_fasilitas,
+            'rating' => $averageRating,
             'rating_komentar' => $this->rating_komentar,
         ]);
 
-        // Simpan cache agar IP ini tidak bisa submit lagi untuk aduan ini (selamanya / 1 tahun)
-        \Illuminate\Support\Facades\Cache::put($cacheKey, true, now()->addYear());
+        $avgRating = round($this->pengaduan->ratings()->avg('rating'));
+        $avgPelayanan = round($this->pengaduan->ratings()->avg('rating_pelayanan'));
+        $avgRespon = round($this->pengaduan->ratings()->avg('rating_respon'));
+        $avgKompetensi = round($this->pengaduan->ratings()->avg('rating_kompetensi'));
+        $avgFasilitas = round($this->pengaduan->ratings()->avg('rating_fasilitas'));
+        
+        $this->pengaduan->update([
+            'rating' => $avgRating,
+            'rating_pelayanan' => $avgPelayanan,
+            'rating_respon' => $avgRespon,
+            'rating_kompetensi' => $avgKompetensi,
+            'rating_fasilitas' => $avgFasilitas,
+        ]);
 
+        $this->shouldShowFeedback = false;
         $this->showFeedbackForm = false;
         
+        $this->pengaduan->load('ratings.user');
+
         $this->dispatch('feedback-submitted');
         session()->flash('success', 'Terima kasih atas feedback Anda!');
     }
