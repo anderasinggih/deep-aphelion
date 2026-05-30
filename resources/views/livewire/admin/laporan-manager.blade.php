@@ -41,7 +41,10 @@
                     <p class="text-[9px] font-bold">Email: {{ \App\Models\Setting::get('instansi_email') ?? '-' }} | Website: kembaran-ngadu.id</p>
                 </td>
                 <td class="w-20 pb-4 text-right">
-                    <img src="{{ asset('storage/assets/logokominfo.png') }}" class="w-16 h-16 object-contain mx-auto">
+                    @php
+                        $appLogoSekunder = \App\Models\Setting::get('app_logo_sekunder');
+                    @endphp
+                    <img src="{{ $appLogoSekunder ? asset('storage/' . $appLogoSekunder) : asset('storage/assets/logokominfo.png') }}" class="w-16 h-16 object-contain mx-auto">
                 </td>
             </tr>
         </table>

@@ -160,9 +160,9 @@
                 <a href="/"
                     class="text-xl font-bold text-brand flex items-center gap-2 lg:ml-2 whitespace-nowrap hover:scale-105 transition-transform">
                     @php
-                        $appLogo = \App\Models\Setting::get('app_logo');
+                        $appLogoSekunder = \App\Models\Setting::get('app_logo_sekunder');
                     @endphp
-                    <img src="{{ $appLogo ? asset('storage/' . $appLogo) : asset('storage/assets/logobanyumas.png') }}" alt="Logo App"
+                    <img src="{{ $appLogoSekunder ? asset('storage/' . $appLogoSekunder) : asset('storage/assets/logobanyumas.png') }}" alt="Logo App"
                         class="w-7 h-7 object-contain drop-shadow-sm" />
                     <span class="hidden lg:block text-base-content/90">Kembaran Ngadu</span>
                 </a>
