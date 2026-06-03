@@ -302,9 +302,10 @@
                                 </a>
                             @else
                                 {{-- Jika tidak ada foto, tampilkan placeholder hanya di desktop (sm ke atas) agar tinggi grid seimbang --}}
-                                <a href="{{ route('pengaduan.feed-detail', $pengaduan->kode_tracking) }}" wire:navigate.prefetch class="hidden sm:block relative w-full overflow-hidden bg-base-200" style="aspect-ratio: 1/1;">
-                                    <div class="absolute inset-0 flex items-center justify-center opacity-20">
-                                        <x-icon name="o-camera" class="w-12 h-12 text-neutral-content" />
+                                <a href="{{ route('pengaduan.feed-detail', $pengaduan->kode_tracking) }}" wire:navigate.prefetch class="hidden sm:block relative w-full overflow-hidden bg-base-300/60" style="aspect-ratio: 1/1;">
+                                    <div class="absolute inset-0 flex flex-col items-center justify-center gap-1.5 opacity-40">
+                                        <x-icon name="o-camera" class="w-8 h-8 text-base-content" />
+                                        <span class="text-[9px] font-black uppercase tracking-wider">Tanpa Foto</span>
                                     </div>
                                     
                                     <div class="absolute top-3 right-3 flex flex-col items-end gap-1.5 z-20">
