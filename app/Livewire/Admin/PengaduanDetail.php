@@ -128,9 +128,6 @@ class PengaduanDetail extends Component
         if ($this->update_status === 'selesai' || $this->update_status === 'ditolak') {
             $rules['update_keterangan'] = 'required|string|min:5';
         }
-        if ($this->update_status === 'selesai') {
-            $rules['update_foto'] = 'required|image|max:5120';
-        }
 
         $this->validate($rules);
 
@@ -157,7 +154,7 @@ class PengaduanDetail extends Component
         
         if ($this->update_status === 'selesai' || $this->update_status === 'ditolak') {
             $this->pengaduan->pesan_penutup = $this->update_keterangan;
-            if ($this->update_status === 'selesai') {
+            if ($this->update_status === 'selesai' && $path) {
                 $this->pengaduan->foto_penyelesaian = $path;
             }
         }

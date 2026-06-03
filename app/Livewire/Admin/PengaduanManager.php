@@ -299,9 +299,6 @@ class PengaduanManager extends Component
         if ($this->update_status === 'selesai' || $this->update_status === 'ditolak') {
             $rules['update_keterangan'] = 'required|string|min:5';
         }
-        if ($this->update_status === 'selesai') {
-            $rules['update_foto'] = 'required|image|max:5120';
-        }
 
         $this->validate($rules);
 
@@ -332,6 +329,9 @@ class PengaduanManager extends Component
         // Simpan pesan penutup jika status selesai/ditolak
         if ($this->update_status === 'selesai' || $this->update_status === 'ditolak') {
             $pengaduan->pesan_penutup = $this->update_keterangan;
+            if ($this->update_status === 'selesai' && $path) {
+                $pengaduan->foto_penyelesaian = $path;
+            }
         }
 
         $pengaduan->save();

@@ -473,7 +473,7 @@
             }" class="space-y-2">
                 <label class="label pb-0">
                     <span class="label-text font-bold text-base-content/80">
-                        Foto Dokumentasi ({{ $update_status === 'selesai' ? 'Wajib' : 'Opsional' }})
+                        Foto Dokumentasi (Opsional)
                     </span>
                 </label>
                 
@@ -499,7 +499,7 @@
                 </div>
                 
                 <p class="text-[10px] text-base-content/50">
-                    {{ $update_status === 'selesai' ? 'Wajib menyertakan foto hasil pekerjaan untuk status Selesai.' : 'Lampirkan foto pendukung bila ada.' }}
+                    Lampirkan foto pendukung bila ada.
                 </p>
             </div>
 
