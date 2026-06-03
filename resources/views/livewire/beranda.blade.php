@@ -278,16 +278,11 @@
                         <div wire:key="grid-{{ $pengaduan->id }}" wire:ignore.self
                             class="relative group bg-base-100 rounded-2xl overflow-hidden border border-base-300 hover:shadow-xl transition-all duration-500 animate-in fade-in zoom-in-95">
                             
-                            {{-- Image Container (Link to detail) --}}
+                            {{-- Image Container (Link to detail) - Hanya jika ada foto --}}
+                            @if($pengaduan->foto_bukti && count($pengaduan->foto_bukti) > 0)
                             <a href="{{ route('pengaduan.feed-detail', $pengaduan->kode_tracking) }}" wire:navigate.prefetch class="block relative w-full overflow-hidden bg-base-200" style="aspect-ratio: 1/1;">
-                                @if($pengaduan->foto_bukti && count($pengaduan->foto_bukti) > 0)
-                                    <img src="{{ Storage::url($pengaduan->foto_bukti[0]) }}" alt="Bukti {{ $pengaduan->judul }}"
-                                        class="absolute inset-0 object-cover w-full h-full transition-transform duration-300 group-hover:scale-105" />
-                                @else
-                                    <div class="absolute inset-0 flex items-center justify-center opacity-20">
-                                        <x-icon name="o-camera" class="w-12 h-12 text-neutral-content" />
-                                    </div>
-                                @endif
+                                <img src="{{ Storage::url($pengaduan->foto_bukti[0]) }}" alt="Bukti {{ $pengaduan->judul }}"
+                                    class="absolute inset-0 object-cover w-full h-full transition-transform duration-300 group-hover:scale-105" />
                                 
                                 <div class="absolute top-3 right-3 flex flex-col items-end gap-1.5 z-20">
                                     <span class="px-3 py-1 text-[10px] font-bold rounded-full 
@@ -304,14 +299,33 @@
                                     @endif
                                 </div>
                             </a>
+                            @endif
 
                             <div class="flex flex-col flex-1 p-4 sm:p-5">
                                 {{-- Link wrapper for title and description --}}
                                 <a href="{{ route('pengaduan.feed-detail', $pengaduan->kode_tracking) }}" wire:navigate.prefetch class="block flex-1 group">
                                     <div class="flex items-center justify-between mb-3 text-xs font-medium text-base-content/60">
-                                        <span class="px-1.5 py-1 rounded-md bg-base-200 text-primary min-w-0" title="{{ $pengaduan->kategori->nama }}">
-                                            <span class="truncate">{{ $pengaduan->kategori->nama }}</span>
-                                        </span>
+                                        <div class="flex items-center gap-1.5 min-w-0">
+                                            <span class="px-1.5 py-1 rounded-md bg-base-200 text-primary truncate" title="{{ $pengaduan->kategori->nama }}">
+                                                {{ $pengaduan->kategori->nama }}
+                                            </span>
+                                            
+                                            {{-- Status Badge jika laporan tidak menggunakan foto --}}
+                                            @if(!($pengaduan->foto_bukti && count($pengaduan->foto_bukti) > 0))
+                                                <span class="px-2 py-0.5 text-[9px] font-bold rounded-full 
+                                                    {{ $pengaduan->status == 'menunggu' ? 'bg-warning/20 text-warning' : '' }}
+                                                    {{ $pengaduan->status == 'diproses' ? 'bg-info/20 text-info' : '' }}
+                                                    {{ $pengaduan->status == 'selesai' ? 'bg-success/20 text-success' : '' }}
+                                                    {{ $pengaduan->status == 'ditolak' ? 'bg-error/20 text-error' : '' }}">
+                                                    {{ ucfirst($pengaduan->status) }}
+                                                </span>
+                                                @if($pengaduan->dukungans_count >= 50)
+                                                    <span class="px-1.5 py-0.5 text-[8px] font-black bg-error text-white rounded uppercase tracking-tighter flex items-center gap-0.5 animate-pulse">
+                                                        <x-icon name="s-fire" class="w-2 h-2" /> Mendesak
+                                                    </span>
+                                                @endif
+                                            @endif
+                                        </div>
 
                                         <span class="flex items-center gap-1 shrink-0 ml-2">
                                             <x-icon name="o-clock" class="w-3.5 h-3.5" /> {{ $pengaduan->created_at->diffForHumans() }}
@@ -390,17 +404,13 @@
                         <div wire:key="list-{{ $pengaduan->id }}" wire:ignore.self
                             class="relative flex flex-row items-center gap-3 sm:gap-6 p-2 sm:p-4 border border-base-300 bg-base-100 rounded-xl sm:rounded-2xl hover:shadow-md hover:border-primary/20 transition-all group animate-in fade-in slide-in-from-bottom-2 duration-500">
                             
-                            {{-- Image Container (Link to detail) --}}
+                            {{-- Image Container (Link to detail) - Hanya jika ada foto --}}
+                            @if($pengaduan->foto_bukti && count($pengaduan->foto_bukti) > 0)
                             <a href="{{ route('pengaduan.feed-detail', $pengaduan->kode_tracking) }}" wire:navigate.prefetch class="block w-24 sm:w-40 aspect-square shrink-0 bg-base-200 rounded-lg sm:rounded-xl overflow-hidden relative shadow-inner">
-                                @if($pengaduan->foto_bukti && count($pengaduan->foto_bukti) > 0)
-                                    <img src="{{ Storage::url($pengaduan->foto_bukti[0]) }}" alt="Bukti" loading="lazy" decoding="async"
-                                        class="absolute inset-0 object-cover w-full h-full transition-transform duration-500 group-hover:scale-110" />
-                                @else
-                                    <div class="absolute inset-0 flex items-center justify-center opacity-20">
-                                        <x-icon name="o-camera" class="w-6 h-6 sm:w-10 sm:h-10" />
-                                    </div>
-                                @endif
+                                <img src="{{ Storage::url($pengaduan->foto_bukti[0]) }}" alt="Bukti" loading="lazy" decoding="async"
+                                    class="absolute inset-0 object-cover w-full h-full transition-transform duration-500 group-hover:scale-110" />
                             </a>
+                            @endif
 
                             {{-- Content --}}
                             <div class="flex flex-col flex-1 min-w-0">
