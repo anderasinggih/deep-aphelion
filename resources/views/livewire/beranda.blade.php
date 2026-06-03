@@ -278,27 +278,50 @@
                         <div wire:key="grid-{{ $pengaduan->id }}" wire:ignore.self
                             class="relative group bg-base-100 rounded-2xl overflow-hidden border border-base-300 hover:shadow-xl transition-all duration-500 animate-in fade-in zoom-in-95">
                             
-                            {{-- Image Container (Link to detail) - Hanya jika ada foto --}}
+                            {{-- Image Container (Link to detail) --}}
                             @if($pengaduan->foto_bukti && count($pengaduan->foto_bukti) > 0)
-                            <a href="{{ route('pengaduan.feed-detail', $pengaduan->kode_tracking) }}" wire:navigate.prefetch class="block relative w-full overflow-hidden bg-base-200" style="aspect-ratio: 1/1;">
-                                <img src="{{ Storage::url($pengaduan->foto_bukti[0]) }}" alt="Bukti {{ $pengaduan->judul }}"
-                                    class="absolute inset-0 object-cover w-full h-full transition-transform duration-300 group-hover:scale-105" />
-                                
-                                <div class="absolute top-3 right-3 flex flex-col items-end gap-1.5 z-20">
-                                    <span class="px-3 py-1 text-[10px] font-bold rounded-full 
-                                        {{ $pengaduan->status == 'menunggu' ? 'bg-warning text-warning-content' : '' }}
-                                        {{ $pengaduan->status == 'diproses' ? 'bg-info text-info-content' : '' }}
-                                        {{ $pengaduan->status == 'selesai' ? 'bg-success text-success-content' : '' }}
-                                        {{ $pengaduan->status == 'ditolak' ? 'bg-error text-error-content' : '' }} shadow-sm">
-                                        {{ ucfirst($pengaduan->status) }}
-                                    </span>
-                                    @if($pengaduan->dukungans_count >= 50)
-                                        <span class="px-2 py-0.5 text-[8px] font-black bg-error text-white rounded-md shadow-lg uppercase tracking-tighter flex items-center gap-1 animate-pulse border border-white/20">
-                                            <x-icon name="s-fire" class="w-2.5 h-2.5" /> Mendesak
+                                {{-- Jika ada foto, tampilkan di semua ukuran layar --}}
+                                <a href="{{ route('pengaduan.feed-detail', $pengaduan->kode_tracking) }}" wire:navigate.prefetch class="block relative w-full overflow-hidden bg-base-200" style="aspect-ratio: 1/1;">
+                                    <img src="{{ Storage::url($pengaduan->foto_bukti[0]) }}" alt="Bukti {{ $pengaduan->judul }}"
+                                        class="absolute inset-0 object-cover w-full h-full transition-transform duration-300 group-hover:scale-105" />
+                                    
+                                    <div class="absolute top-3 right-3 flex flex-col items-end gap-1.5 z-20">
+                                        <span class="px-3 py-1 text-[10px] font-bold rounded-full 
+                                            {{ $pengaduan->status == 'menunggu' ? 'bg-warning text-warning-content' : '' }}
+                                            {{ $pengaduan->status == 'diproses' ? 'bg-info text-info-content' : '' }}
+                                            {{ $pengaduan->status == 'selesai' ? 'bg-success text-success-content' : '' }}
+                                            {{ $pengaduan->status == 'ditolak' ? 'bg-error text-error-content' : '' }} shadow-sm">
+                                            {{ ucfirst($pengaduan->status) }}
                                         </span>
-                                    @endif
-                                </div>
-                            </a>
+                                        @if($pengaduan->dukungans_count >= 50)
+                                            <span class="px-2 py-0.5 text-[8px] font-black bg-error text-white rounded-md shadow-lg uppercase tracking-tighter flex items-center gap-1 animate-pulse border border-white/20">
+                                                <x-icon name="s-fire" class="w-2.5 h-2.5" /> Mendesak
+                                            </span>
+                                        @endif
+                                    </div>
+                                </a>
+                            @else
+                                {{-- Jika tidak ada foto, tampilkan placeholder hanya di desktop (sm ke atas) agar tinggi grid seimbang --}}
+                                <a href="{{ route('pengaduan.feed-detail', $pengaduan->kode_tracking) }}" wire:navigate.prefetch class="hidden sm:block relative w-full overflow-hidden bg-base-200" style="aspect-ratio: 1/1;">
+                                    <div class="absolute inset-0 flex items-center justify-center opacity-20">
+                                        <x-icon name="o-camera" class="w-12 h-12 text-neutral-content" />
+                                    </div>
+                                    
+                                    <div class="absolute top-3 right-3 flex flex-col items-end gap-1.5 z-20">
+                                        <span class="px-3 py-1 text-[10px] font-bold rounded-full 
+                                            {{ $pengaduan->status == 'menunggu' ? 'bg-warning text-warning-content' : '' }}
+                                            {{ $pengaduan->status == 'diproses' ? 'bg-info text-info-content' : '' }}
+                                            {{ $pengaduan->status == 'selesai' ? 'bg-success text-success-content' : '' }}
+                                            {{ $pengaduan->status == 'ditolak' ? 'bg-error text-error-content' : '' }} shadow-sm">
+                                            {{ ucfirst($pengaduan->status) }}
+                                        </span>
+                                        @if($pengaduan->dukungans_count >= 50)
+                                            <span class="px-2 py-0.5 text-[8px] font-black bg-error text-white rounded-md shadow-lg uppercase tracking-tighter flex items-center gap-1 animate-pulse border border-white/20">
+                                                <x-icon name="s-fire" class="w-2.5 h-2.5" /> Mendesak
+                                            </span>
+                                        @endif
+                                    </div>
+                                </a>
                             @endif
 
                             <div class="flex flex-col flex-1 p-4 sm:p-5">
@@ -310,9 +333,9 @@
                                                 {{ $pengaduan->kategori->nama }}
                                             </span>
                                             
-                                            {{-- Status Badge jika laporan tidak menggunakan foto --}}
+                                            {{-- Status Badge jika laporan tidak menggunakan foto (hanya tampil di mobile sm:hidden, di desktop sudah ada di placeholder) --}}
                                             @if(!($pengaduan->foto_bukti && count($pengaduan->foto_bukti) > 0))
-                                                <span class="px-2 py-0.5 text-[9px] font-bold rounded-full 
+                                                <span class="sm:hidden px-2 py-0.5 text-[9px] font-bold rounded-full 
                                                     {{ $pengaduan->status == 'menunggu' ? 'bg-warning/20 text-warning' : '' }}
                                                     {{ $pengaduan->status == 'diproses' ? 'bg-info/20 text-info' : '' }}
                                                     {{ $pengaduan->status == 'selesai' ? 'bg-success/20 text-success' : '' }}
@@ -320,7 +343,7 @@
                                                     {{ ucfirst($pengaduan->status) }}
                                                 </span>
                                                 @if($pengaduan->dukungans_count >= 50)
-                                                    <span class="px-1.5 py-0.5 text-[8px] font-black bg-error text-white rounded uppercase tracking-tighter flex items-center gap-0.5 animate-pulse">
+                                                    <span class="sm:hidden px-1.5 py-0.5 text-[8px] font-black bg-error text-white rounded uppercase tracking-tighter flex items-center gap-0.5 animate-pulse">
                                                         <x-icon name="s-fire" class="w-2 h-2" /> Mendesak
                                                     </span>
                                                 @endif
