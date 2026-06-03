@@ -15,7 +15,7 @@ class CheckMaintenanceMode
 
         if ($maintenance === '1') {
             // Cek apakah ini route login atau logout
-            if ($request->is('login') || $request->is('logout') || $request->is('livewire/*')) {
+            if ($request->is('login') || $request->is('admin/login') || $request->is('logout') || $request->is('livewire/*')) {
                 return $next($request);
             }
 
