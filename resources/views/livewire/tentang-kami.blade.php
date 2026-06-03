@@ -75,10 +75,10 @@
                 </div>
             </div>
 
-            <h1 class="text-3xl md:text-6xl lg:text-7xl font-black text-white mb-2 tracking-tight drop-shadow-2xl">
+            <h1 class="text-3xl md:text-6xl lg:text-7xl font-semibold text-white mb-4 tracking-tight drop-shadow-2xl">
                 Tentang Kami
             </h1>
-            <p class="text-xs sm:text-base font-bold text-white/80 max-w-2xl drop-shadow-lg">
+            <p class="text-xs md:text-lg lg:text-xl text-white/80 mb-10 max-w-2xl leading-relaxed font-medium drop-shadow-md">
                 Portal Informasi & Komitmen Pelayanan Publik Kecamatan Kembaran
             </p>
         </div>
