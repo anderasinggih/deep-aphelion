@@ -19,7 +19,13 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Kembaran Ngadu">
-    <link rel="apple-touch-icon" href="{{ asset('storage/assets/logobanyumas.png') }}">
+    @php
+        $appLogo = \App\Models\Setting::get('app_logo');
+        $appLogoSekunder = \App\Models\Setting::get('app_logo_sekunder');
+    @endphp
+    @if($appLogo)
+    <link rel="apple-touch-icon" href="{{ asset('storage/' . $appLogo) }}">
+    @endif
     
     @stack('meta')
 
@@ -159,12 +165,11 @@
                 </details>
                 <a href="/"
                     class="text-xl font-bold text-brand flex items-center gap-2 lg:ml-2 whitespace-nowrap hover:scale-105 transition-transform">
-                    @php
-                        $appLogoSekunder = \App\Models\Setting::get('app_logo_sekunder');
-                    @endphp
-                    <img src="{{ $appLogoSekunder ? asset('storage/' . $appLogoSekunder) : asset('storage/assets/logobanyumas.png') }}" alt="Logo App"
+                    @if($appLogoSekunder)
+                    <img src="{{ asset('storage/' . $appLogoSekunder) }}" alt="Logo App"
                         class="w-7 h-7 object-contain drop-shadow-sm" />
-                    <span class="hidden lg:block text-base-content/90">Kembaran Ngadu</span>
+                    @endif
+                    <span class="{{ $appLogoSekunder ? 'hidden lg:block' : '' }} text-base-content/90">Kembaran Ngadu</span>
                 </a>
 
             </div>

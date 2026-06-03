@@ -28,7 +28,7 @@
         if(isset($settings['app_banner_3'])) $banners[] = asset('storage/' . $settings['app_banner_3']);
         
         // Fallback if empty
-        if(empty($banners)) $banners[] = asset('storage/assets/banner.jpg');
+        if(empty($banners)) $banners[] = asset('assets/banner.jpg');
     @endphp
 
     <div x-data="{ 
@@ -96,14 +96,18 @@
             {{-- Logo Row --}}
             <div class="flex items-center justify-center gap-4 mb-6">
                 {{-- Logo Utama --}}
-                <img src="{{ isset($settings['app_logo']) ? asset('storage/' . $settings['app_logo']) : asset('storage/assets/logobanyumas.png') }}"
+                @if(isset($settings['app_logo']))
+                <img src="{{ asset('storage/' . $settings['app_logo']) }}"
                     class="w-16 md:w-24 lg:w-28 h-auto drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]" alt="Logo Utama" />
+                @endif
                 
                 {{-- Logo Pendamping --}}
+                @if(isset($settings['app_logo_sekunder']))
                 <div class="bg-white rounded-2xl p-2 w-16 h-16 md:w-24 md:h-24 flex items-center justify-center shadow-lg overflow-hidden shrink-0 drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]">
-                    <img src="{{ isset($settings['app_logo_sekunder']) ? asset('storage/' . $settings['app_logo_sekunder']) : asset('storage/assets/logokominfo.png') }}"
+                    <img src="{{ asset('storage/' . $settings['app_logo_sekunder']) }}"
                         class="w-full h-full object-contain" alt="Logo Pendamping" />
                 </div>
+                @endif
             </div>
 
             <h1 class="text-3xl md:text-6xl lg:text-7xl font-semibold text-white mb-4 tracking-tight drop-shadow-2xl">

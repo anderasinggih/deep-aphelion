@@ -89,12 +89,23 @@ new #[Layout('layouts.auth')] class extends Component
     {{-- Sisi Kanan (Konten) --}}
     <div class="flex flex-col w-full p-8 md:w-7/12 sm:p-10 bg-base-100">
         
+        @php
+            $resetLogo = \App\Models\Setting::get('app_logo');
+        @endphp
+        @if($resetLogo)
         <div class="flex items-center justify-center gap-4 mb-8">
-            <img src="{{ asset('storage/assets/logobanyumas.png') }}" alt="Logo Banyumas" class="w-10 h-10 object-contain" />
+            <img src="{{ asset('storage/' . $resetLogo) }}" alt="Logo" class="w-10 h-10 object-contain" />
             <div class="w-10 h-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
                 <x-icon name="o-shield-check" class="w-6 h-6" />
             </div>
         </div>
+        @else
+        <div class="flex items-center justify-center gap-4 mb-8">
+            <div class="w-10 h-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
+                <x-icon name="o-shield-check" class="w-6 h-6" />
+            </div>
+        </div>
+        @endif
 
         <div class="mb-8 text-center">
             <h1 class="text-2xl font-bold text-base-content mb-2">Kata Sandi Baru</h1>

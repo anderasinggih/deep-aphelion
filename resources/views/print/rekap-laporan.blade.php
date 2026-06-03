@@ -45,7 +45,9 @@
     <table class="kop-table">
         <tr>
             <td class="kop-logo">
-                <img src="{{ isset($settings['app_logo']) ? asset('storage/' . $settings['app_logo']) : asset('storage/assets/logobanyumas.png') }}" alt="Logo" style="width:72px; height:72px; object-fit:contain;">
+                @if(isset($settings['app_logo']))
+                    <img src="{{ asset('storage/' . $settings['app_logo']) }}" alt="Logo" style="width:72px; height:72px; object-fit:contain;">
+                @endif
             </td>
             <td class="kop-text">
                 <h1>Pemerintah Kabupaten Banyumas</h1>
@@ -56,8 +58,6 @@
             <td class="kop-logo" style="text-align: right;">
                 @if(isset($settings['app_logo_sekunder']))
                     <img src="{{ asset('storage/' . $settings['app_logo_sekunder']) }}" alt="Logo Sekunder" style="width:72px; height:72px; object-fit:contain;">
-                @else
-                     <img src="{{ asset('storage/assets/logokominfo.png') }}" alt="Kominfo" style="width:72px; height:72px; object-fit:contain;">
                 @endif
             </td>
         </tr>

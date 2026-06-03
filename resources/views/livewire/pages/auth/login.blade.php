@@ -87,12 +87,22 @@ new #[Layout('layouts.auth')] class extends Component
 
     <div class="flex flex-col justify-center w-full p-8 md:w-1/2 sm:p-12 bg-base-100">
 
+        @php
+            $loginLogo = \App\Models\Setting::get('app_logo');
+            $loginLogoSekunder = \App\Models\Setting::get('app_logo_sekunder');
+        @endphp
+        @if($loginLogo || $loginLogoSekunder)
         <div class="flex items-center justify-center gap-4 mb-6">
-            <img src="{{ asset('storage/' . \App\Models\Setting::get('app_logo', 'assets/logobanyumas.png')) }}" 
+            @if($loginLogo)
+            <img src="{{ asset('storage/' . $loginLogo) }}" 
                 alt="Logo Utama" class="block object-contain w-12 h-12" />
-            <img src="{{ asset('storage/' . \App\Models\Setting::get('app_logo_sekunder', 'assets/logokominfo.png')) }}" 
+            @endif
+            @if($loginLogoSekunder)
+            <img src="{{ asset('storage/' . $loginLogoSekunder) }}" 
                 alt="Logo Sekunder" class="block object-contain w-12 h-12" />
+            @endif
         </div>
+        @endif
 
         <div class="mb-8 text-center">
             <h1 class="mb-2 text-2xl font-bold text-base-content">Masuk</h1>

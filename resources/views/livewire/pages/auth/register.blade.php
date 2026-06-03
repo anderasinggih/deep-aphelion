@@ -118,12 +118,22 @@ new #[Layout('layouts.auth')] class extends Component
     <div class="flex flex-col w-full p-8 overflow-y-auto md:w-7/12 sm:p-10 no-scrollbar bg-base-100"
         style="scrollbar-width: none;">
 
+        @php
+            $regLogo = \App\Models\Setting::get('app_logo');
+            $regLogoSekunder = \App\Models\Setting::get('app_logo_sekunder');
+        @endphp
+        @if($regLogo || $regLogoSekunder)
         <div class="flex items-center justify-center gap-4 mb-6">
-            <img src="{{ asset('storage/' . \App\Models\Setting::get('app_logo', 'assets/logobanyumas.png')) }}" 
+            @if($regLogo)
+            <img src="{{ asset('storage/' . $regLogo) }}" 
                 alt="Logo Utama" class="block object-contain w-10 h-10" />
-            <img src="{{ asset('storage/' . \App\Models\Setting::get('app_logo_sekunder', 'assets/logokominfo.png')) }}" 
+            @endif
+            @if($regLogoSekunder)
+            <img src="{{ asset('storage/' . $regLogoSekunder) }}" 
                 alt="Logo Sekunder" class="block object-contain w-10 h-10" />
+            @endif
         </div>
+        @endif
 
         <div class="mb-6 text-center">
             <h1 class="mb-1 text-2xl font-bold text-base-content">Daftar Akun Baru</h1>

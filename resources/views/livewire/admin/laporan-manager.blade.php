@@ -32,7 +32,9 @@
                     @php
                         $appLogo = \App\Models\Setting::get('app_logo');
                     @endphp
-                    <img src="{{ $appLogo ? asset('storage/' . $appLogo) : asset('storage/assets/logobanyumas.png') }}" class="w-16 h-16 object-contain mx-auto">
+                    @if($appLogo)
+                        <img src="{{ asset('storage/' . $appLogo) }}" class="w-16 h-16 object-contain mx-auto">
+                    @endif
                 </td>
                 <td class="text-center pb-4 pr-10">
                     <h2 class="text-sm font-bold uppercase tracking-widest leading-tight">Pemerintah Kabupaten Banyumas</h2>
@@ -44,7 +46,9 @@
                     @php
                         $appLogoSekunder = \App\Models\Setting::get('app_logo_sekunder');
                     @endphp
-                    <img src="{{ $appLogoSekunder ? asset('storage/' . $appLogoSekunder) : asset('storage/assets/logokominfo.png') }}" class="w-16 h-16 object-contain mx-auto">
+                    @if($appLogoSekunder)
+                        <img src="{{ asset('storage/' . $appLogoSekunder) }}" class="w-16 h-16 object-contain mx-auto">
+                    @endif
                 </td>
             </tr>
         </table>

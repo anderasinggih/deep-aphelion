@@ -82,12 +82,22 @@ new #[Layout('layouts.auth')] class extends Component
     {{-- Sisi Kanan (Konten) --}}
     <div class="flex flex-col w-full p-8 md:w-7/12 sm:p-10 bg-base-100">
         
+        @php
+            $verifyLogo = \App\Models\Setting::get('app_logo');
+            $verifyLogoSekunder = \App\Models\Setting::get('app_logo_sekunder');
+        @endphp
+        @if($verifyLogo || $verifyLogoSekunder)
         <div class="flex items-center justify-center gap-4 mb-8">
-            <img src="{{ asset('storage/' . \App\Models\Setting::get('app_logo', 'assets/logobanyumas.png')) }}" 
+            @if($verifyLogo)
+            <img src="{{ asset('storage/' . $verifyLogo) }}" 
                 alt="Logo Utama" class="block object-contain w-10 h-10" />
-            <img src="{{ asset('storage/' . \App\Models\Setting::get('app_logo_sekunder', 'assets/logokominfo.png')) }}" 
+            @endif
+            @if($verifyLogoSekunder)
+            <img src="{{ asset('storage/' . $verifyLogoSekunder) }}" 
                 alt="Logo Sekunder" class="block object-contain w-10 h-10" />
+            @endif
         </div>
+        @endif
 
         <div class="mb-8 text-center">
             <h1 class="text-2xl font-bold text-base-content mb-2">Terima Kasih Telah Mendaftar!</h1>

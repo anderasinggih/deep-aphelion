@@ -3,11 +3,20 @@
         {{-- Card --}}
         <div class="bg-white p-10 md:p-14 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-slate-100 text-center space-y-10">
             
-            {{-- Logos --}}
+            @php
+                $maintenanceLogo = \App\Models\Setting::get('app_logo');
+                $maintenanceLogoSekunder = \App\Models\Setting::get('app_logo_sekunder');
+            @endphp
+            @if($maintenanceLogo || $maintenanceLogoSekunder)
             <div class="flex justify-center gap-8 items-center opacity-90">
-                 <img src="{{ asset('storage/' . \App\Models\Setting::get('app_logo', 'assets/logobanyumas.png')) }}" class="h-14 object-contain" />
-                 <img src="{{ asset('storage/' . \App\Models\Setting::get('app_logo_sekunder', 'assets/logokominfo.png')) }}" class="h-14 object-contain" />
+                 @if($maintenanceLogo)
+                 <img src="{{ asset('storage/' . $maintenanceLogo) }}" class="h-14 object-contain" />
+                 @endif
+                 @if($maintenanceLogoSekunder)
+                 <img src="{{ asset('storage/' . $maintenanceLogoSekunder) }}" class="h-14 object-contain" />
+                 @endif
             </div>
+            @endif
 
             {{-- Divider --}}
             <div class="w-16 h-1 bg-primary/20 mx-auto rounded-full"></div>

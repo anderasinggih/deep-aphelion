@@ -9,19 +9,26 @@
                     {{-- Logo App / Banyumas --}}
                     @php
                         $appLogo = \App\Models\Setting::get('app_logo');
-                    @endphp
-                    <img src="{{ $appLogo ? asset('storage/' . $appLogo) : asset('storage/assets/logobanyumas.png') }}" alt="Logo Kabupaten Banyumas"
-                        class="w-14 h-14 object-contain drop-shadow-md">
-
-                    {{-- Logo Kominfo --}}
-                    @php
                         $appLogoSekunder = \App\Models\Setting::get('app_logo_sekunder');
                     @endphp
-                    <div
-                        class="bg-white rounded-2xl p-2 w-14 h-14 flex items-center justify-center shadow-md overflow-hidden shrink-0">
-                        <img src="{{ $appLogoSekunder ? asset('storage/' . $appLogoSekunder) : asset('storage/assets/logokominfo.png') }}" alt="Kominfo"
-                            class="w-full h-full object-contain">
+                    @if($appLogo || $appLogoSekunder)
+                    <div class="flex items-center gap-4">
+                        {{-- Logo App / Banyumas --}}
+                        @if($appLogo)
+                        <img src="{{ asset('storage/' . $appLogo) }}" alt="Logo Kabupaten Banyumas"
+                            class="w-14 h-14 object-contain drop-shadow-md">
+                        @endif
+
+                        {{-- Logo Kominfo --}}
+                        @if($appLogoSekunder)
+                        <div
+                            class="bg-white rounded-2xl p-2 w-14 h-14 flex items-center justify-center shadow-md overflow-hidden shrink-0">
+                            <img src="{{ asset('storage/' . $appLogoSekunder) }}" alt="Kominfo"
+                                class="w-full h-full object-contain">
+                        </div>
+                        @endif
                     </div>
+                    @endif
                 </div>
 
                 <div>

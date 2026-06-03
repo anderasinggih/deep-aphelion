@@ -13,7 +13,11 @@
     @push('meta')
         <meta property="og:title" content="{{ $this->pengaduan->judul }} | Kembaran Ngadu" />
         <meta property="og:description" content="{{ Str::limit($this->pengaduan->deskripsi, 150) }}" />
-        <meta property="og:image" content="{{ $this->pengaduan->foto_bukti && count($this->pengaduan->foto_bukti) > 0 ? url(Storage::url($this->pengaduan->foto_bukti[0])) : url(asset('storage/assets/logobanyumas.png')) }}" />
+        @if($this->pengaduan->foto_bukti && count($this->pengaduan->foto_bukti) > 0)
+            <meta property="og:image" content="{{ url(Storage::url($this->pengaduan->foto_bukti[0])) }}" />
+        @elseif($appLogo = \App\Models\Setting::get('app_logo'))
+            <meta property="og:image" content="{{ url('storage/' . $appLogo) }}" />
+        @endif
         <meta property="og:url" content="{{ url()->current() }}" />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />

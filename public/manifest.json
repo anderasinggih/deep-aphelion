@@ -8,13 +8,13 @@
   "theme_color": "#4f46e5",
   "icons": [
     {
-      "src": "/storage/assets/logobanyumas.png",
+      "src": "/assets/logobanyumas.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/storage/assets/logobanyumas.png",
+      "src": "/assets/logobanyumas.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

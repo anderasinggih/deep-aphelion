@@ -1,5 +1,5 @@
 @php
-    $logo = isset($settings['app_logo']) ? asset('storage/' . $settings['app_logo']) : asset('storage/assets/logobanyumas.png');
+    $logo = isset($settings['app_logo']) ? asset('storage/' . $settings['app_logo']) : null;
 @endphp
 <!DOCTYPE html>
 <html lang="id">
@@ -132,7 +132,9 @@
     </div>
 
     <div class="kop-surat">
-        <img src="{{ $logo }}" class="logo" alt="Logo Daerah">
+        @if($logo)
+            <img src="{{ $logo }}" class="logo" alt="Logo Daerah">
+        @endif
         <div class="kop-teks">
             <h2>Pemerintah Kabupaten Banyumas</h2>
             <h1>{{ $settings['instansi_nama'] ?? 'Kecamatan Kembaran' }}</h1>

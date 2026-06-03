@@ -46,15 +46,27 @@
     <table class="kop-table">
         <tr>
             <td class="kop-logo">
-                <img src="{{ asset('storage/assets/logobanyumas.png') }}" alt="Logo Banyumas" style="width:72px; height:72px; object-fit:contain;">
+                @php
+                    $appLogo = \App\Models\Setting::get('app_logo');
+                @endphp
+                @if($appLogo)
+                    <img src="{{ asset('storage/' . $appLogo) }}" alt="Logo Banyumas" style="width:72px; height:72px; object-fit:contain;">
+                @endif
             </td>
             <td class="kop-text">
                 <h1>Pemerintah Kabupaten Banyumas</h1>
-                <h2>Kecamatan Kembaran</h2>
-                <p>Jl. Kyai Kembar No. 17, Kembaran, Kabupaten Banyumas, Jawa Tengah 53182</p>
-                <p>Telepon: (0281) 6840XXX &nbsp;|&nbsp; Email: kecamatan.kembaran@banyumaskab.go.id</p>
+                <h2>{{ \App\Models\Setting::get('instansi_nama') ?? 'Kecamatan Kembaran' }}</h2>
+                <p>{{ \App\Models\Setting::get('instansi_alamat') ?? 'Jl. Kyai Kembar No. 17, Kembaran, Kabupaten Banyumas, Jawa Tengah 53182' }}</p>
+                <p>Telepon: {{ \App\Models\Setting::get('instansi_telepon') ?? '(0281) 6840XXX' }} &nbsp;|&nbsp; Email: {{ \App\Models\Setting::get('instansi_email') ?? 'kecamatan.kembaran@banyumaskab.go.id' }}</p>
             </td>
-            <td style="width:72px;"></td>
+            <td class="kop-logo" style="text-align: right; width:72px;">
+                @php
+                    $appLogoSekunder = \App\Models\Setting::get('app_logo_sekunder');
+                @endphp
+                @if($appLogoSekunder)
+                    <img src="{{ asset('storage/' . $appLogoSekunder) }}" alt="Logo Sekunder" style="width:72px; height:72px; object-fit:contain;">
+                @endif
+            </td>
         </tr>
     </table>
 

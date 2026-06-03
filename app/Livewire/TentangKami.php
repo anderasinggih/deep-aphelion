@@ -36,7 +36,7 @@ class TentangKami extends Component
         if(isset($settings['app_banner_2'])) $this->banners[] = asset('storage/' . $settings['app_banner_2']);
         if(isset($settings['app_banner_3'])) $this->banners[] = asset('storage/' . $settings['app_banner_3']);
         
-        if(empty($this->banners)) $this->banners[] = asset('storage/assets/banner.jpg');
+        if(empty($this->banners)) $this->banners[] = asset('assets/banner.jpg');
 
         // Fetch Public Stats
         $this->stats = [

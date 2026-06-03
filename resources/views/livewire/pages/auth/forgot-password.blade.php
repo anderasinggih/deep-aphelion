@@ -62,12 +62,22 @@ new #[Layout('layouts.auth')] class extends Component
     {{-- Sisi Kanan (Konten) --}}
     <div class="flex flex-col w-full p-8 md:w-7/12 sm:p-10 bg-base-100">
         
+        @php
+            $forgotLogo = \App\Models\Setting::get('app_logo');
+            $forgotLogoSekunder = \App\Models\Setting::get('app_logo_sekunder');
+        @endphp
+        @if($forgotLogo || $forgotLogoSekunder)
         <div class="flex items-center justify-center gap-4 mb-8">
-            <img src="{{ asset('storage/' . \App\Models\Setting::get('app_logo', 'assets/logobanyumas.png')) }}" 
+            @if($forgotLogo)
+            <img src="{{ asset('storage/' . $forgotLogo) }}" 
                 alt="Logo Utama" class="block object-contain w-10 h-10" />
-            <img src="{{ asset('storage/' . \App\Models\Setting::get('app_logo_sekunder', 'assets/logokominfo.png')) }}" 
+            @endif
+            @if($forgotLogoSekunder)
+            <img src="{{ asset('storage/' . $forgotLogoSekunder) }}" 
                 alt="Logo Sekunder" class="block object-contain w-10 h-10" />
+            @endif
         </div>
+        @endif
 
         <div class="mb-8 text-center">
             <h1 class="text-2xl font-bold text-base-content mb-2">Pemulihan Akun</h1>
