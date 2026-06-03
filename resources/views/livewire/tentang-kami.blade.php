@@ -63,15 +63,19 @@
         @endif
 
         <div class="relative z-10 flex flex-col items-center justify-center text-center pt-32 pb-24 md:pt-44 md:pb-32 lg:pt-52 lg:pb-40 px-6 max-w-7xl mx-auto w-full">
-            <div class="flex justify-center items-center gap-3 mb-6 drop-shadow-2xl">
-                <img src="{{ $app_logo ? asset('storage/' . $app_logo) : asset('storage/assets/logobanyumas.png') }}" class="w-16 md:w-24 h-auto object-contain" alt="Logo" />
-                <div class="w-px h-12 bg-white/30 backdrop-blur-sm"></div>
-                <div class="bg-white/90 backdrop-blur-md rounded-2xl p-2 w-16 h-16 md:w-24 md:h-24 flex items-center justify-center border border-white/20 shadow-xl">
-                    <img src="{{ $app_logo_sekunder ? asset('storage/' . $app_logo_sekunder) : asset('storage/assets/logokominfo.png') }}" class="w-full h-full object-contain" alt="Logo Sekunder" />
+            <div class="flex items-center justify-center gap-4 mb-6">
+                {{-- Logo Utama --}}
+                <img src="{{ $app_logo ? asset('storage/' . $app_logo) : asset('storage/assets/logobanyumas.png') }}"
+                    class="w-16 md:w-24 lg:w-28 h-auto drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]" alt="Logo Utama" />
+                
+                {{-- Logo Pendamping --}}
+                <div class="bg-white rounded-2xl p-2 w-16 h-16 md:w-24 md:h-24 flex items-center justify-center shadow-lg overflow-hidden shrink-0 drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]">
+                    <img src="{{ $app_logo_sekunder ? asset('storage/' . $app_logo_sekunder) : asset('storage/assets/logokominfo.png') }}"
+                        class="w-full h-full object-contain" alt="Logo Pendamping" />
                 </div>
             </div>
 
-            <h1 class="text-3xl md:text-5xl lg:text-6xl font-black text-white mb-2 tracking-tight drop-shadow-2xl">
+            <h1 class="text-3xl md:text-6xl lg:text-7xl font-black text-white mb-2 tracking-tight drop-shadow-2xl">
                 Tentang Kami
             </h1>
             <p class="text-xs sm:text-base font-bold text-white/80 max-w-2xl drop-shadow-lg">

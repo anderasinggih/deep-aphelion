@@ -1,5 +1,5 @@
 @php
-    $logo = asset('storage/assets/logobanyumas.png');
+    $logo = isset($settings['app_logo']) ? asset('storage/' . $settings['app_logo']) : asset('storage/assets/logobanyumas.png');
 @endphp
 <!DOCTYPE html>
 <html lang="id">
@@ -135,9 +135,9 @@
         <img src="{{ $logo }}" class="logo" alt="Logo Daerah">
         <div class="kop-teks">
             <h2>Pemerintah Kabupaten Banyumas</h2>
-            <h1>Kecamatan Kembaran</h1>
-            <p>Jl. Raya Kembaran No. 1, Kembaran, Banyumas, Jawa Tengah 53182</p>
-            <p>Email: kecamatan.kembaran@banyumaskab.go.id | Website: kembaran.banyumaskab.go.id</p>
+            <h1>{{ $settings['instansi_nama'] ?? 'Kecamatan Kembaran' }}</h1>
+            <p>{{ $settings['instansi_alamat'] ?? 'Jl. Raya Kembaran No. 1, Kembaran, Banyumas, Jawa Tengah 53182' }}</p>
+            <p>Email: {{ $settings['instansi_email'] ?? 'kecamatan.kembaran@banyumaskab.go.id' }} | Website: {{ $settings['instansi_website'] ?? 'kembaran.banyumaskab.go.id' }}</p>
         </div>
     </div>
 

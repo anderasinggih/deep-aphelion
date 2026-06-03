@@ -18,14 +18,14 @@ class PrintController extends Controller
         if (!$isAdmin && !$isOwner && !$isGuestOwner) {
             abort(403, 'Unauthorized action.');
         }
-        $settings = \App\Models\Setting::whereIn('key', ['ttd_jabatan', 'ttd_nama', 'ttd_file'])->pluck('value', 'key');
+        $settings = \App\Models\Setting::all()->pluck('value', 'key');
         $ttd = [
             'jabatan' => $settings['ttd_jabatan'] ?? 'Admin Sistem Kembaran Ngadu',
             'nama' => $settings['ttd_nama'] ?? '',
             'file' => $settings['ttd_file'] ?? null,
         ];
 
-        return view('print.resi', compact('pengaduan', 'ttd'));
+        return view('print.resi', compact('pengaduan', 'ttd', 'settings'));
     }
 
     public function laporan(Request $request)

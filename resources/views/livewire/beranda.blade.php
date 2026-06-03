@@ -494,9 +494,9 @@
                         </div>
                     @empty
                         <div class="flex flex-col items-center justify-center py-20 text-center bg-base-100 rounded-3xl border border-dashed border-base-300 p-8">
-                            <div class="w-48 h-48 mb-8 relative">
+                            <div class="w-48 h-48 mb-8 relative flex items-center justify-center">
                                 <div class="absolute inset-0 bg-primary/10 rounded-full animate-pulse"></div>
-                                <img src="https://illustrations.popsy.co/amber/waiting.svg" class="relative z-10 w-full h-full object-contain" alt="Empty">
+                                <x-icon name="o-inbox-stack" class="relative z-10 w-24 h-24 text-primary" />
                             </div>
                             <h3 class="text-2xl font-black text-base-content mb-2">Belum ada laporan di sini</h3>
                             <p class="text-base-content/50 max-w-sm mb-8 font-medium">Jadilah orang pertama yang melaporkan masalah atau memberikan aspirasi untuk kemajuan Kecamatan Kembaran!</p>
