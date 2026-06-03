@@ -478,7 +478,16 @@
                                     <span class="font-extrabold text-[12px] {{ $timelineColor }} uppercase">{{ $history->status_baru }}</span>
                                     <span class="text-[10px] font-semibold text-base-content/40">{{ $history->created_at->diffForHumans() }}</span>
                                 </div>
-                                <div class="text-[11px] font-medium text-base-content/70">Oleh: {{ $history->user?->name ?? 'User Terhapus' }} ({{ $history->user ? ucfirst($history->user->role) : 'N/A' }})</div>
+                                <div class="text-[11px] font-medium text-base-content/70">
+                                    Oleh: 
+                                    @if($history->user)
+                                        {{ $history->user->name }} ({{ ucfirst($history->user->role) }})
+                                    @elseif($history->status_sebelumnya === null)
+                                        {{ $this->pengaduan->user ? $this->pengaduan->user->name : ($this->pengaduan->guest_name ?? 'Pelapor') }} (Pelapor)
+                                    @else
+                                        User Terhapus (N/A)
+                                    @endif
+                                </div>
                                 @if($history->keterangan_admin)
                                 <p class="text-[11px] leading-relaxed italic text-base-content/60 bg-base-200/50 p-2 rounded-lg mt-1 break-words overflow-hidden">"{!! \App\Models\Pengaduan::formatMessageWithLinks($history->keterangan_admin, true) !!}"</p>
                                 @endif
