@@ -6,6 +6,7 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use Mary\Traits\Toast;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\DB;
 use App\Models\Kategori;
 use App\Models\Pengaduan;
 use App\Models\PengaduanHistory;
@@ -260,17 +261,24 @@ class PengaduanForm extends Component
             }
             $data['status'] = 'menunggu';
 
-            // Generate kode_tracking SEBELUM create() agar tidak pernah NULL
-            // jika terjadi error setelah record dibuat
+            // Generate kode_tracking di dalam transaksi dengan row lock
+            // untuk mencegah race condition saat submit bersamaan
             $bulanRomawi = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
             $bulan = $bulanRomawi[now()->month - 1];
             $tahun = now()->year;
-            $nomorUrut = Pengaduan::whereMonth('created_at', now()->month)
-                ->whereYear('created_at', $tahun)
-                ->count() + 1;
-            $data['kode_tracking'] = 'PKM-KBR/' . str_pad($nomorUrut, 3, '0', STR_PAD_LEFT) . '/' . $bulan . '/' . $tahun;
 
-            $pengaduan = Pengaduan::create($data);
+            $pengaduan = DB::transaction(function () use ($data, $bulan, $tahun) {
+                // lockForUpdate() mencegah transaksi lain membaca count yang sama
+                // sampai transaksi ini selesai
+                $nomorUrut = Pengaduan::whereMonth('created_at', now()->month)
+                    ->whereYear('created_at', $tahun)
+                    ->lockForUpdate()
+                    ->count() + 1;
+
+                $data['kode_tracking'] = 'PKM-KBR/' . str_pad($nomorUrut, 3, '0', STR_PAD_LEFT) . '/' . $bulan . '/' . $tahun;
+
+                return Pengaduan::create($data);
+            });
 
             PengaduanHistory::create([
                 'pengaduan_id' => $pengaduan->id,
