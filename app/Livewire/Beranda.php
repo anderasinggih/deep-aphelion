@@ -152,7 +152,8 @@ class Beranda extends Component
                 }
             }])
             ->where('is_private', false)
-            ->where('status', '!=', 'ditolak');
+            ->where('status', '!=', 'ditolak')
+            ->whereNotNull('kode_tracking');
 
         if ($this->kategori_id) {
             $query->where('kategori_id', $this->kategori_id);

@@ -6,48 +6,58 @@ MASTER DOKUMENTASI SISTEM PENGADUAN MASYARAKAT: KEMBARAN NGADU
 Nama Sistem: Kembaran Ngadu
 Jenis Aplikasi: Sistem Informasi Berbasis Web (Responsive & Mobile-First)
 Tujuan Utama: 
-Menjadi platform digital resmi bagi warga Kecamatan Kembaran untuk menyampaikan pengaduan, aspirasi, dan laporan masalah infrastruktur/pelayanan publik secara transparan. Sistem ini memfasilitasi komunikasi dua arah antara masyarakat dan pemerintah daerah guna mempercepat penanganan masalah di lapangan.
+Menjadi platform digital resmi bagi warga Kecamatan Kembaran untuk menyampaikan pengaduan, aspirasi, dan laporan masalah infrastruktur/pelayanan publik secara transparan. Sistem ini memfasilitasi komunikasi dua arah antara masyarakat dan pemerintah daerah guna mempercepat penanganan masalah di lapangan serta menyediakan media umpan balik (rating & ulasan) yang komprehensif bagi pelayanan publik.
 
 =====================================================================
-2. ARSITEKTUR TEKNOLOGI (TECH STACK)
+2. ARSITEKTUR TEKNOLOGI (TECH STACK) & PERANGKAT OPTIMASI
 =====================================================================
 - PHP: v8.2+
 - Framework: Laravel v12.x
-- Frontend Logic: Livewire v3.x (TALL Stack)
+- Frontend Logic: Livewire v3.x & Alpine.js (TALL Stack)
 - UI Library: MaryUI (Blade-based components)
 - Styling: Tailwind CSS
 - Database: MySQL v8.0
 - Assets Manager: Vite
+- Kompresi Gambar: HTML5 Canvas API (Client-side) & GD Library / Imagick (Server-side)
+- Pengujian Beban (Load Testing): Locust (Python v3.x)
 
 =====================================================================
 3. DAFTAR FITUR & ROLE (BAHAN USE CASE)
 =====================================================================
-ROLE: WARGA
-- Registrasi Akun: Validasi NIK (16 digit), No. WA, dan Email.
+ROLE: WARGA / PENGUNJUNG
+- Registrasi & Autentikasi Akun: Validasi NIK (16 digit), No. WA, dan Email.
 - Feed Pengaduan: Eksplorasi laporan publik, filter kategori, dan pencarian tracking code.
-- Sistem Dukungan (Upvote): Memberi dukungan pada laporan warga lain untuk menaikkan urgensi.
+- Sistem Dukungan (Upvote): Memberi dukungan pada laporan warga lain untuk menaikkan urgensi (Laporan > 50 dukungan ditandai status "Mendesak").
 - Komentar Interaktif: Diskusi di tiap laporan dengan fitur balasan (nested reply).
 - Kirim Laporan:
   - Deskripsi & Judul detail.
   - Geo-tagging: Pin point lokasi otomatis via Leaflet Maps.
-  - Multimedia: Upload hingga 5 foto bukti kejadian.
+  - Multimedia: Upload hingga 5 foto bukti kejadian (dengan kompresi otomatis).
   - Privasi: Fitur "Sembunyikan Nama" (Anonim) dan "Laporan Privat".
-- Tracking: Notifikasi real-time via bell icon dan WhatsApp terkait perubahan status.
+- Tracking & Notifikasi: Notifikasi real-time via bell icon dan link WhatsApp terkait perubahan status.
+- Umpan Balik & Penilaian (Multi-User Rating System):
+  - Memberikan rating dan ulasan pada laporan yang berstatus "Selesai".
+  - Penilaian mencakup 4 metrik pelayanan: Pelayanan, Respon, Kompetensi, dan Fasilitas.
+  - Fitur Auto-Popup Rating yang muncul secara otomatis setelah 15 detik bagi warga yang mengunjungi detail laporan selesai (kecuali sudah memberikan rating).
+  - Pagination komentar ulasan (3-item client-side pagination) menggunakan Alpine.js.
 
 ROLE: ADMIN / PETUGAS
-- Dashboard: Grafik statistik laporan masuk vs selesai, serta monitoring SLA per kategori.
+- Dashboard: Grafik statistik laporan masuk vs selesai, grafik distribusi rating, daftar umpan balik terbaru, serta monitoring SLA per kategori.
 - User Management: Pengelolaan akun petugas dan warga dengan fitur Soft Delete.
 - Category & SLA Management: Pengaturan kategori (Jalan, Sampah, dll) dengan batas waktu pengerjaan (SLA hari).
 - Update Status & Workflow:
   - Menunggu -> Diproses -> Selesai / Ditolak.
-  - Lampiran foto bukti penyelesaian dan pesan penutup.
+  - Lampiran foto bukti penyelesaian (opsional) dan pesan penutup.
 - Audit Trail: Log otomatis setiap perubahan status (siapa petugasnya, kapan, dan alasannya).
+- Executive Report (Laporan Eksekutif):
+  - Ekspor laporan kinerja dan ringkasan eksekutif dengan header logo dinamis.
+  - Statistik performa dihitung berdasarkan data ulasan terbaru dari model PengaduanRating.
 
 =====================================================================
 4. LOGIKA ALUR KERJA (BAHAN ACTIVITY DIAGRAM)
 =====================================================================
-[ ALUR PENGIRIMAN LAPORAN ]
-Mulai -> Warga login -> Isi Form (Judul, Kategori, Foto, Lokasi) -> Submit -> Sistem generate Tracking Code -> Notifikasi ke Admin -> Selesai.
+[ ALUR PENGIRIMAN LAPORAN & KOMPRESI GAMBAR ]
+Mulai -> Warga login -> Isi Form (Judul, Kategori, Foto, Lokasi) -> Sistem mengompres foto di sisi client (Canvas API ke resolusi maks 800px, kualitas 30%) -> Kirim data -> Server memproses & mengompres ulang -> Sistem generate Tracking Code -> Notifikasi ke Admin -> Selesai.
 
 [ ALUR VERIFIKASI & PENANGANAN ]
 Laporan Masuk -> Admin review kelengkapan data -> 
@@ -55,8 +65,8 @@ Laporan Masuk -> Admin review kelengkapan data ->
   B. Jika tidak valid: Status berubah "Ditolak" -> Beri alasan penolakan.
 Selesai.
 
-[ ALUR PENYELESAIAN ]
-Laporan "Diproses" -> Petugas eksekusi lapangan -> Petugas upload foto hasil & pesan penutup -> Klik "Selesai" -> Sistem hitung durasi kerja vs SLA -> Notifikasi ke warga -> Selesai.
+[ ALUR PENYELESAIAN & RATING ]
+Laporan "Diproses" -> Petugas eksekusi lapangan -> Petugas upload foto hasil (opsional) & pesan penutup -> Klik "Selesai" -> Sistem hitung durasi kerja vs SLA -> Notifikasi ke warga -> Warga membuka laporan -> Sistem memunculkan rating popup (15 detik delay) -> Warga mengisi 4 metrik rating & ulasan -> Submit -> Sistem menghitung rata-rata ulasan -> Selesai.
 
 =====================================================================
 5. STRUKTUR DATABASE & RELASI (BAHAN ERD)
@@ -66,6 +76,7 @@ Laporan "Diproses" -> Petugas eksekusi lapangan -> Petugas upload foto hasil & p
    - Fields: name, nik, email, no_wa, role (enum), password, deleted_at (soft delete).
    - Relasi: One to Many ke pengaduans (sebagai pelapor).
    - Relasi: One to Many ke pengaduan_histories (sebagai petugas).
+   - Relasi: One to Many ke pengaduan_ratings (sebagai pemberi ulasan).
 
 2. Tabel: kategoris
    - PK: id
@@ -74,22 +85,28 @@ Laporan "Diproses" -> Petugas eksekusi lapangan -> Petugas upload foto hasil & p
 
 3. Tabel: pengaduans
    - PK: id
-   - Fields: kode_tracking (unique), user_id (FK), kategori_id (FK), judul, deskripsi, foto_bukti (json), lokasi_kejadian, latitude, longitude, status (enum), is_anonymous (bool), is_private (bool), pesan_penutup.
+   - Fields: kode_tracking (unique), user_id (FK), kategori_id (FK), judul, deskripsi, foto_bukti (json), lokasi_kejadian, latitude, longitude, status (enum), is_anonymous (bool), is_private (bool), foto_penyelesaian (json/string), pesan_penutup, catatan_internal, linked_id (FK - Self).
    - Relasi: Many to One ke users.
    - Relasi: Many to One ke kategoris.
-   - Relasi: One to Many ke pengaduan_histories, pengaduan_komentars, pengaduan_dukungans.
+   - Relasi: One to Many ke pengaduan_histories, pengaduan_komentars, pengaduan_dukungans, pengaduan_ratings.
 
-4. Tabel: pengaduan_histories
+4. Tabel: pengaduan_ratings (BARU)
+   - PK: id
+   - Fields: pengaduan_id (FK), user_id (FK, nullable), ip_address (string), rating_pelayanan (tinyint), rating_respon (tinyint), rating_kompetensi (tinyint), rating_fasilitas (tinyint), rating (float), rating_komentar (text).
+   - Relasi: Many to One ke pengaduans.
+   - Relasi: Many to One ke users.
+
+5. Tabel: pengaduan_histories
    - PK: id
    - Fields: pengaduan_id (FK), user_id (FK - Petugas), status_sebelumnya, status_baru, keterangan_admin, foto_bukti.
    - Relasi: Many to One ke pengaduans.
 
-5. Tabel: pengaduan_komentars
+6. Tabel: pengaduan_komentars
    - PK: id
    - Fields: pengaduan_id (FK), user_id (FK), parent_id (FK - Self), komentar (text).
    - Relasi: Many to One ke pengaduans; Self-relation (Parent-Child) untuk nested reply.
 
-6. Tabel: pengaduan_dukungans
+7. Tabel: pengaduan_dukungans
    - PK: id
    - Fields: pengaduan_id (FK), user_id (FK).
    - Constraint: Unique(pengaduan_id, user_id).
@@ -98,28 +115,38 @@ Laporan "Diproses" -> Petugas eksekusi lapangan -> Petugas upload foto hasil & p
 =====================================================================
 6. LOGIKA INTERAKSI (BAHAN SEQUENCE DIAGRAM)
 =====================================================================
-[ PROSES KIRIM LAPORAN ]
-User -> [View: Form Component] -> Input Data -> Klik Submit
-[View] -> [Controller: Livewire Class] -> Validasi & Upload Foto
-[Controller] -> [Model: Pengaduan] -> Create Record (id, kode_tracking, dll)
-[Model] -> [Database: MySQL] -> Insert Row & Return Success
-[Database] -> [Model] -> Return Data
-[Model] -> [Controller] -> Flash Message & Redirect
-[Controller] -> [View] -> Tampilkan Detail Laporan (Success State)
+[ PROSES PENILAIAN / RATING LAPORAN SELESAI ]
+Warga -> [View: Detail Laporan Selesai] -> Tunggu 15 Detik -> [Modal: Beri Rating] Muncul
+Warga -> [Modal: Beri Rating] -> Pilih Bintang (1-5) 4 Kategori & Tulis Ulasan -> Klik Kirim
+[Modal] -> [Controller: Livewire Detail] -> Validasi & Simpan Rating
+[Controller] -> [Model: PengaduanRating] -> Create Record (pengaduan_id, user_id, rating_pelayanan, dll)
+[Model] -> [Database: MySQL] -> Insert Row
+[Database] -> [Model] -> Return Success
+[Controller] -> [View] -> Refresh Rating Container (Tampilkan ulasan baru dengan pagination Alpine.js)
 
-[ PROSES UPDATE STATUS (SELESAI) ]
-Admin -> [View: Admin Detail] -> Input Pesan Penutup & Foto Hasil -> Klik Selesai
-[View] -> [Controller: Admin Controller] -> Validasi Input
-[Controller] -> [Model: Pengaduan] -> update(status='selesai')
-[Controller] -> [Model: PengaduanHistory] -> create(log_perubahan)
-[Model] -> [Database] -> Transaction: Commit Update
-[Database] -> [Controller] -> Trigger Notification (WhatsApp & Web)
-[Controller] -> [View] -> Refresh Dashboard / Detail
+[ PROSES COMPRESSION GAMBAR (CLIENT-SIDE) ]
+User -> [View: Kirim Laporan] -> Pilih File Gambar -> JavaScript/Canvas API terpanggil
+[JS Canvas] -> Baca data file -> Buat objek Image -> Resize (Maks 800px) & Kompresi (Quality 30%) -> Konversi ke Blob/File Baru
+[JS Canvas] -> Update input Livewire File -> Upload ke Server
+[Controller] -> Simpan File yang telah dikompres (~35KB dibanding file asli yang bisa bergiga-giga)
 
 =====================================================================
 7. NILAI TAMBAH SISTEM (BAHAN SIDANG)
 =====================================================================
-1. TRANSPARANSI: Publik dapat melihat sejarah penanganan laporan secara detail (Audit Trail) sehingga tidak ada proses yang tertutup.
+1. TRANSPARANSI: Publik dapat melihat sejarah penanganan laporan secara detail (Audit Trail) serta ulasan/rating kinerja yang diberikan oleh warga lainnya.
 2. KEAMANAN & INTEGRITAS DATA: Penggunaan Soft Deletes pada user memastikan data laporan historis tetap terjaga untuk keperluan statistik pemerintahan meskipun akun user terkait dinonaktifkan.
-3. PRIVASI & KEAMANAN: Opsi pelaporan anonim dan privat memberikan rasa aman bagi warga untuk melapor tanpa takut akan intimidasi.
-4. EFISIENSI & AKUNTABILITAS: Fitur SLA (Service Level Agreement) memberikan standar waktu pelayanan yang jelas, mempermudah evaluasi kinerja petugas lapangan berdasarkan durasi penyelesaian laporan.
+3. EFISIENSI & AKUNTABILITAS: Fitur SLA (Service Level Agreement) memberikan standar waktu pelayanan yang jelas, mempermudah evaluasi kinerja petugas lapangan berdasarkan durasi penyelesaian laporan.
+4. OPTIMASI STORAGE & BANDWIDTH: Implementasi Canvas API di sisi client meminimalkan beban bandwidth upload, mempercepat respons aplikasi pada koneksi mobile yang lambat, dan menghemat ruang penyimpanan server.
+5. PENINGKATAN KUALITAS PELAYANAN: Sistem rating multi-dimensi (4 aspek) memberikan data analitis bagi pimpinan kecamatan untuk mengevaluasi sektor pelayanan mana yang perlu ditingkatkan.
+
+=====================================================================
+8. INSTRUKSI PENGUJIAN BEBAN (LOAD TESTING)
+=====================================================================
+Sistem ini dilengkapi dengan script pengujian performa menggunakan Locust (`locustfile.py`) untuk mensimulasikan beban 500 pengguna aktif:
+1. Pastikan Locust terinstal: `pip install locust`
+2. Jalankan perintah di terminal: `locust -f locustfile.py`
+3. Buka browser pada `http://localhost:8089` dan masukkan parameter:
+   - Number of users: 500
+   - Spawn rate: 10 atau 20 (jumlah user baru per detik)
+   - Host target: `https://kembaranngadu.my.id` atau `http://localhost:8000` (lokal)
+

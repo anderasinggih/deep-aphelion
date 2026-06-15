@@ -259,17 +259,18 @@ class PengaduanForm extends Component
                 $data['guest_wa'] = $this->guest_wa;
             }
             $data['status'] = 'menunggu';
-            $pengaduan = Pengaduan::create($data);
 
-            // Generate kode resmi: PKM-KBR/001/V/2025
+            // Generate kode_tracking SEBELUM create() agar tidak pernah NULL
+            // jika terjadi error setelah record dibuat
             $bulanRomawi = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
             $bulan = $bulanRomawi[now()->month - 1];
             $tahun = now()->year;
             $nomorUrut = Pengaduan::whereMonth('created_at', now()->month)
                 ->whereYear('created_at', $tahun)
-                ->count();
-            $pengaduan->kode_tracking = 'PKM-KBR/' . str_pad($nomorUrut, 3, '0', STR_PAD_LEFT) . '/' . $bulan . '/' . $tahun;
-            $pengaduan->save();
+                ->count() + 1;
+            $data['kode_tracking'] = 'PKM-KBR/' . str_pad($nomorUrut, 3, '0', STR_PAD_LEFT) . '/' . $bulan . '/' . $tahun;
+
+            $pengaduan = Pengaduan::create($data);
 
             PengaduanHistory::create([
                 'pengaduan_id' => $pengaduan->id,

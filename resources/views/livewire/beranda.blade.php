@@ -278,6 +278,7 @@
                 {{-- Grid Cards --}}
                 <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-3">
                     @forelse($pengaduans as $pengaduan)
+                        @continue(!$pengaduan->kode_tracking)
                         {{-- Grid Card Content --}}
                         <div wire:key="grid-{{ $pengaduan->id }}" wire:ignore.self
                             class="relative group bg-base-100 rounded-2xl overflow-hidden border border-base-300 hover:shadow-xl transition-all duration-500 animate-in fade-in zoom-in-95">
@@ -428,6 +429,7 @@
                 {{-- Ultra-Compact List View --}}
                 <div class="flex flex-col gap-2 sm:gap-3">
                     @forelse($pengaduans as $pengaduan)
+                        @continue(!$pengaduan->kode_tracking)
                         {{-- List Card Content --}}
                         <div wire:key="list-{{ $pengaduan->id }}" wire:ignore.self
                             class="relative flex flex-row items-center gap-3 sm:gap-6 p-2 sm:p-4 border border-base-300 bg-base-100 rounded-xl sm:rounded-2xl hover:shadow-md hover:border-primary/20 transition-all group animate-in fade-in slide-in-from-bottom-2 duration-500">
