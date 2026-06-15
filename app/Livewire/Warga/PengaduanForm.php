@@ -262,18 +262,25 @@ class PengaduanForm extends Component
             $data['status'] = 'menunggu';
 
             // Generate kode_tracking di dalam transaksi dengan row lock
-            // untuk mencegah race condition saat submit bersamaan
+            // untuk mencegah race condition saat submit bersamaan.
+            // Hanya hitung record yang sudah punya kode_tracking valid (whereNotNull)
+            // agar record NULL dari bug lama tidak mengacaukan nomor urut.
             $bulanRomawi = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
             $bulan = $bulanRomawi[now()->month - 1];
             $tahun = now()->year;
 
             $pengaduan = DB::transaction(function () use ($data, $bulan, $tahun) {
-                // lockForUpdate() mencegah transaksi lain membaca count yang sama
-                // sampai transaksi ini selesai
+                // Hanya hitung record yang benar-benar punya kode_tracking valid
                 $nomorUrut = Pengaduan::whereMonth('created_at', now()->month)
                     ->whereYear('created_at', $tahun)
+                    ->whereNotNull('kode_tracking')
                     ->lockForUpdate()
                     ->count() + 1;
+
+                // Pastikan kode yang akan dipakai belum ada (safety net)
+                while (Pengaduan::where('kode_tracking', 'PKM-KBR/' . str_pad($nomorUrut, 3, '0', STR_PAD_LEFT) . '/' . $bulan . '/' . $tahun)->exists()) {
+                    $nomorUrut++;
+                }
 
                 $data['kode_tracking'] = 'PKM-KBR/' . str_pad($nomorUrut, 3, '0', STR_PAD_LEFT) . '/' . $bulan . '/' . $tahun;
 
