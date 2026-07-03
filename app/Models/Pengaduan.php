@@ -128,9 +128,9 @@ class Pengaduan extends Model
         
         $routeName = $isAdmin ? 'admin.pengaduan.detail' : 'pengaduan.feed-detail';
         
-        // Regex for tracking code: PKM-KBR/006/V/2026
+        // Regex for tracking code: PKM-KBR/006-K4M/V/2026
         return preg_replace_callback(
-            '/PKM-KBR\/[0-9]{3}\/[IVXLCDM]+\/[0-9]{4}/',
+            '/PKM-KBR\/[0-9]{3}-[A-Z0-9]{3}\/[IVXLCDM]+\/[0-9]{4}/',
             function($matches) use ($routeName) {
                 $code = $matches[0];
                 try {

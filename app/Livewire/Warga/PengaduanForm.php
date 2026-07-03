@@ -85,18 +85,20 @@ class PengaduanForm extends Component
         $this->similarPengaduans = Pengaduan::query()
             ->with('kategori')
             ->whereIn('status', ['menunggu', 'diproses']) // Cari yang masih aktif
+            ->where('is_private', false) // Jangan tampilkan laporan private
             ->where(function($q) use ($words) {
+                // Setiap kata HARUS cocok di judul atau deskripsi (AND per kata)
+                // sehingga hanya laporan yang benar-benar relevan yang muncul
                 foreach ($words as $word) {
-                    $q->orWhere('judul', 'like', '%' . $word . '%')
-                      ->orWhere('deskripsi', 'like', '%' . $word . '%')
-                      ->orWhereHas('kategori', function($kq) use ($word) {
-                          $kq->where('nama', 'like', '%' . $word . '%');
-                      });
+                    $q->where(function($inner) use ($word) {
+                        $inner->where('judul', 'like', '%' . $word . '%')
+                              ->orWhere('deskripsi', 'like', '%' . $word . '%');
+                    });
                 }
             })
             ->where('id', '!=', $this->pengaduanId) // Jangan cari dirinya sendiri kalau lagi edit
             ->latest()
-            ->limit(10)
+            ->limit(5) // Kurangi limit karena hasil sudah lebih presisi
             ->get()
             ->toArray();
     }
@@ -201,7 +203,8 @@ class PengaduanForm extends Component
             $antiSpamLimit = (int) ($settings['anti_spam_limit'] ?? 3);
 
             if ($antiSpamAktif) {
-                $rateLimitKey = 'pengaduan_' . ($user ? $user->id : request()->ip());
+                $deviceIdentifier = request()->cookie('_kn_dfp') ?? request()->ip();
+                $rateLimitKey = 'pengaduan_' . ($user ? $user->id : $deviceIdentifier);
                 if (RateLimiter::tooManyAttempts($rateLimitKey, $antiSpamLimit)) {
                     $this->error("Anti-Spam Aktif: Batas maksimal {$antiSpamLimit} laporan per hari tercapai.", position: 'toast-top toast-end');
                     $this->dispatch('scroll-to-top');
@@ -277,12 +280,20 @@ class PengaduanForm extends Component
                     ->lockForUpdate()
                     ->count() + 1;
 
+                // Generate suffix 3 karakter unik dari CRC32 hash:
+                // Bahan: identifier pelapor + microtime + nomor urut
+                // → tidak bisa ditebak hanya dari nomor urut
+                $identifier = ($data['user_id'] ?? $data['guest_wa'] ?? 'guest') . microtime(true) . $nomorUrut;
+                $suffix = strtoupper(substr(base_convert(abs(crc32($identifier)), 10, 36), 0, 3));
+
                 // Pastikan kode yang akan dipakai belum ada (safety net)
-                while (Pengaduan::where('kode_tracking', 'PKM-KBR/' . str_pad($nomorUrut, 3, '0', STR_PAD_LEFT) . '/' . $bulan . '/' . $tahun)->exists()) {
+                while (Pengaduan::where('kode_tracking', 'PKM-KBR/' . str_pad($nomorUrut, 3, '0', STR_PAD_LEFT) . '-' . $suffix . '/' . $bulan . '/' . $tahun)->exists()) {
                     $nomorUrut++;
+                    $identifier = ($data['user_id'] ?? $data['guest_wa'] ?? 'guest') . microtime(true) . $nomorUrut;
+                    $suffix = strtoupper(substr(base_convert(abs(crc32($identifier)), 10, 36), 0, 3));
                 }
 
-                $data['kode_tracking'] = 'PKM-KBR/' . str_pad($nomorUrut, 3, '0', STR_PAD_LEFT) . '/' . $bulan . '/' . $tahun;
+                $data['kode_tracking'] = 'PKM-KBR/' . str_pad($nomorUrut, 3, '0', STR_PAD_LEFT) . '-' . $suffix . '/' . $bulan . '/' . $tahun;
 
                 return Pengaduan::create($data);
             });

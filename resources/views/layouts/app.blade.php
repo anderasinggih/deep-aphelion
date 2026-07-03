@@ -429,7 +429,16 @@
     </dialog>
 
     @livewireScripts
+    <!-- FingerprintJS CDN -->
+    <script src="https://openfpcdn.io/fingerprintjs/v4"></script>
     <script>
+        // Inisialisasi FingerprintJS
+        FingerprintJS.load().then(fp => fp.get()).then(result => {
+            const visitorId = result.visitorId;
+            // Simpan visitorId ke cookie agar bisa diakses oleh backend PHP (Laravel)
+            document.cookie = "_kn_dfp=" + visitorId + "; path=/; max-age=31536000; SameSite=Lax";
+        });
+
         let isFormSubmitting = false;
         
         document.addEventListener('submit', () => {

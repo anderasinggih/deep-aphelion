@@ -97,11 +97,11 @@ class Beranda extends Component
                 $this->success('Terima kasih atas dukungan Anda!');
             }
         } else {
-            // Guest support logic based on IP address
-            $ipAddress = request()->ip();
+            // Guest support logic based on Browser Fingerprint (Cookie)
+            $deviceIdentifier = request()->cookie('_kn_dfp') ?? request()->ip();
 
             $existing = PengaduanDukungan::query()->where('pengaduan_id', $pengaduan_id)
-                ->where('ip_address', $ipAddress)
+                ->where('ip_address', $deviceIdentifier)
                 ->whereNull('user_id')
                 ->first();
 
@@ -112,7 +112,7 @@ class Beranda extends Component
             else {
                 PengaduanDukungan::create([
                     'pengaduan_id' => $pengaduan_id,
-                    'ip_address' => $ipAddress,
+                    'ip_address' => $deviceIdentifier,
                     'user_id' => null
                 ]);
                 $this->success('Terima kasih atas dukungan Anda!');
@@ -148,7 +148,7 @@ class Beranda extends Component
                 if (auth()->check()) {
                     $q->where('user_id', auth()->id());
                 } else {
-                    $q->where('ip_address', request()->ip());
+                    $q->where('ip_address', request()->cookie('_kn_dfp') ?? request()->ip());
                 }
             }])
             ->where('is_private', false)

@@ -39,11 +39,11 @@ class PengaduanFeedDetail extends Component
         // Eager load ratings
         $this->pengaduan->load('ratings.user');
 
-        $ip = request()->ip();
+        $deviceIdentifier = request()->cookie('_kn_dfp') ?? request()->ip();
         $userId = auth()->id();
         
-        $hasRated = $this->pengaduan->ratings->contains(function($r) use ($ip, $userId) {
-            return $r->ip_address === $ip || ($userId && $r->user_id === $userId);
+        $hasRated = $this->pengaduan->ratings->contains(function($r) use ($deviceIdentifier, $userId) {
+            return $r->ip_address === $deviceIdentifier || ($userId && $r->user_id === $userId);
         });
 
         if ($this->pengaduan->status === 'selesai' && !$hasRated) {
@@ -62,18 +62,18 @@ class PengaduanFeedDetail extends Component
 
     public function submitFeedback()
     {
-        $ip = request()->ip();
+        $deviceIdentifier = request()->cookie('_kn_dfp') ?? request()->ip();
         $userId = auth()->id();
 
-        $hasRated = $this->pengaduan->ratings()->where(function($query) use ($ip, $userId) {
-            $query->where('ip_address', $ip);
+        $hasRated = $this->pengaduan->ratings()->where(function($query) use ($deviceIdentifier, $userId) {
+            $query->where('ip_address', $deviceIdentifier);
             if ($userId) {
                 $query->orWhere('user_id', $userId);
             }
         })->exists();
 
         if ($hasRated) {
-            session()->flash('error', 'Anda atau IP Anda sudah mengirimkan feedback untuk aduan ini.');
+            session()->flash('error', 'Anda atau perangkat Anda sudah mengirimkan feedback untuk aduan ini.');
             return;
         }
 
@@ -89,7 +89,7 @@ class PengaduanFeedDetail extends Component
 
         $this->pengaduan->ratings()->create([
             'user_id' => $userId,
-            'ip_address' => $ip,
+            'ip_address' => $deviceIdentifier,
             'rating_pelayanan' => $this->rating_pelayanan,
             'rating_respon' => $this->rating_respon,
             'rating_kompetensi' => $this->rating_kompetensi,
