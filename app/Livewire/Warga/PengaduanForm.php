@@ -273,27 +273,21 @@ class PengaduanForm extends Component
             $tahun = now()->year;
 
             $pengaduan = DB::transaction(function () use ($data, $bulan, $tahun) {
-                // Hanya hitung record yang benar-benar punya kode_tracking valid
-                $nomorUrut = Pengaduan::whereMonth('created_at', now()->month)
-                    ->whereYear('created_at', $tahun)
-                    ->whereNotNull('kode_tracking')
-                    ->lockForUpdate()
-                    ->count() + 1;
+                // Generate 6 karakter acak penuh (kombinasi huruf besar & angka)
+                // Berbahan dasar: microtime + random byte agar unik
+                $generateCode = function() {
+                    $entropy = microtime(true) . bin2hex(random_bytes(4));
+                    return strtoupper(substr(base_convert(abs(crc32($entropy)), 10, 36), 0, 6));
+                };
 
-                // Generate suffix 3 karakter unik dari CRC32 hash:
-                // Bahan: identifier pelapor + microtime + nomor urut
-                // → tidak bisa ditebak hanya dari nomor urut
-                $identifier = ($data['user_id'] ?? $data['guest_wa'] ?? 'guest') . microtime(true) . $nomorUrut;
-                $suffix = strtoupper(substr(base_convert(abs(crc32($identifier)), 10, 36), 0, 3));
+                $randomCode = $generateCode();
 
-                // Pastikan kode yang akan dipakai belum ada (safety net)
-                while (Pengaduan::where('kode_tracking', 'PKM-KBR/' . str_pad($nomorUrut, 3, '0', STR_PAD_LEFT) . '-' . $suffix . '/' . $bulan . '/' . $tahun)->exists()) {
-                    $nomorUrut++;
-                    $identifier = ($data['user_id'] ?? $data['guest_wa'] ?? 'guest') . microtime(true) . $nomorUrut;
-                    $suffix = strtoupper(substr(base_convert(abs(crc32($identifier)), 10, 36), 0, 3));
+                // Pastikan kode yang akan dipakai belum ada di database (safety net)
+                while (Pengaduan::where('kode_tracking', 'PKM-KBR/' . $randomCode . '/' . $bulan . '/' . $tahun)->exists()) {
+                    $randomCode = $generateCode();
                 }
 
-                $data['kode_tracking'] = 'PKM-KBR/' . str_pad($nomorUrut, 3, '0', STR_PAD_LEFT) . '-' . $suffix . '/' . $bulan . '/' . $tahun;
+                $data['kode_tracking'] = 'PKM-KBR/' . $randomCode . '/' . $bulan . '/' . $tahun;
 
                 return Pengaduan::create($data);
             });
