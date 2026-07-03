@@ -429,15 +429,18 @@
     </dialog>
 
     @livewireScripts
-    <!-- FingerprintJS CDN -->
-    <script src="https://openfpcdn.io/fingerprintjs/v4"></script>
     <script>
-        // Inisialisasi FingerprintJS
-        FingerprintJS.load().then(fp => fp.get()).then(result => {
-            const visitorId = result.visitorId;
-            // Simpan visitorId ke cookie agar bisa diakses oleh backend PHP (Laravel)
+        // UUID Generator Lokal (Tanpa dependensi CDN luar agar 100% andal di jaringan apapun)
+        (function() {
+            let visitorId = localStorage.getItem('_kn_did');
+            if (!visitorId) {
+                // Generate UUID v4 random
+                visitorId = 'did_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+                localStorage.setItem('_kn_did', visitorId);
+            }
+            // Selalu set cookie agar sinkron dengan backend PHP
             document.cookie = "_kn_dfp=" + visitorId + "; path=/; max-age=31536000; SameSite=Lax";
-        });
+        })();
 
         let isFormSubmitting = false;
         
